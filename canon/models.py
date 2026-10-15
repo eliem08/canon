@@ -17,6 +17,9 @@ class Fact(BaseModel):
     field: str
     value: str | float | int
     observed_at: date | None = None
+    valid_until: date | None = Field(
+        default=None, description="End of the period the source asserts it for (e.g. contract term)"
+    )
     record_id: str
 
 
@@ -57,8 +60,43 @@ class FieldValue(BaseModel):
     rule: str
 
 
+class Evidence(BaseModel):
+    """One source observation of a fact value, with the weights that scored it."""
+
+    record_id: str
+    source: SourceType
+    status: RecordStatus
+    value: str | float | int
+    observed_at: date | None
+    authority: float
+    freshness: float
+    weight: float  # authority x freshness, in [0, 1]
+    acl: list[str] = Field(default_factory=list)
+
+
+class ScoredValue(BaseModel):
+    value: str | float | int
+    score: float  # noisy-OR of supporting evidence weights
+    last_updated: date | None
+    sources: list[Evidence]
+
+
+class ResolvedFact(BaseModel):
+    """The winning value of one field plus every losing value kept as an alternative."""
+
+    field: str
+    value: str | float | int | None
+    confidence: float
+    last_updated: date | None
+    sources: list[Evidence] = Field(default_factory=list)
+    alternatives: list[ScoredValue] = Field(default_factory=list)
+    conflict: bool = False
+    explanation: str = ""
+
+
 class GoldenRecord(BaseModel):
     entity_id: str
     fields: dict[str, FieldValue]
     members: list[str] = Field(description="Lineage: every source record merged into this entity")
     acl: list[str] = Field(default_factory=list)
+    facts: dict[str, ResolvedFact] = Field(default_factory=dict)

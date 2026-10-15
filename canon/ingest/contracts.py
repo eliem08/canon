@@ -52,13 +52,23 @@ def parse_contract(text: str, record_id: str, locator: str, acl=DEFAULT_CONTRACT
     value = float(re.sub(r"\D", "", raw_value)) if raw_value else None
     facts = []
 
-    def fact(name: str, v) -> None:
-        if v not in (None, ""):
-            facts.append(Fact(field=name, value=v, observed_at=signed, record_id=record_id))
-
     number = _grab(text, "number")
     start = parse_date(_grab(text, "start"))
     renewal = parse_date(_grab(text, "renewal"))
+
+    def fact(name: str, v) -> None:
+        # Contract terms are asserted for the whole contract period.
+        if v not in (None, ""):
+            facts.append(
+                Fact(
+                    field=name,
+                    value=v,
+                    observed_at=signed,
+                    valid_until=renewal,
+                    record_id=record_id,
+                )
+            )
+
     fact("contract_number", number)
     fact("contract_value", value)
     fact("contract_start", start.isoformat() if start else None)
