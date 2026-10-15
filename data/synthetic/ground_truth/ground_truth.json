@@ -1,0 +1,1125 @@
+{
+  "seed": 20261001,
+  "reference_date": "2026-10-01",
+  "entities": {
+    "E01": {
+      "key": "atlas-log",
+      "name": "Atlas Logistique",
+      "legal_name": "Atlas Logistique SARL",
+      "legal_form": "SARL",
+      "arabic_name": "أطلس لوجيستيك",
+      "domain": "atlaslogistique.ma",
+      "phone": "+212524358036",
+      "address": "112 Boulevard Zerktouni",
+      "city": "Casablanca",
+      "tax_id": "000133528873882",
+      "industry": "Logistics",
+      "owner": "Nadia Berrada",
+      "contract_number": "CN-2024-107",
+      "contract_value": 461000,
+      "currency": "MAD",
+      "contract_start": "2025-12-01",
+      "renewal_date": "2027-12-01",
+      "signatory": "Sanae Tahiri",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E02": {
+      "key": "atlas-tours",
+      "name": "Atlas Tours",
+      "legal_name": "Atlas Tours SA",
+      "legal_form": "SA",
+      "arabic_name": "أطلس تورز",
+      "domain": "atlastours.ma",
+      "phone": "+212561684072",
+      "address": "45 Avenue Mohammed V",
+      "city": "Marrakech",
+      "tax_id": "005741370984432",
+      "industry": "Travel",
+      "owner": "Nadia Berrada",
+      "contract_number": "CN-2024-114",
+      "contract_value": 708000,
+      "currency": "MAD",
+      "contract_start": "2025-10-01",
+      "renewal_date": "2027-10-01",
+      "signatory": "Khadija Benjelloun",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": true
+    },
+    "E03": {
+      "key": "sahara-tech",
+      "name": "Sahara Tech Solutions",
+      "legal_name": "Sahara Tech Solutions SARL",
+      "legal_form": "SARL",
+      "arabic_name": "صحراء تك",
+      "domain": "saharatech.ma",
+      "phone": "+212592846751",
+      "address": "8 Rue Patrice Lumumba",
+      "city": "Rabat",
+      "tax_id": "000411668199476",
+      "industry": "Software",
+      "owner": "Imane Chraibi",
+      "contract_number": "CN-2024-121",
+      "contract_value": 1579000,
+      "currency": "MAD",
+      "contract_start": "2026-01-01",
+      "renewal_date": "2027-01-01",
+      "signatory": "Adil Sefrioui",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E04": {
+      "key": "sahara-tours",
+      "name": "Sahara Tours",
+      "legal_name": "Sahara Tours SARL",
+      "legal_form": "SARL",
+      "arabic_name": "صحراء تورز",
+      "domain": "saharatours.ma",
+      "phone": "+212535736112",
+      "address": "Route de Rissani",
+      "city": "Merzouga",
+      "tax_id": "008897917515358",
+      "industry": "Travel",
+      "owner": "Omar Fassi",
+      "contract_number": "CN-2024-128",
+      "contract_value": 968000,
+      "currency": "MAD",
+      "contract_start": "2026-04-01",
+      "renewal_date": "2027-04-01",
+      "signatory": "Tarik El Ouali",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": true
+    },
+    "E05": {
+      "key": "al-baraka",
+      "name": "Boulangerie Al Baraka",
+      "legal_name": "Boulangerie Al Baraka SARL",
+      "legal_form": "SARL",
+      "arabic_name": "مخبزة البركة",
+      "domain": "albaraka-boulangerie.ma",
+      "phone": "+212546677565",
+      "address": "17 Rue Talaa Kebira",
+      "city": "Fès",
+      "tax_id": "000812861060161",
+      "industry": "Food",
+      "owner": "Youssef Benali",
+      "contract_number": "CN-2023-135",
+      "contract_value": 1426000,
+      "currency": "MAD",
+      "contract_start": "2026-03-01",
+      "renewal_date": "2028-03-01",
+      "signatory": "Jamal Haddad",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": true
+    },
+    "E06": {
+      "key": "marjana",
+      "name": "Marjana Distribution",
+      "legal_name": "Marjana Distribution SA",
+      "legal_form": "SA",
+      "arabic_name": "مرجانة للتوزيع",
+      "domain": "marjana-distrib.ma",
+      "phone": "+212540258418",
+      "address": "3 Zone Franche Gzenaya",
+      "city": "Tanger",
+      "tax_id": "009691341861069",
+      "industry": "Retail",
+      "owner": "Imane Chraibi",
+      "contract_number": "CN-2024-142",
+      "contract_value": 959000,
+      "currency": "MAD",
+      "contract_start": "2025-09-01",
+      "renewal_date": "2027-09-01",
+      "signatory": "Meryem Kettani",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E07": {
+      "key": "nour-energie",
+      "name": "Nour Énergie",
+      "legal_name": "Nour Énergie SA",
+      "legal_form": "SA",
+      "arabic_name": "نور للطاقة",
+      "domain": "nourenergie.ma",
+      "phone": "+212593052484",
+      "address": "Route de Zagora km 10",
+      "city": "Ouarzazate",
+      "tax_id": "002037429325353",
+      "industry": "Energy",
+      "owner": "Salma El Idrissi",
+      "contract_number": "CN-2024-149",
+      "contract_value": 1625000,
+      "currency": "MAD",
+      "contract_start": "2025-08-01",
+      "renewal_date": "2027-08-01",
+      "signatory": "Adil Sefrioui",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": true
+    },
+    "E08": {
+      "key": "nour-pack",
+      "name": "Nour Packaging",
+      "legal_name": "Nour Packaging SARL",
+      "legal_form": "SARL",
+      "arabic_name": "نور للتغليف",
+      "domain": "nourpack.ma",
+      "phone": "+212510892258",
+      "address": "Lot 22 Zone Industrielle Bir Rami",
+      "city": "Kénitra",
+      "tax_id": "000065108143961",
+      "industry": "Manufacturing",
+      "owner": "Omar Fassi",
+      "contract_number": "CN-2024-156",
+      "contract_value": 1706000,
+      "currency": "MAD",
+      "contract_start": "2025-07-01",
+      "renewal_date": "2027-07-01",
+      "signatory": "Rachid Ouazzani",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": true
+    },
+    "E09": {
+      "key": "dar-el-hana",
+      "name": "Dar El Hana Immobilier",
+      "legal_name": "Dar El Hana Immobilier SARL",
+      "legal_form": "SARL",
+      "arabic_name": "دار الهناء",
+      "domain": "darelhana.ma",
+      "phone": "+212521937293",
+      "address": "21 Avenue Hassan II",
+      "city": "Agadir",
+      "tax_id": "006586697434211",
+      "industry": "Real estate",
+      "owner": "Salma El Idrissi",
+      "contract_number": "CN-2023-163",
+      "contract_value": 190000,
+      "currency": "MAD",
+      "contract_start": "2026-05-01",
+      "renewal_date": "2028-05-01",
+      "signatory": "Jamal Haddad",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E10": {
+      "key": "oasis-agro",
+      "name": "Oasis Agro Export",
+      "legal_name": "Oasis Agro Export SARL",
+      "legal_form": "SARL",
+      "arabic_name": null,
+      "domain": "oasisagro.ma",
+      "phone": "+212578098257",
+      "address": "9 Rue de Marrakech",
+      "city": "Meknès",
+      "tax_id": "007327057588566",
+      "industry": "Agriculture",
+      "owner": "Karim Tazi",
+      "contract_number": "CN-2023-170",
+      "contract_value": 1084000,
+      "currency": "MAD",
+      "contract_start": "2026-06-01",
+      "renewal_date": "2027-06-01",
+      "signatory": "Adil Sefrioui",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E11": {
+      "key": "chaouen-tex",
+      "name": "Chefchaouen Textiles",
+      "legal_name": "Chefchaouen Textiles SARL",
+      "legal_form": "SARL",
+      "arabic_name": "نسيج شفشاون",
+      "domain": "chaouentex.ma",
+      "phone": "+212578825267",
+      "address": "4 Place Outa El Hammam",
+      "city": "Chefchaouen",
+      "tax_id": "000532116896522",
+      "industry": "Textiles",
+      "owner": "Nadia Berrada",
+      "contract_number": "CN-2023-177",
+      "contract_value": 872000,
+      "currency": "MAD",
+      "contract_start": "2025-06-01",
+      "renewal_date": "2027-06-01",
+      "signatory": "Fatima Zahra Lahlou",
+      "owner_change_in_slack_only": true,
+      "crm_value_stale": true
+    },
+    "E12": {
+      "key": "rif-ciment",
+      "name": "Rif Ciment",
+      "legal_name": "Rif Ciment SA",
+      "legal_form": "SA",
+      "arabic_name": "إسمنت الريف",
+      "domain": "rifciment.ma",
+      "phone": "+212507059484",
+      "address": "Zone Industrielle Selouane",
+      "city": "Nador",
+      "tax_id": "000439142302837",
+      "industry": "Construction",
+      "owner": "Youssef Benali",
+      "contract_number": "CN-2023-184",
+      "contract_value": 1666000,
+      "currency": "MAD",
+      "contract_start": "2025-03-01",
+      "renewal_date": "2027-03-01",
+      "signatory": "Meryem Kettani",
+      "owner_change_in_slack_only": true,
+      "crm_value_stale": false
+    },
+    "E13": {
+      "key": "tm-freight",
+      "name": "Tanger Med Freight",
+      "legal_name": "Tanger Med Freight Ltd",
+      "legal_form": "Ltd",
+      "arabic_name": null,
+      "domain": "tmfreight.co.uk",
+      "phone": "+212544469797",
+      "address": "Tanger Med Port Zone, Building B4",
+      "city": "Tanger",
+      "tax_id": "004104993385176",
+      "industry": "Logistics",
+      "owner": "Nadia Berrada",
+      "contract_number": "CN-2024-191",
+      "contract_value": 1341000,
+      "currency": "MAD",
+      "contract_start": "2026-06-01",
+      "renewal_date": "2028-06-01",
+      "signatory": "Hicham Amrani",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E14": {
+      "key": "medina-pharma",
+      "name": "Medina Pharma",
+      "legal_name": "Medina Pharma SA",
+      "legal_form": "SA",
+      "arabic_name": "مدينة فارما",
+      "domain": "medinapharma.ma",
+      "phone": "+212545140939",
+      "address": "86 Boulevard Zerktouni",
+      "city": "Casablanca",
+      "tax_id": "009683235419979",
+      "industry": "Pharmaceuticals",
+      "owner": "Leila Bennani",
+      "contract_number": "CN-2023-198",
+      "contract_value": 600000,
+      "currency": "MAD",
+      "contract_start": "2025-08-01",
+      "renewal_date": "2027-08-01",
+      "signatory": "Adil Sefrioui",
+      "owner_change_in_slack_only": true,
+      "crm_value_stale": false
+    },
+    "E15": {
+      "key": "zitoun",
+      "name": "Zitoun Cosmetics",
+      "legal_name": "Zitoun Cosmetics SARL",
+      "legal_form": "SARL",
+      "arabic_name": "زيتون",
+      "domain": "zitoun-cosmetics.ma",
+      "phone": "+212579101995",
+      "address": "12 Derb Dabachi",
+      "city": "Marrakech",
+      "tax_id": "009233447656500",
+      "industry": "Cosmetics",
+      "owner": "Leila Bennani",
+      "contract_number": "CN-2023-205",
+      "contract_value": 1241000,
+      "currency": "MAD",
+      "contract_start": "2025-05-01",
+      "renewal_date": "2027-05-01",
+      "signatory": "Houda Mernissi",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E16": {
+      "key": "kasbah",
+      "name": "Kasbah Hospitality Group",
+      "legal_name": "Kasbah Hospitality Group SA",
+      "legal_form": "SA",
+      "arabic_name": null,
+      "domain": "kasbahgroup.com",
+      "phone": "+212549384799",
+      "address": "Route de l'Ourika km 7",
+      "city": "Marrakech",
+      "tax_id": "000566407165631",
+      "industry": "Hospitality",
+      "owner": "Imane Chraibi",
+      "contract_number": "CN-2024-212",
+      "contract_value": 134000,
+      "currency": "MAD",
+      "contract_start": "2026-03-01",
+      "renewal_date": "2027-03-01",
+      "signatory": "Adil Sefrioui",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E17": {
+      "key": "argan-dor",
+      "name": "Argan d'Or",
+      "legal_name": "Argan d'Or SARL",
+      "legal_form": "SARL",
+      "arabic_name": "أركان الذهب",
+      "domain": "argandor.ma",
+      "phone": "+212560053144",
+      "address": "33 Rue Sidi Mohammed Ben Abdallah",
+      "city": "Essaouira",
+      "tax_id": "003508674300219",
+      "industry": "Cosmetics",
+      "owner": "Nadia Berrada",
+      "contract_number": "CN-2023-219",
+      "contract_value": 1497000,
+      "currency": "MAD",
+      "contract_start": "2025-09-01",
+      "renewal_date": "2027-09-01",
+      "signatory": "Rachid Ouazzani",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E18": {
+      "key": "bab-rayan",
+      "name": "Bab Rayan Consulting",
+      "legal_name": "Bab Rayan Consulting Ltd",
+      "legal_form": "Ltd",
+      "arabic_name": null,
+      "domain": "babrayan.com",
+      "phone": "+212595188870",
+      "address": "Hay Riad, Avenue Annakhil, Tower 2",
+      "city": "Rabat",
+      "tax_id": "005818658668251",
+      "industry": "Consulting",
+      "owner": "Youssef Benali",
+      "contract_number": "CN-2023-226",
+      "contract_value": 487000,
+      "currency": "MAD",
+      "contract_start": "2025-09-01",
+      "renewal_date": "2027-09-01",
+      "signatory": "Fatima Zahra Lahlou",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E19": {
+      "key": "amal-mf",
+      "name": "Amal Microfinance",
+      "legal_name": "Amal Microfinance SA",
+      "legal_form": "SA",
+      "arabic_name": "أمل للتمويل الأصغر",
+      "domain": "amal-mf.ma",
+      "phone": "+212543094269",
+      "address": "5 Rue Ibnou Mounir, Maârif",
+      "city": "Casablanca",
+      "tax_id": "009557572680505",
+      "industry": "Finance",
+      "owner": "Mehdi Alaoui",
+      "contract_number": "CN-2024-233",
+      "contract_value": 841000,
+      "currency": "MAD",
+      "contract_start": "2025-12-01",
+      "renewal_date": "2027-12-01",
+      "signatory": "Zineb Squalli",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E20": {
+      "key": "atlantic-fish",
+      "name": "Atlantic Fishing Company",
+      "legal_name": "Atlantic Fishing Company Ltd",
+      "legal_form": "Ltd",
+      "arabic_name": null,
+      "domain": "atlanticfishing.co",
+      "phone": "+212524415035",
+      "address": "Port de Dakhla, Quai 3",
+      "city": "Dakhla",
+      "tax_id": "004465248712359",
+      "industry": "Fishing",
+      "owner": "Mehdi Alaoui",
+      "contract_number": "CN-2023-240",
+      "contract_value": 1858000,
+      "currency": "MAD",
+      "contract_start": "2025-04-01",
+      "renewal_date": "2027-04-01",
+      "signatory": "Meryem Kettani",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E21": {
+      "key": "riad-digital",
+      "name": "Riad Digital Agency",
+      "legal_name": "Riad Digital Agency SARL",
+      "legal_form": "SARL",
+      "arabic_name": "رياض ديجيتال",
+      "domain": "riaddigital.ma",
+      "phone": "+212598931681",
+      "address": "27 Avenue Fal Ould Oumeir, Agdal",
+      "city": "Rabat",
+      "tax_id": "003824833636915",
+      "industry": "Marketing",
+      "owner": "Leila Bennani",
+      "contract_number": "CN-2023-247",
+      "contract_value": 1382000,
+      "currency": "MAD",
+      "contract_start": "2026-05-01",
+      "renewal_date": "2027-05-01",
+      "signatory": "Zineb Squalli",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E22": {
+      "key": "souss-fresh",
+      "name": "Souss Fresh",
+      "legal_name": "Souss Fresh SARL",
+      "legal_form": "SARL",
+      "arabic_name": "سوس فريش",
+      "domain": "soussfresh.ma",
+      "phone": "+212548654849",
+      "address": "Zone Industrielle Tassila, Lot 140",
+      "city": "Agadir",
+      "tax_id": "008303665742185",
+      "industry": "Agriculture",
+      "owner": "Youssef Benali",
+      "contract_number": "CN-2023-254",
+      "contract_value": 536000,
+      "currency": "MAD",
+      "contract_start": "2025-08-01",
+      "renewal_date": "2027-08-01",
+      "signatory": "Houda Mernissi",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E23": {
+      "key": "al-massira",
+      "name": "Al Massira Transport",
+      "legal_name": "Al Massira Transport SA",
+      "legal_form": "SA",
+      "arabic_name": "المسيرة للنقل",
+      "domain": "almassira-transport.ma",
+      "phone": "+212505105973",
+      "address": "Avenue de la Mecque",
+      "city": "Laâyoune",
+      "tax_id": "006134156082671",
+      "industry": "Transport",
+      "owner": "Salma El Idrissi",
+      "contract_number": "CN-2023-261",
+      "contract_value": 745000,
+      "currency": "MAD",
+      "contract_start": "2026-04-01",
+      "renewal_date": "2027-04-01",
+      "signatory": "Houda Mernissi",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E24": {
+      "key": "fennec",
+      "name": "Fennec Software",
+      "legal_name": "Fennec Software Ltd",
+      "legal_form": "Ltd",
+      "arabic_name": null,
+      "domain": "fennecsoft.io",
+      "phone": "+212500042077",
+      "address": "Casanearshore Park, Shore 7",
+      "city": "Casablanca",
+      "tax_id": "006697165490708",
+      "industry": "Software",
+      "owner": "Imane Chraibi",
+      "contract_number": "CN-2024-268",
+      "contract_value": 1031000,
+      "currency": "MAD",
+      "contract_start": "2025-09-01",
+      "renewal_date": "2027-09-01",
+      "signatory": "Adil Sefrioui",
+      "owner_change_in_slack_only": true,
+      "crm_value_stale": true
+    },
+    "E25": {
+      "key": "yasmine",
+      "name": "Yasmine Hôtels",
+      "legal_name": "Yasmine Hôtels SA",
+      "legal_form": "SA",
+      "arabic_name": "فنادق ياسمين",
+      "domain": "yasmine-hotels.ma",
+      "phone": "+212593516835",
+      "address": "Avenue Mohammed VI, Malabata",
+      "city": "Tanger",
+      "tax_id": "005619350767177",
+      "industry": "Hospitality",
+      "owner": "Omar Fassi",
+      "contract_number": "CN-2023-275",
+      "contract_value": 711000,
+      "currency": "MAD",
+      "contract_start": "2025-05-01",
+      "renewal_date": "2027-05-01",
+      "signatory": "Adil Sefrioui",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    }
+  },
+  "records": {
+    "contract:CN-2023-135_v1": "E05",
+    "contract:CN-2023-135_v2": "E05",
+    "contract:CN-2023-163_v1": "E09",
+    "contract:CN-2023-163_v2": "E09",
+    "contract:CN-2023-170_v1": "E10",
+    "contract:CN-2023-170_v2": "E10",
+    "contract:CN-2023-177_v1": "E11",
+    "contract:CN-2023-177_v2": "E11",
+    "contract:CN-2023-184_v1": "E12",
+    "contract:CN-2023-184_v2": "E12",
+    "contract:CN-2023-198_v1": "E14",
+    "contract:CN-2023-198_v2": "E14",
+    "contract:CN-2023-205_v1": "E15",
+    "contract:CN-2023-205_v2": "E15",
+    "contract:CN-2023-219_v1": "E17",
+    "contract:CN-2023-219_v2": "E17",
+    "contract:CN-2023-226_v1": "E18",
+    "contract:CN-2023-226_v2": "E18",
+    "contract:CN-2023-240_v1": "E20",
+    "contract:CN-2023-240_v2": "E20",
+    "contract:CN-2023-247_v1": "E21",
+    "contract:CN-2023-247_v2": "E21",
+    "contract:CN-2023-254_v1": "E22",
+    "contract:CN-2023-254_v2": "E22",
+    "contract:CN-2023-261_v1": "E23",
+    "contract:CN-2023-261_v2": "E23",
+    "contract:CN-2023-275_v1": "E25",
+    "contract:CN-2023-275_v2": "E25",
+    "contract:CN-2024-107_v1": "E01",
+    "contract:CN-2024-107_v2": "E01",
+    "contract:CN-2024-114_v1": "E02",
+    "contract:CN-2024-114_v2": "E02",
+    "contract:CN-2024-121_v1": "E03",
+    "contract:CN-2024-121_v2": "E03",
+    "contract:CN-2024-128_v1": "E04",
+    "contract:CN-2024-128_v2": "E04",
+    "contract:CN-2024-142_v1": "E06",
+    "contract:CN-2024-142_v2": "E06",
+    "contract:CN-2024-149_v1": "E07",
+    "contract:CN-2024-149_v2": "E07",
+    "contract:CN-2024-156_v1": "E08",
+    "contract:CN-2024-156_v2": "E08",
+    "contract:CN-2024-191_v1": "E13",
+    "contract:CN-2024-191_v2": "E13",
+    "contract:CN-2024-212_v1": "E16",
+    "contract:CN-2024-212_v2": "E16",
+    "contract:CN-2024-233_v1": "E19",
+    "contract:CN-2024-233_v2": "E19",
+    "contract:CN-2024-268_v1": "E24",
+    "contract:CN-2024-268_v2": "E24",
+    "crm:0015g00000ACTMS": "E22",
+    "crm:0015g00000E829Z": "E02",
+    "crm:0015g00003Q1548": "E21",
+    "crm:0015g000045GR4X": "E24",
+    "crm:0015g00004NHBKQ": "E12",
+    "crm:0015g00005CDPYT": "E13",
+    "crm:0015g000074H9BX": "E25",
+    "crm:0015g00007K2RCW": "E06",
+    "crm:0015g00007L6BQX": "E10",
+    "crm:0015g000082PXLV": "E12",
+    "crm:0015g00008EEL0X": "E14",
+    "crm:0015g00008WTTPY": "E04",
+    "crm:0015g000098EZ1H": "E02",
+    "crm:0015g00009CNXAW": "E17",
+    "crm:0015g0000AGRRWC": "E05",
+    "crm:0015g0000AQSZBV": "E05",
+    "crm:0015g0000BGTWN2": "E23",
+    "crm:0015g0000C324EP": "E13",
+    "crm:0015g0000D1ECEK": "E19",
+    "crm:0015g0000DT29PZ": "E25",
+    "crm:0015g0000ES4QTK": "E21",
+    "crm:0015g0000HHFN7R": "E03",
+    "crm:0015g0000JVLW6D": "E24",
+    "crm:0015g0000K3QV1Y": "E03",
+    "crm:0015g0000K55VT4": "E20",
+    "crm:0015g0000KG51J5": "E05",
+    "crm:0015g0000LQLZ0P": "E16",
+    "crm:0015g0000M0HJ0E": "E01",
+    "crm:0015g0000MLCGAU": "E19",
+    "crm:0015g0000MLGP7X": "E10",
+    "crm:0015g0000MPK8DF": "E08",
+    "crm:0015g0000MS430H": "E10",
+    "crm:0015g0000NDR1ZL": "E23",
+    "crm:0015g0000PNDMSR": "E14",
+    "crm:0015g0000PXAUW0": "E15",
+    "crm:0015g0000R111H6": "E18",
+    "crm:0015g0000RTBQLA": "E01",
+    "crm:0015g0000SKPBB3": "E01",
+    "crm:0015g0000TB9NBR": "E11",
+    "crm:0015g0000UEHXSG": "E07",
+    "crm:0015g0000VHF9FX": "E07",
+    "crm:0015g0000VL83VJ": "E24",
+    "crm:0015g0000VVTYHL": "E11",
+    "crm:0015g0000W8BEM4": "E15",
+    "crm:0015g0000WAX21R": "E14",
+    "crm:0015g0000WELQ0F": "E04",
+    "crm:0015g0000XL7SKG": "E09",
+    "crm:0015g0000YC1EAH": "E06",
+    "crm:0015g0000YR8NH2": "E21",
+    "crm:0015g0000ZS34AB": "E18",
+    "slack:C01L6YDM40": "E03",
+    "slack:C028SSZ5RD": "E03",
+    "slack:C04C8VQRYN": "E17",
+    "slack:C07FPTMEYP": "E09",
+    "slack:C0AQE7ZRNA": "E16",
+    "slack:C0G95VPQ4R": "E24",
+    "slack:C0GRA3T02W": "E10",
+    "slack:C0JN8J0YGW": "E15",
+    "slack:C0K57GT61H": "E01",
+    "slack:C0K57K0ZF0": "E13",
+    "slack:C0KFCE7RZT": "E04",
+    "slack:C0M4SY6288": "E17",
+    "slack:C0P1V6TFLJ": "E23",
+    "slack:C0Q4KQF31N": "E14",
+    "slack:C0Q8FYPBD1": "E11",
+    "slack:C0R4KRZT1H": "E15",
+    "slack:C0RDSJJSDJ": "E20",
+    "slack:C0SFHJJF06": "E16",
+    "slack:C0ZNRV3PXG": "E12"
+  },
+  "record_notes": {
+    "contract:CN-2023-135_v1": [
+      "superseded"
+    ],
+    "contract:CN-2023-135_v2": [],
+    "contract:CN-2023-163_v1": [
+      "superseded"
+    ],
+    "contract:CN-2023-163_v2": [],
+    "contract:CN-2023-170_v1": [
+      "superseded"
+    ],
+    "contract:CN-2023-170_v2": [],
+    "contract:CN-2023-177_v1": [
+      "superseded"
+    ],
+    "contract:CN-2023-177_v2": [],
+    "contract:CN-2023-184_v1": [
+      "superseded",
+      "stale:address"
+    ],
+    "contract:CN-2023-184_v2": [],
+    "contract:CN-2023-198_v1": [
+      "superseded",
+      "stale:address"
+    ],
+    "contract:CN-2023-198_v2": [],
+    "contract:CN-2023-205_v1": [
+      "superseded"
+    ],
+    "contract:CN-2023-205_v2": [],
+    "contract:CN-2023-219_v1": [
+      "superseded"
+    ],
+    "contract:CN-2023-219_v2": [],
+    "contract:CN-2023-226_v1": [
+      "superseded"
+    ],
+    "contract:CN-2023-226_v2": [],
+    "contract:CN-2023-240_v1": [
+      "superseded"
+    ],
+    "contract:CN-2023-240_v2": [],
+    "contract:CN-2023-247_v1": [
+      "superseded"
+    ],
+    "contract:CN-2023-247_v2": [],
+    "contract:CN-2023-254_v1": [
+      "superseded"
+    ],
+    "contract:CN-2023-254_v2": [],
+    "contract:CN-2023-261_v1": [
+      "superseded",
+      "stale:address"
+    ],
+    "contract:CN-2023-261_v2": [],
+    "contract:CN-2023-275_v1": [
+      "superseded",
+      "stale:address"
+    ],
+    "contract:CN-2023-275_v2": [],
+    "contract:CN-2024-107_v1": [
+      "superseded",
+      "stale:address"
+    ],
+    "contract:CN-2024-107_v2": [],
+    "contract:CN-2024-114_v1": [
+      "superseded",
+      "stale:address"
+    ],
+    "contract:CN-2024-114_v2": [],
+    "contract:CN-2024-121_v1": [
+      "superseded"
+    ],
+    "contract:CN-2024-121_v2": [],
+    "contract:CN-2024-128_v1": [
+      "superseded"
+    ],
+    "contract:CN-2024-128_v2": [],
+    "contract:CN-2024-142_v1": [
+      "superseded"
+    ],
+    "contract:CN-2024-142_v2": [],
+    "contract:CN-2024-149_v1": [
+      "superseded"
+    ],
+    "contract:CN-2024-149_v2": [],
+    "contract:CN-2024-156_v1": [
+      "superseded"
+    ],
+    "contract:CN-2024-156_v2": [],
+    "contract:CN-2024-191_v1": [
+      "superseded"
+    ],
+    "contract:CN-2024-191_v2": [],
+    "contract:CN-2024-212_v1": [
+      "superseded"
+    ],
+    "contract:CN-2024-212_v2": [],
+    "contract:CN-2024-233_v1": [
+      "superseded"
+    ],
+    "contract:CN-2024-233_v2": [],
+    "contract:CN-2024-268_v1": [
+      "superseded"
+    ],
+    "contract:CN-2024-268_v2": [],
+    "crm:0015g00000ACTMS": [
+      "name:clean"
+    ],
+    "crm:0015g00000E829Z": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "stale:address",
+      "name:darija",
+      "free_mail"
+    ],
+    "crm:0015g00003Q1548": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:darija"
+    ],
+    "crm:0015g000045GR4X": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:ste"
+    ],
+    "crm:0015g00004NHBKQ": [
+      "stale:owner",
+      "name:upper"
+    ],
+    "crm:0015g00005CDPYT": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:alias"
+    ],
+    "crm:0015g000074H9BX": [
+      "name:upper"
+    ],
+    "crm:0015g00007K2RCW": [
+      "name:upper"
+    ],
+    "crm:0015g00007L6BQX": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:typo"
+    ],
+    "crm:0015g000082PXLV": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "stale:address",
+      "name:arabic",
+      "free_mail"
+    ],
+    "crm:0015g00008EEL0X": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "stale:address",
+      "name:darija",
+      "free_mail"
+    ],
+    "crm:0015g00008WTTPY": [
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:clean"
+    ],
+    "crm:0015g000098EZ1H": [
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:clean"
+    ],
+    "crm:0015g00009CNXAW": [
+      "name:clean"
+    ],
+    "crm:0015g0000AGRRWC": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:noaccent"
+    ],
+    "crm:0015g0000AQSZBV": [
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:upper"
+    ],
+    "crm:0015g0000BGTWN2": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "stale:address",
+      "name:typo"
+    ],
+    "crm:0015g0000C324EP": [
+      "name:clean"
+    ],
+    "crm:0015g0000D1ECEK": [
+      "name:clean"
+    ],
+    "crm:0015g0000DT29PZ": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "stale:address",
+      "name:typo"
+    ],
+    "crm:0015g0000ES4QTK": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:alias"
+    ],
+    "crm:0015g0000HHFN7R": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:darija"
+    ],
+    "crm:0015g0000JVLW6D": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:noaccent"
+    ],
+    "crm:0015g0000K3QV1Y": [
+      "name:clean"
+    ],
+    "crm:0015g0000K55VT4": [
+      "name:ste"
+    ],
+    "crm:0015g0000KG51J5": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:typo"
+    ],
+    "crm:0015g0000LQLZ0P": [
+      "name:ste"
+    ],
+    "crm:0015g0000M0HJ0E": [
+      "name:ste"
+    ],
+    "crm:0015g0000MLCGAU": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:typo",
+      "free_mail"
+    ],
+    "crm:0015g0000MLGP7X": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:alias"
+    ],
+    "crm:0015g0000MPK8DF": [
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:clean"
+    ],
+    "crm:0015g0000MS430H": [
+      "name:ste"
+    ],
+    "crm:0015g0000NDR1ZL": [
+      "name:upper"
+    ],
+    "crm:0015g0000PNDMSR": [
+      "stale:owner",
+      "name:clean"
+    ],
+    "crm:0015g0000PXAUW0": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:alias",
+      "free_mail"
+    ],
+    "crm:0015g0000R111H6": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:typo"
+    ],
+    "crm:0015g0000RTBQLA": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "stale:address",
+      "name:arabic",
+      "free_mail"
+    ],
+    "crm:0015g0000SKPBB3": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "stale:address",
+      "name:alias",
+      "free_mail"
+    ],
+    "crm:0015g0000TB9NBR": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:noaccent",
+      "free_mail"
+    ],
+    "crm:0015g0000UEHXSG": [
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:ste"
+    ],
+    "crm:0015g0000VHF9FX": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:typo"
+    ],
+    "crm:0015g0000VL83VJ": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:alias"
+    ],
+    "crm:0015g0000VVTYHL": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:clean"
+    ],
+    "crm:0015g0000W8BEM4": [
+      "name:upper"
+    ],
+    "crm:0015g0000WAX21R": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "stale:address",
+      "name:typo"
+    ],
+    "crm:0015g0000WELQ0F": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:arabic"
+    ],
+    "crm:0015g0000XL7SKG": [
+      "name:clean"
+    ],
+    "crm:0015g0000YC1EAH": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:arabic"
+    ],
+    "crm:0015g0000YR8NH2": [
+      "name:upper"
+    ],
+    "crm:0015g0000ZS34AB": [
+      "name:ste"
+    ],
+    "slack:C01L6YDM40": [
+      "channel:old-saharatech",
+      "archived",
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date"
+    ],
+    "slack:C028SSZ5RD": [
+      "channel:deal-sahara-tech-solutions"
+    ],
+    "slack:C04C8VQRYN": [
+      "channel:old-argan-dor",
+      "archived",
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date"
+    ],
+    "slack:C07FPTMEYP": [
+      "channel:old-dar-el-hana",
+      "archived",
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date"
+    ],
+    "slack:C0AQE7ZRNA": [
+      "channel:client-khg"
+    ],
+    "slack:C0G95VPQ4R": [
+      "channel:acc-fennec"
+    ],
+    "slack:C0GRA3T02W": [
+      "channel:client-oasisagro"
+    ],
+    "slack:C0JN8J0YGW": [
+      "channel:old-zitoun",
+      "archived",
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date"
+    ],
+    "slack:C0K57GT61H": [
+      "channel:acc-atlaslog"
+    ],
+    "slack:C0K57K0ZF0": [
+      "channel:acc-tmf"
+    ],
+    "slack:C0KFCE7RZT": [
+      "channel:old-saharatour",
+      "archived",
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date"
+    ],
+    "slack:C0M4SY6288": [
+      "channel:acc-argan-dor"
+    ],
+    "slack:C0P1V6TFLJ": [
+      "channel:ext-al-massira-transport"
+    ],
+    "slack:C0Q4KQF31N": [
+      "channel:client-medina-pharm"
+    ],
+    "slack:C0Q8FYPBD1": [
+      "channel:deal-chaouentex"
+    ],
+    "slack:C0R4KRZT1H": [
+      "channel:deal-zitoun"
+    ],
+    "slack:C0RDSJJSDJ": [
+      "channel:deal-atlantic-fishing"
+    ],
+    "slack:C0SFHJJF06": [
+      "channel:old-khg",
+      "archived",
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date"
+    ],
+    "slack:C0ZNRV3PXG": [
+      "channel:deal-rif-cement"
+    ]
+  }
+}
