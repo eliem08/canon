@@ -1,14 +1,17 @@
 import json
+from datetime import date
 from pathlib import Path
 
 import pytest
 
 from canon.ingest import load_all
 from canon.resolve.evaluate import blocking_quality, field_accuracy, pairwise
-from canon.resolve.pipeline import resolve
+from canon.resolve.pipeline import ResolverConfig, resolve
 from canon.resolve.report import render_report, seed_sweep
+from canon.score import FactScoringConfig
 from canon.store import read_golden, write_store
 
+CONFIG = ResolverConfig(facts=FactScoringConfig(as_of=date(2026, 10, 1)))
 DATA = Path(__file__).resolve().parents[1] / "data" / "synthetic"
 
 
@@ -16,7 +19,7 @@ DATA = Path(__file__).resolve().parents[1] / "data" / "synthetic"
 def run():
     truth = json.loads((DATA / "ground_truth" / "ground_truth.json").read_text(encoding="utf-8"))
     records = load_all(DATA)
-    return records, resolve(records), truth
+    return records, resolve(records, CONFIG), truth
 
 
 def test_f1_target_on_committed_dataset(run):
@@ -41,8 +44,9 @@ def test_golden_records_have_full_lineage(run):
 
 
 def test_f1_holds_on_held_out_seeds():
-    f1s = [f for _, f in seed_sweep(range(101, 106))]
-    assert min(f1s) >= 0.90, f1s
+    sweep = seed_sweep(range(101, 106), CONFIG)
+    assert min(f for _, f, _ in sweep) >= 0.90, sweep
+    assert min(a for _, _, a in sweep) >= 0.85, sweep
 
 
 def test_store_roundtrip(run, tmp_path):
@@ -54,4 +58,8 @@ def test_store_roundtrip(run, tmp_path):
 def test_report_renders(run):
     records, res, truth = run
     report = render_report(records, res, truth)
-    assert "# Entity resolution report" in report and "Baseline" in report
+    assert (
+        "# Entity resolution and fact scoring report" in report
+        and "Fact scoring" in report
+        and "Baseline" in report
+    )

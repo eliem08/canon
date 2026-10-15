@@ -10,6 +10,7 @@ from canon.models import SourceRecord
 from canon.resolve.evaluate import bcubed, blocking_quality, field_accuracy, pairwise
 from canon.resolve.normalize import normalize_name
 from canon.resolve.pipeline import Resolution, ResolverConfig, resolve
+from canon.score.evaluate import fact_report
 
 
 def exact_name_baseline(records: list[SourceRecord]) -> list[list[str]]:
@@ -36,8 +37,12 @@ def exact_name_baseline(records: list[SourceRecord]) -> list[list[str]]:
     return list(groups.values())
 
 
-def seed_sweep(seeds: range, config: ResolverConfig | None = None) -> list[tuple[int, float]]:
-    """Regenerate the dataset with other seeds and measure pairwise F1 (held-out check)."""
+def seed_sweep(
+    seeds: range, config: ResolverConfig | None = None
+) -> list[tuple[int, float, float]]:
+    """Regenerate the dataset with other seeds (held-out check).
+
+    Returns (seed, pairwise F1, overall fact accuracy) per seed."""
     from canon.ingest import load_all
     from canon.synth import generate
 
@@ -46,8 +51,56 @@ def seed_sweep(seeds: range, config: ResolverConfig | None = None) -> list[tuple
         with tempfile.TemporaryDirectory() as d:
             truth = generate(Path(d), seed=seed)
             res = resolve(load_all(Path(d)), config)
-            out.append((seed, pairwise(res.clusters, truth["records"]).f1))
+            records = load_all(Path(d))
+            facts = fact_report(res.golden, records, truth["records"], truth["entities"])
+            out.append(
+                (seed, pairwise(res.clusters, truth["records"]).f1, facts["overall"]["canon"])
+            )
     return out
+
+
+def _fact_section(rep: dict) -> list[str]:
+    lines = [
+        "",
+        "## Fact scoring (freshness x authority)",
+        "",
+        "Accuracy of the winning value per field against ground-truth *current* values, "
+        "compared with two naive resolvers over the same clusters. `truth kept` = the true "
+        "value is the winner or one of the retained alternatives.",
+        "",
+        "| Field | Canon | Latest wins | Authority wins | Truth kept | Conflicts |",
+        "|---|---|---|---|---|---|",
+    ]
+    for name, row in rep["per_field"].items():
+        lines.append(
+            f"| {name} | **{row['canon']:.3f}** | {row['latest']:.3f} | "
+            f"{row['authority']:.3f} | {row['truth_retained']:.3f} | "
+            f"{row['conflicts']}/{row['n']} |"
+        )
+    o = rep["overall"]
+    lines += [
+        f"| **overall** | **{o['canon']:.3f}** | {o['latest']:.3f} | {o['authority']:.3f} | | |",
+        "",
+        f"Mean confidence: {rep['mean_confidence_correct']} when correct, "
+        f"{rep['mean_confidence_wrong']} when wrong.",
+        "",
+        "| Confidence | Facts | Accuracy |",
+        "|---|---|---|",
+        *[
+            f"| {c['bucket']} | {c['n']} | "
+            f"{'' if c['accuracy'] is None else format(c['accuracy'], '.3f')} |"
+            for c in rep["calibration"]
+        ],
+        "",
+        "### Fact failures",
+        "",
+    ]
+    lines += [
+        f"- {f['entity']} `{f['field']}`: expected `{f['expected']}`, got `{f['got']}` "
+        f"({f['explanation']})"
+        for f in rep["failures"]
+    ] or ["None."]
+    return lines
 
 
 def _row(name: str, m) -> str:
@@ -58,7 +111,7 @@ def render_report(
     records: list[SourceRecord],
     res: Resolution,
     truth: dict,
-    sweep: list[tuple[int, float]] | None = None,
+    sweep: list[tuple[int, float, float]] | None = None,
 ) -> str:
     t = truth["records"]
     pw, b3 = pairwise(res.clusters, t), bcubed(res.clusters, t)
@@ -67,7 +120,7 @@ def render_report(
     fields = field_accuracy(res.golden, t, truth["entities"])
     by_id = {r.record_id: r for r in records}
     lines = [
-        "# Entity resolution report",
+        "# Entity resolution and fact scoring report",
         "",
         f"Dataset: {len(records)} records, {len(set(t.values()))} true entities, "
         f"{len(res.clusters)} predicted clusters.",
@@ -93,7 +146,8 @@ def render_report(
         *[f"| {k} | {v:.3f} |" for k, v in fields.items()],
     ]
     if sweep:
-        f1s = [f for _, f in sweep]
+        f1s = [f for _, f, _ in sweep]
+        facc = [a for _, _, a in sweep]
         lines += [
             "",
             "## Robustness: held-out seeds",
@@ -101,7 +155,8 @@ def render_report(
             f"Regenerated the dataset with seeds {sweep[0][0]}–{sweep[-1][0]} "
             f"(same generator, different randomness) — pairwise F1 mean "
             f"**{sum(f1s) / len(f1s):.3f}**, min **{min(f1s):.3f}**, "
-            f"{sum(f >= 0.9 for f in f1s)}/{len(f1s)} seeds ≥ 0.90.",
+            f"{sum(f >= 0.9 for f in f1s)}/{len(f1s)} seeds ≥ 0.90. "
+            f"Fact accuracy mean **{sum(facc) / len(facc):.3f}**, min **{min(facc):.3f}**.",
         ]
     errors = []
     for c in res.clusters:
@@ -116,4 +171,5 @@ def render_report(
             names = ", ".join(f"`{by_id[r].name}` [{r}]" for r in small)
             errors.append(f"- **missed link** ({eid}, split into {len(parts)}): {names}")
     lines += ["", "## Errors", "", *(errors or ["None."])]
+    lines += _fact_section(fact_report(res.golden, records, t, truth["entities"]))
     return "\n".join(lines) + "\n"

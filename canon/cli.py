@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import os
+from datetime import date
 from pathlib import Path
 
 
@@ -24,12 +25,14 @@ def cmd_resolve(args: argparse.Namespace) -> None:
     import json
 
     from canon.ingest import load_all
-    from canon.resolve.pipeline import resolve
+    from canon.resolve.pipeline import ResolverConfig, resolve
+    from canon.score import FactScoringConfig
     from canon.store import write_store
 
     data, out = Path(args.data), Path(args.out)
     records = load_all(data)
-    res = resolve(records)
+    as_of = date.fromisoformat(args.as_of) if args.as_of else None
+    res = resolve(records, ResolverConfig(facts=FactScoringConfig(as_of=as_of)))
     out.mkdir(parents=True, exist_ok=True)
     (out / "golden_records.json").write_text(
         json.dumps([g.model_dump(mode="json") for g in res.golden], ensure_ascii=False, indent=2),
@@ -42,7 +45,8 @@ def cmd_resolve(args: argparse.Namespace) -> None:
         from canon.resolve.report import render_report, seed_sweep
 
         truth = json.loads(truth_path.read_text(encoding="utf-8"))
-        sweep = seed_sweep(range(1, args.seeds + 1)) if args.seeds else None
+        cfg = ResolverConfig(facts=FactScoringConfig(as_of=as_of))
+        sweep = seed_sweep(range(1, args.seeds + 1), cfg) if args.seeds else None
         report = render_report(records, res, truth, sweep)
         (out / "er_report.md").write_text(report, encoding="utf-8")
         print(report)
@@ -62,6 +66,7 @@ def main(argv: list[str] | None = None) -> None:
     r.add_argument("--out", default=os.environ.get("CANON_OUT_DIR", "out"))
     r.add_argument("--report", action="store_true", help="evaluate against ground truth")
     r.add_argument("--seeds", type=int, default=0, help="also sweep N held-out seeds")
+    r.add_argument("--as-of", default=None, help="reference date for freshness (default: today)")
     r.set_defaults(func=cmd_resolve)
 
     args = parser.parse_args(argv)
