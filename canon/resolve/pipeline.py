@@ -10,6 +10,7 @@ from canon.resolve.cluster import cluster
 from canon.resolve.features import RecordFeatures, features
 from canon.resolve.golden import build_golden
 from canon.resolve.scoring import PairScore, ScoringConfig, is_cannot_link, score_pair
+from canon.score import FactScoringConfig
 
 
 @dataclass(frozen=True)
@@ -17,6 +18,7 @@ class ResolverConfig:
     scoring: ScoringConfig = field(default_factory=ScoringConfig)
     match_threshold: float = 0.5
     max_block_size: int = 40
+    facts: FactScoringConfig = field(default_factory=FactScoringConfig)
 
 
 @dataclass
@@ -42,7 +44,7 @@ def resolve(records: list[SourceRecord], config: ResolverConfig | None = None) -
     )
     by_id = {r.record_id: r for r in records}
     golden = [
-        build_golden(f"C{i:04d}", [by_id[rid] for rid in members])
+        build_golden(f"C{i:04d}", [by_id[rid] for rid in members], config.facts)
         for i, members in enumerate(clusters, start=1)
     ]
     return Resolution(clusters, golden, candidates, scores, feats)

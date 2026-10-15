@@ -6,7 +6,7 @@ import json
 import sqlite3
 from pathlib import Path
 
-from canon.models import GoldenRecord, SourceRecord
+from canon.models import GoldenRecord, ResolvedFact, SourceRecord
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS records (
@@ -26,6 +26,11 @@ CREATE TABLE IF NOT EXISTS lineage (
     PRIMARY KEY (entity_id, record_id)
 );
 CREATE TABLE IF NOT EXISTS entities (entity_id TEXT PRIMARY KEY, acl TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS scored_facts (
+    entity_id TEXT NOT NULL, field TEXT NOT NULL, value TEXT, confidence REAL,
+    last_updated TEXT, conflict INTEGER NOT NULL, payload TEXT NOT NULL,
+    PRIMARY KEY (entity_id, field)
+);
 """
 
 
@@ -76,6 +81,21 @@ def write_store(path: Path, records: list[SourceRecord], golden: list[GoldenReco
             db.executemany(
                 "INSERT INTO lineage VALUES (?,?)", [(g.entity_id, m) for m in g.members]
             )
+            db.executemany(
+                "INSERT INTO scored_facts VALUES (?,?,?,?,?,?,?)",
+                [
+                    (
+                        g.entity_id,
+                        name,
+                        json.dumps(f.value),
+                        f.confidence,
+                        f.last_updated.isoformat() if f.last_updated else None,
+                        int(f.conflict),
+                        f.model_dump_json(),
+                    )
+                    for name, f in g.facts.items()
+                ],
+            )
 
 
 def read_golden(path: Path) -> list[GoldenRecord]:
@@ -88,12 +108,19 @@ def read_golden(path: Path) -> list[GoldenRecord]:
                 "rule": rule,
                 "record_ids": json.loads(rids),
             }
+        facts: dict[str, dict] = {}
+        for eid, name, payload in db.execute("SELECT entity_id, field, payload FROM scored_facts"):
+            facts.setdefault(eid, {})[name] = ResolvedFact.model_validate_json(payload)
         members: dict[str, list[str]] = {}
         for eid, rid in db.execute("SELECT entity_id, record_id FROM lineage ORDER BY 1, 2"):
             members.setdefault(eid, []).append(rid)
     return [
         GoldenRecord(
-            entity_id=eid, fields=fields[eid], members=members[eid], acl=json.loads(acl[eid])
+            entity_id=eid,
+            fields=fields[eid],
+            members=members[eid],
+            acl=json.loads(acl[eid]),
+            facts=facts.get(eid, {}),
         )
         for eid in sorted(acl)
     ]

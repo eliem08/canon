@@ -1,8 +1,8 @@
 """Golden records: per-field survivorship with lineage to every source record.
 
-Rules are deliberately simple and explainable; Milestone 3 replaces the
-business-fact rules with scored facts (freshness x authority) and keeps the
-losing values as alternatives.
+Identity fields use simple, explainable survivorship rules. Business facts
+(owner, contract terms, address, ...) come from `canon.score`: freshness x
+authority, with losing values kept as alternatives in `GoldenRecord.facts`.
 
 | field | rule |
 |---|---|
@@ -10,9 +10,8 @@ losing values as alternatives.
 | name | legal_name without legal suffix |
 | arabic_name | any Arabic-script name seen |
 | domain, phone, tax_id | source-weighted vote (contract 3, CRM 2, Slack 1), ties -> recency |
-| address, city | active contract, else most recently updated CRM record |
-| owner | most recent dated owner fact from non-archived records |
-| contract_* / renewal_date | active (non-superseded) contract, else most recent fact |
+| city | active contract, else most recently updated CRM record |
+| owner, address, signatory, contract_*, renewal_date | scored fact (see `canon.score`) |
 """
 
 from __future__ import annotations
@@ -23,10 +22,10 @@ from datetime import date
 
 from canon.models import FieldValue, GoldenRecord, SourceRecord
 from canon.resolve.normalize import has_arabic, strip_legal_suffix
+from canon.score import FACT_FIELDS, FactScoringConfig, score_entity
 
 SOURCE_PRIORITY = {"contract": 3, "crm": 2, "email": 1, "slack": 0}
 VOTE_WEIGHT = {"contract": 3.0, "crm": 2.0, "email": 1.0, "slack": 1.0}
-CONTRACT_FIELDS = ("contract_number", "contract_value", "contract_start", "renewal_date")
 
 
 def _recency(r: SourceRecord) -> date:
@@ -67,29 +66,9 @@ def _first_by_priority(records: list[SourceRecord], get, rule: str) -> FieldValu
     return FieldValue(value=get(ranked[0]), record_ids=[ranked[0].record_id], rule=rule)
 
 
-def _latest_fact(records: list[SourceRecord], field: str, prefer_contract: bool) -> FieldValue:
-    candidates = []
-    for r in records:
-        if r.status != "active":
-            continue
-        for f in r.facts:
-            if f.field == field:
-                candidates.append((r, f))
-    if prefer_contract:
-        contract = [(r, f) for r, f in candidates if r.source == "contract"]
-        if contract:
-            r, f = max(contract, key=lambda rf: rf[1].observed_at or date.min)
-            return FieldValue(value=f.value, record_ids=[r.record_id], rule="active contract")
-    if not candidates:
-        return FieldValue(value=None, rule="no active source")
-    r, f = max(
-        candidates,
-        key=lambda rf: (rf[1].observed_at or date.min, SOURCE_PRIORITY.get(rf[0].source, 0)),
-    )
-    return FieldValue(value=f.value, record_ids=[r.record_id], rule="most recent active fact")
-
-
-def build_golden(entity_id: str, records: list[SourceRecord]) -> GoldenRecord:
+def build_golden(
+    entity_id: str, records: list[SourceRecord], fact_config: FactScoringConfig | None = None
+) -> GoldenRecord:
     fields: dict[str, FieldValue] = {}
     contracts = [r for r in records if r.source == "contract" and r.status == "active" and r.name]
     if contracts:
@@ -121,19 +100,22 @@ def build_golden(entity_id: str, records: list[SourceRecord]) -> GoldenRecord:
     fields["domain"] = _vote(records, lambda r: r.domain)
     fields["phone"] = _vote(records, lambda r: r.phone)
     fields["tax_id"] = _vote(records, lambda r: r.tax_id)
-    fields["address"] = _first_by_priority(
-        records, lambda r: r.address, "active contract > CRM, most recent"
-    )
     fields["city"] = _first_by_priority(
         records, lambda r: r.city, "active contract > CRM, most recent"
     )
-    fields["owner"] = _latest_fact(records, "owner", prefer_contract=False)
-    for name in CONTRACT_FIELDS:
-        fields[name] = _latest_fact(records, name, prefer_contract=True)
+    facts = score_entity(records, fact_config)
+    for name in FACT_FIELDS:
+        fact = facts.get(name)
+        fields[name] = FieldValue(
+            value=fact.value if fact else None,
+            record_ids=sorted(e.record_id for e in fact.sources) if fact else [],
+            rule=f"scored fact (confidence {fact.confidence:.2f})" if fact else "no source",
+        )
     acl = sorted({a for r in records for a in r.acl})
     return GoldenRecord(
         entity_id=entity_id,
         fields=fields,
         members=sorted(r.record_id for r in records),
         acl=acl,
+        facts=facts,
     )
