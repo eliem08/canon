@@ -24,6 +24,10 @@ Entity resolution on the synthetic set (119 records, 25 customers): **pairwise F
 Details: [`docs/ENTITY_RESOLUTION.md`](docs/ENTITY_RESOLUTION.md),
 [`docs/reports/er_report.md`](docs/reports/er_report.md).
 
+Fact scoring (freshness × authority, losers kept as alternatives): **0.968** of current facts
+correct, versus 0.904 for "latest wins". Contract value and renewal date are 1.00, owner is 0.92,
+and both owner misses are flagged at confidence ≈ 0.09. Details: [`docs/FACT_SCORING.md`](docs/FACT_SCORING.md).
+
 ## Layout
 
 ```
@@ -31,7 +35,8 @@ canon/ingest       connectors -> SourceRecord (CRM, Slack, contracts)
 canon/resolve      normalize, block, score, cluster, golden records, evaluation
 canon/store.py     SQLite persistence (records, facts, golden fields, lineage)
 canon/synth        seeded synthetic data generator (tooling)
-canon/score        M3   canon/mcp_server  M4   canon/evals  M5
+canon/score        fact freshness, authority, confidence, conflicts
+canon/mcp_server   M4   canon/evals  M5
 data/synthetic     generated dataset + hidden ground truth
 docs               plan, decisions, method notes, reports
 ```
@@ -42,6 +47,6 @@ docs               plan, decisions, method notes, reports
 |---|---|
 | 1. Synthetic messy dataset | done — [`data/synthetic`](data/synthetic/README.md) |
 | 2. Entity resolution | done: F1 0.991 ([report](docs/reports/er_report.md)) |
-| 3. Fact scoring | planned |
+| 3. Fact scoring | done: fact accuracy 0.968 ([method](docs/FACT_SCORING.md)) |
 | 4. MCP server | planned |
 | 5. Eval harness | planned |
