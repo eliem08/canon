@@ -18,3 +18,7 @@ Agent-ready data layer: ingest → resolve → score → serve (MCP) → eval. S
   and tests may read it — never ingest/resolve/score logic.
 - Ambiguity: choose the simplest option and record it in `docs/DECISIONS.md`.
 - Small commits; never push to main.
+
+## Where things are
+- Method notes for ER: `docs/ENTITY_RESOLUTION.md`; latest metrics: `docs/reports/er_report.md`
+  (regenerate with `uv run canon resolve --report --seeds 50 && cp out/er_report.md docs/reports/`).
