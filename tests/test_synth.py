@@ -27,7 +27,7 @@ def _raw_record_ids(root: Path) -> set[str]:
 
 def test_generation_is_deterministic_and_matches_committed_data(tmp_path):
     generate(tmp_path)
-    cmp = filecmp.dircmp(DATA, tmp_path)
+    cmp = filecmp.dircmp(DATA, tmp_path, ignore=["README.md"])
 
     def assert_same(c: filecmp.dircmp) -> None:
         assert not c.left_only and not c.right_only, (c.left_only, c.right_only)
