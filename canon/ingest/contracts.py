@@ -1,0 +1,108 @@
+"""Contract connector: parses text extracted from contract PDFs (French or English).
+
+Versions of the same contract number are linked: any version that a later one
+explicitly supersedes ("annule et remplace", "supersedes and replaces") or that
+is older than the highest version is marked `superseded`.
+"""
+
+from __future__ import annotations
+
+import re
+from pathlib import Path
+
+from canon.ingest.common import business_domain, find_emails, normalize_phone, parse_date
+from canon.models import Fact, SourceRecord
+
+DEFAULT_CONTRACT_ACL = ("legal", "exec")
+
+PATTERNS = {
+    "number": r"(?:Contrat N°|Agreement No)\s*:?\s*(\S+)",
+    "version": r"^Version\s*:?\s*(\d+)",
+    "signed": r"(?:Date de signature|Signature date)\s*:?\s*(\d{1,2}/\d{1,2}/\d{4})",
+    "party": r"^(?:Le Client|Customer)\s*:\s*(.+)$",
+    "party_ar": r"^الطرف الثاني\s*:\s*(.+)$",
+    "tax_id": r"(?:ICE|Tax ID \(ICE\))\s*:?\s*(\d{15})",
+    "address": r"^(?:Siège social|Registered office)\s*:\s*(.+)$",
+    "contact": r"^Contact\s*:\s*(.+)$",
+    "value": r"(?:montant annuel est fixé à|annual fee is)\s*([\d .,  ]+)\s*MAD",
+    "start": r"(?:Date d'effet|Effective date)\s*:\s*(\d{1,2}/\d{1,2}/\d{4})",
+    "renewal": r"(?:Date de renouvellement|Renewal date)\s*:\s*(\d{1,2}/\d{1,2}/\d{4})",
+    "signatory": r"^(?:Représenté par|Represented by)\s*:\s*(.+)$",
+    "supersedes": r"(?:annule et remplace|supersedes and replaces)\s+(?:la\s+)?version\s+(\d+)",
+}
+
+
+def _grab(text: str, key: str) -> str | None:
+    m = re.search(PATTERNS[key], text, re.MULTILINE | re.IGNORECASE)
+    return m.group(1).strip() if m else None
+
+
+def parse_contract(text: str, record_id: str, locator: str, acl=DEFAULT_CONTRACT_ACL) -> dict:
+    """Return parsed fields plus a draft record (status fixed up by `load_contracts`)."""
+    signed = parse_date(_grab(text, "signed"))
+    address_line = _grab(text, "address")
+    address, city = address_line, None
+    if address_line and "," in address_line:
+        address, city = (s.strip() for s in address_line.rsplit(",", 1))
+    contact = _grab(text, "contact") or ""
+    emails = find_emails(contact)
+    phone_part = re.split(r"T[ée]l\s*:", contact)
+    phone = normalize_phone(phone_part[1]) if len(phone_part) > 1 else None
+    raw_value = _grab(text, "value")
+    value = float(re.sub(r"\D", "", raw_value)) if raw_value else None
+    facts = []
+
+    def fact(name: str, v) -> None:
+        if v not in (None, ""):
+            facts.append(Fact(field=name, value=v, observed_at=signed, record_id=record_id))
+
+    number = _grab(text, "number")
+    start = parse_date(_grab(text, "start"))
+    renewal = parse_date(_grab(text, "renewal"))
+    fact("contract_number", number)
+    fact("contract_value", value)
+    fact("contract_start", start.isoformat() if start else None)
+    fact("renewal_date", renewal.isoformat() if renewal else None)
+    fact("signatory", _grab(text, "signatory"))
+    fact("address", address)
+    record = SourceRecord(
+        record_id=record_id,
+        source="contract",
+        locator=locator,
+        name=_grab(text, "party"),
+        alt_names=[n for n in [_grab(text, "party_ar")] if n],
+        domain=business_domain(emails[0]) if emails else None,
+        phone=phone,
+        email=emails[0] if emails else None,
+        address=address,
+        city=city,
+        tax_id=_grab(text, "tax_id"),
+        updated_at=signed,
+        facts=facts,
+        acl=list(acl),
+    )
+    version = _grab(text, "version")
+    supersedes = _grab(text, "supersedes")
+    return {
+        "record": record,
+        "number": number,
+        "version": int(version) if version else 1,
+        "supersedes": int(supersedes) if supersedes else None,
+    }
+
+
+def load_contracts(root: Path, acl=DEFAULT_CONTRACT_ACL) -> list[SourceRecord]:
+    parsed = [
+        parse_contract(p.read_text(encoding="utf-8"), f"contract:{p.stem}", str(p), acl)
+        for p in sorted(Path(root).glob("*.txt"))
+    ]
+    by_number: dict[str, list[dict]] = {}
+    for item in parsed:
+        by_number.setdefault(item["number"] or item["record"].record_id, []).append(item)
+    for versions in by_number.values():
+        latest = max(v["version"] for v in versions)
+        superseded = {v["supersedes"] for v in versions if v["supersedes"]}
+        for v in versions:
+            if v["version"] < latest or v["version"] in superseded:
+                v["record"].status = "superseded"
+    return [item["record"] for item in parsed]
