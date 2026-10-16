@@ -43,6 +43,13 @@ docker run --rm --network none \
 
 Re-running keeps entity ids stable. Send `quarantine.json` and `review_queue.json` to the client on day 3.
 
+The readiness report (fix list, duplicates, stale CRM values, quarantine, merges to confirm, permission
+map) is produced the same way:
+```bash
+docker run --rm --network none -v "$PWD/export:/data:ro" -v "$PWD/out:/out" canon audit
+# -> out/audit_report.md, out/audit.json
+```
+
 ## 2. Serve to an agent (optional trial)
 ```bash
 docker run --rm --network none -v "$PWD/out:/out" canon token add --caller hind.legal --tokens /out/tokens.json

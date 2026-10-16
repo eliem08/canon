@@ -115,6 +115,23 @@ def cmd_serve(args: argparse.Namespace) -> None:
     server.run("streamable-http", host=args.host, port=args.port)
 
 
+def cmd_audit(args: argparse.Namespace) -> None:
+    from canon.audit import build_audit, render_audit
+    from canon.mcp_server import CallerDirectory
+
+    data, out = Path(args.data), Path(args.out)
+    as_of = date.fromisoformat(args.as_of) if args.as_of else None
+    overrides = Path(args.overrides) if args.overrides else None
+    records, res, unreadable = build_store(data, out, as_of, overrides)
+    identities = Path(args.identities) if args.identities else data / "identities.json"
+    directory = CallerDirectory.from_file(identities) if identities.exists() else None
+    audit = build_audit(records, res, directory, unreadable, as_of)
+    report = render_audit(audit)
+    (out / "audit_report.md").write_text(report, encoding="utf-8")
+    (out / "audit.json").write_text(audit.model_dump_json(indent=2), encoding="utf-8")
+    print(report)
+
+
 def cmd_token(args: argparse.Namespace) -> None:
     from canon.mcp_server.auth import issue_token, revoke_caller
 
@@ -213,6 +230,14 @@ def main(argv: list[str] | None = None) -> None:
     s.add_argument("--port", type=int, default=8765)
     s.add_argument("--public-url", default=None, help="URL clients use (default http://host:port)")
     s.set_defaults(func=cmd_serve)
+
+    a = sub.add_parser("audit", help="readiness audit report: duplicates, stale facts, quarantine")
+    a.add_argument("--data", default=str(_data_dir()))
+    a.add_argument("--out", default=os.environ.get("CANON_OUT_DIR", "out"))
+    a.add_argument("--identities", default=None, help="default: <data>/identities.json")
+    a.add_argument("--overrides", default=None)
+    a.add_argument("--as-of", default=None)
+    a.set_defaults(func=cmd_audit)
 
     t = sub.add_parser("token", help="issue or revoke HTTP bearer tokens for callers")
     t.add_argument("action", choices=["add", "revoke"])

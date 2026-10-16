@@ -23,6 +23,7 @@ uv run canon resolve --report --seeds 20   # also sweep 20 held-out generator se
 uv run canon serve                         # MCP server over stdio (see docs/MCP_SERVER.md)
 uv run python examples/mcp_client.py       # example client: same questions, four callers
 uv run canon eval --seeds 10               # before/after eval (stub model; --model claude for real)
+uv run canon audit                         # readiness audit report -> out/audit_report.md
 docker build -t canon .                    # client-side image; see docs/DEPLOY.md
 ```
 
