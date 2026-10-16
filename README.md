@@ -27,11 +27,13 @@ uv run canon eval --seeds 10               # before/after eval (stub model; --mo
 
 ## Results so far
 
-**Before/after eval** (40 questions, same model for both agents): an agent with naive retrieval
-over the raw files answers **60%** correctly. The same agent using Canon's MCP tools answers
-**97.5%** (held-out seeds: 46% → 98%). With four real open models served by Baseten the raw-file agent gets 55-58%
-and the Canon agent 90-97.5%. Contract values, renewal dates and owners are 100% with
-Canon. Details: [`docs/EVALS.md`](docs/EVALS.md), [`docs/reports/eval_report.md`](docs/reports/eval_report.md).
+**Before/after eval** (same model for every agent, four open models on Baseten): on 40 synthetic
+questions, an agent with keyword retrieval over the raw files answers **55–58%** correctly, and the
+same agent using Canon's MCP tools answers **97.5%** (McNemar p ≤ 1e-04). On 30 hand-written
+questions that name the customer mid-sentence: 67–73% → **96.7%**. **Caveat:** given *perfect*
+retrieval over the raw files (every record of the right customer, taken from the answer key), the same
+models reach 90–95%. On this data, most of Canon's value is *finding the right records*; reconciling
+stale values adds the last few points. Details: [`docs/EVALS.md`](docs/EVALS.md).
 
 Entity resolution on the synthetic set (119 records, 25 customers): **pairwise F1 0.991**
 (P 1.000 / R 0.983), versus 0.696 for exact-name matching; mean F1 0.991 over 50 held-out seeds;
@@ -45,21 +47,32 @@ and both owner misses are flagged at confidence ≈ 0.09. Details: [`docs/FACT_S
 
 MCP server: `get_customer`, `find_contract_terms`, `who_owns`, `list_conflicts`. Each answer
 carries value, sources, last_updated, confidence and alternatives, computed only from the
-sources the caller may see. Unauthorized callers get nothing. Connect it to Claude:
+sources the caller may see. Unauthorized callers get nothing. Over HTTP, identity comes from a bearer
+token. Private Slack channels are visible to their members only, injected instructions in source
+text are withheld, and every call is audited. Connect it to Claude:
 [`docs/MCP_SERVER.md`](docs/MCP_SERVER.md).
+
+Contracts can be PDF (text or scanned, via tesseract OCR in French, Arabic and English), DOCX or
+images. Every fact cites `file#p<page>:L<line>`. On 50 synthetic scans, every contract field is
+read correctly, and unreadable files are listed rather than skipped:
+[`docs/DOCUMENTS.md`](docs/DOCUMENTS.md).
 
 ## Layout
 
 ```
-canon/ingest       connectors -> SourceRecord (CRM, Slack, contracts)
+canon/ingest       connectors -> SourceRecord (CRM JSON/CSV, Slack, contracts: txt/PDF/DOCX/OCR),
+                   hardened value parsing, message fact extraction
+canon/guard.py     prompt-injection screening of source text
 canon/resolve      normalize, block, score, cluster, golden records, evaluation
 canon/store.py     SQLite persistence (records, facts, golden fields, lineage)
 canon/synth        seeded synthetic data generator (tooling)
 canon/score        fact freshness, authority, confidence, conflicts
 canon/mcp_server   permission-aware MCP server (service, schemas, MCPServer tools)
-canon/evals        before/after eval harness (questions, agents, models, grading, report)
+canon/evals        before/after eval harness (questions, baseline/oracle/Canon agents, models, stats)
+scripts            OCR benchmark
 examples           runnable MCP client
 data/synthetic     generated dataset + hidden ground truth
+data/eval          hand-written eval questions
 docs               plan, decisions, method notes, reports
 ```
 
@@ -71,4 +84,4 @@ docs               plan, decisions, method notes, reports
 | 2. Entity resolution | done: F1 0.991 ([report](docs/reports/er_report.md)) |
 | 3. Fact scoring | done: fact accuracy 0.968 ([method](docs/FACT_SCORING.md)) |
 | 4. MCP server | done: 4 permission-aware tools ([docs](docs/MCP_SERVER.md)) |
-| 5. Eval harness | done: 55-60% → 90-97.5%, stub and 4 real models ([report](docs/reports/eval_report.md)) |
+| 5. Eval harness | done: 55–58% → 97.5% with 4 real models; oracle retrieval 92.5–95% ([evals](docs/EVALS.md)) |

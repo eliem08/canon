@@ -106,66 +106,63 @@ Wrong answers are classified against the ground truth and the raw source values:
 * **no answer**
 * **other**
 
-## Results (stub model, seed 20261001)
+## Results with real models (Baseten, eval v2, 2026-10-16)
 
-| | Baseline (raw files) | Canon (MCP) |
-|---|---|---|
-| Overall | 24/40 (60.0%) | **39/40 (97.5%)** |
-| contract_value | 60% | 100% |
-| renewal_date | 80% | 100% |
-| owner | 40% | 100% |
-| phone | 60% | 80% |
-| address | 60% | 100% |
-| Held-out seeds 1–10 | 45.8% (32–62%) | **98.2%** (92–100%) |
+Same prompt for every agent, temperature 0, one run per model. Per-model reports with every answer:
+`reports/eval_<model>.md` (40 synthetic questions) and `reports/eval_paraphrase_<model>.md`
+(30 hand-written questions).
 
-**Baseline failures** (16):
+**40 synthetic questions**
 
-* 10 no answer: aliases, lowercase or Arabic-script names that keyword search can't find, and
-  Slack owner mentions stored as `<@U03>` user IDs
-* 4 wrong customer: a confuser's chunk ranked first
-* 2 stale value: a superseded contract or a stale CRM value
+| Model | Baseline (BM25, raw) | Oracle retrieval (raw) | **Canon** | Canon vs. baseline (McNemar p) |
+|---|---|---|---|---|
+| `moonshotai/Kimi-K3` | 57.5% | 95.0% | **97.5%** | +40.0 pts (3e-05) |
+| `deepseek-ai/DeepSeek-V4-Pro-0813` | 55.0% | 95.0% | **97.5%** | +42.5 pts (2e-05) |
+| `nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B` | 57.5% | 92.5% | **97.5%** | +40.0 pts (1e-04) |
+| `zai-org/GLM-5.3` | 55.0% | 95.0% | **97.5%** | +42.5 pts (2e-05) |
 
-**Canon's one miss** (Q34): CRM and Slack list a contact's mobile under the company's phone
-field, while the contract lists the switchboard. Canon returns the mobile at low confidence (0.46)
-with the switchboard as the alternative. Companies have several numbers, and Canon doesn't model
-"main" vs. "contact" phone yet.
+**30 hand-written questions (customer named mid-sentence)**
 
-## Results with real models (Baseten, 2026-10-16)
+| Model | Baseline (BM25, raw) | Oracle retrieval (raw) | **Canon** | Canon vs. baseline (McNemar p) |
+|---|---|---|---|---|
+| `moonshotai/Kimi-K3` | 70.0% | 93.3% | **96.7%** | +26.7 pts (0.008) |
+| `deepseek-ai/DeepSeek-V4-Pro-0813` | 73.3% | 93.3% | **96.7%** | +23.3 pts (0.016) |
+| `nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B` | 66.7% | 90.0% | **96.7%** | +30.0 pts (0.004) |
+| `zai-org/GLM-5.3` | 73.3% | 90.0% | **96.7%** | +23.3 pts (0.016) |
 
-Same 40 questions, same prompt, temperature 0, one run per model (per-model reports in
-`reports/eval_<model>.md`, with per-question answers in the matching `.json`).
+95% Wilson intervals at n = 40 are roughly ±10 points around 97.5% and ±15 around 55%; the paired
+McNemar test is the meaningful comparison.
 
-| Model | Baseline (raw files) | Canon (MCP) | Lift |
-|---|---|---|---|
-| `moonshotai/Kimi-K3` | 23/40 (57.5%) | **39/40 (97.5%)** | +40.0 pts |
-| `deepseek-ai/DeepSeek-V4-Pro-0813` | 23/40 (57.5%) | **36/40 (90.0%)** | +32.5 pts |
-| `nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B` | 23/40 (57.5%) | **39/40 (97.5%)** | +40.0 pts |
-| `zai-org/GLM-5.3` | 22/40 (55.0%) | **39/40 (97.5%)** | +42.5 pts |
+### What this says, plainly
 
-* **The lift holds with real models:** raw-file RAG is stuck at 55-58% whichever model reads it
-  (the stub gave 60%). Canon gives 90-97.5%, so the gap comes from the context, not model
-  reasoning. A stronger model can't recover facts that retrieval never surfaced.
-* **Baseline failures are mostly retrieval:** 9-12 of its 17-18 misses per model are
-  "no answer" (aliases, lowercase or Arabic names, Slack mentions stored as user IDs), and 3-4 are
-  stale values. Models do not rescue a bad context.
-* **Canon's shared miss is Q34**, the mobile-vs-switchboard phone number (see above). All four
-  models answer with the mobile; it comes back at confidence 0.46 with the switchboard as the
-  alternative.
-* **DeepSeek-V4-Pro's three extra Canon misses** are "unknown" on contract-value questions,
-  where the right value was in the context. I re-ran two of them: Q03 (a Darija question about an
-  Arabic-script name) reproduced as "unknown" after normal completion, with plenty of token
-  budget left, and Q06 came back correct. So this is model variance on non-English phrasing, not
-  an adapter problem.
-* **Single runs, 40 questions:** one question is 2.5 points, so differences of one or two
-  questions between models are noise. Models were chosen as the flagship tier by price from
-  Baseten's catalog, with no tuning. Neither agent's prompt was tuned for any model.
-* **Cost:** about 80 short calls per model (roughly 2-3K tokens each); the four runs together
-  took about 10 minutes.
+* **Most of the lift is retrieval.** With *perfect* retrieval over the raw exports, real models reach
+  90–95%. Canon adds only 2.5–6.7 points over that oracle. The baseline's misses are mostly
+  "no answer": aliases, Arabic-script and lowercase names, and Slack owner mentions stored as
+  `<@U03>`, which keyword search can't connect to the customer. Canon wins mainly by *finding the
+  right records* (entity resolution + linking). Resolving conflicts helps much less on this data.
+* **What reconciliation still buys** shows in the oracle's misses, which are always the same
+  questions: an owner change announced only in Slack (Q24, P01, P09, Q22) and a stale contact
+  mobile in the CRM (Q34, P27). Canon gets the owner changes right, except E11/P09 (a documented
+  fact-scoring miss), and also misses the phone question (Q34: mobile vs. switchboard).
+* **Honest positioning:** on clean, small synthetic data, an agent that gets every relevant record
+  in its context does nearly as well as Canon. Real deployments can't do that: thousands of
+  records per customer, permissions, tokens, cost. That is a claim to prove on client data, not
+  something this eval shows. The oracle also needs the answer key, so it is an upper bound, not a
+  product.
+* **Stub vs. real models:** the stub's oracle score (50%) is meaningless, because it takes the
+  first value it sees. Real models weigh dates and supersession, so they reach 90–95%.
+* Models are not compared to each other: differences of 1–2 questions are noise at this size.
+
+## Results (stub model, CI)
+
+`reports/eval_report.md` (40 questions, with held-out seeds) and `reports/eval_paraphrase.md`
+(30 hand-written). Baseline 60.0% / Canon 97.5% (held-out seeds 1–10: 45.8% / 97.2%);
+hand-written: 63.3% / 96.7%. The stub is a deterministic regression check, not the headline.
 
 ## Caveats
 
-* The stub numbers are a deterministic regression check; the real-model table above is the
-  headline.
+* The stub numbers are a deterministic regression check; the real-model tables are the headline,
+  and the oracle column is the honest frame for them.
 * Questions, data and pipeline come from the same author, so the lift is an upper bound until it
   is reproduced on a customer's data with questions written by their team.
 * The router's cue list was extended after the paraphrase questions were written (owner: "looks
