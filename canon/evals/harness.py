@@ -43,6 +43,7 @@ class Outcome(BaseModel):
     failure: str | None = None  # stale_value | wrong_customer | no_answer | other
     trace: list[str] = []
     context_chars: int = 0  # size of what the model had to read
+    restricted: int = 0  # records in the context that the caller may not read
 
 
 class QuestionResult(BaseModel):
@@ -64,6 +65,10 @@ class EvalRun(BaseModel):
 
     def context_chars(self, agent: str) -> float:
         return sum(r.outcomes[agent].context_chars for r in self.results) / len(self.results)
+
+    def leaky(self, agent: str) -> int:
+        """Answers whose context included text from a record the caller may not read."""
+        return sum(r.outcomes[agent].restricted > 0 for r in self.results)
 
     def correct(self, agent: str) -> int:
         return sum(r.outcomes[agent].correct for r in self.results)
@@ -136,6 +141,12 @@ async def _run_async(
         ServiceConfig(facts=FactScoringConfig(as_of=as_of)),
     )
     records = load_all(data_dir)
+    acl = {r.record_id: set(r.acl) for r in records}
+    groups = set(service.directory.resolve(caller).groups)
+
+    def allowed(record_id: str) -> bool:
+        return bool(acl.get(record_id, set()) & groups)
+
     baseline = BaselineAgent(model, data_dir)
     hybrid = HybridAgent(model, data_dir)
     oracle = OracleAgent(model, data_dir, truth["records"]) if truth else None
@@ -157,6 +168,7 @@ async def _run_async(
                     failure=None if ok else classify_failure(q, res.answer, truth, records),
                     trace=res.trace,
                     context_chars=len(res.context),
+                    restricted=sum(1 for rid in res.sources if not allowed(rid)),
                 )
             results.append(QuestionResult(question=q, outcomes=outcomes))
     return EvalRun(
@@ -208,8 +220,11 @@ FAILURE_LABELS = {
 def _row(run: EvalRun, agent: str) -> str:
     n, k = len(run.results), run.correct(agent)
     lo, hi = wilson(k, n)
-    size = run.context_chars(agent)
-    return f"| {AGENT_LABELS[agent]} | {k}/{n} | {k / n:.1%} | {lo:.0%}–{hi:.0%} | {size:,.0f} |"
+    size, leak = run.context_chars(agent), run.leaky(agent)
+    return (
+        f"| {AGENT_LABELS[agent]} | {k}/{n} | {k / n:.1%} | {lo:.0%}–{hi:.0%} | {size:,.0f} "
+        f"| {leak}/{n} |"
+    )
 
 
 def _versus(run: EvalRun, other: str) -> str:
@@ -259,8 +274,9 @@ def render_report(
         "",
         "## Overall",
         "",
-        "| Agent | Correct | Accuracy | 95% CI (Wilson) | Context read (chars, mean) |",
-        "|---|---|---|---|---|",
+        "| Agent | Correct | Accuracy | 95% CI (Wilson) | Context read (chars, mean) "
+        "| Answers that read restricted text |",
+        "|---|---|---|---|---|---|",
         *[_row(run, a) for a in agents],
         "",
         f"Lift, Canon vs. baseline: **{(c - b) * 100:+.1f} pts**. On the same questions, Canon "

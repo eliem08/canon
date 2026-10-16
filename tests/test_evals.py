@@ -260,3 +260,15 @@ def test_client_hosted_model_needs_no_key(monkeypatch):
                               post=post, require_key=False)  # fmt: skip
     assert m.answer("q", "c") == "461000"
     assert sent == {"url": "http://llm.internal:8000/v1/chat/completions", "headers": {}}
+
+
+def test_raw_file_rag_reads_text_a_sales_rep_may_not_see():
+    as_rep = run_eval(DATA, StubModel(), caller="salma.el.idrissi", as_of=date(2026, 10, 1))
+    assert as_rep.leaky("canon") == 0
+    assert as_rep.leaky("hybrid") > len(as_rep.results) / 2
+    report = render_report(as_rep)
+    assert "Answers that read restricted text" in report
+
+
+def test_full_access_caller_has_no_restricted_reads(run):
+    assert all(run.leaky(a) == 0 for a in run.agents)

@@ -36,6 +36,30 @@ class AgentResult:
     answer: str
     context: str
     trace: list[str] = field(default_factory=list)
+    sources: list[str] = field(default_factory=list)  # record ids whose text reached the model
+
+
+def chunk_record_ids(root: Path) -> dict[str, str]:
+    """Raw-chunk locator -> source record id (Slack chunks map to their channel's record)."""
+    root = Path(root)
+    channels = json.loads((root / "slack" / "channels.json").read_text(encoding="utf-8"))
+    if (root / "slack" / "groups.json").exists():
+        channels += json.loads((root / "slack" / "groups.json").read_text(encoding="utf-8"))
+    channel_id = {c["name"]: c["id"] for c in channels}
+    out = {}
+    for locator, _ in raw_chunks(root):
+        kind, _, rest = locator.partition(":")
+        out[locator] = f"slack:{channel_id[rest.split('/')[0]]}" if kind == "slack" else locator
+    return out
+
+
+def _cited(obj) -> set[str]:
+    if isinstance(obj, dict):
+        own = {obj["record_id"]} if isinstance(obj.get("record_id"), str) else set()
+        return own.union(*(_cited(v) for v in obj.values()))
+    if isinstance(obj, list):
+        return set().union(*(_cited(v) for v in obj)) if obj else set()
+    return set()
 
 
 # ---------------------------------------------------------------- baseline
@@ -95,6 +119,7 @@ class BaselineAgent:
     def __init__(self, model: Model, data_dir: Path, k: int = 5) -> None:
         self.model = model
         self.chunks = raw_chunks(data_dir)
+        self.record_of = chunk_record_ids(data_dir)
         self.index = BM25([text for _, text in self.chunks])
         self.k = k
 
@@ -102,7 +127,8 @@ class BaselineAgent:
         hits = self.index.search(question, self.k)
         context = "\n---\n".join(self.chunks[i][1] for i in hits)
         trace = [f"retrieved {self.chunks[i][0]}" for i in hits]
-        return AgentResult(self.model.answer(question, context), context, trace)
+        sources = sorted({self.record_of[self.chunks[i][0]] for i in hits})
+        return AgentResult(self.model.answer(question, context), context, trace, sources)
 
 
 # ---------------------------------------------------------------- strong baseline
@@ -178,6 +204,7 @@ class HybridAgent:
     def __init__(self, model: Model, data_dir: Path, k: int = 10, per_query: int = 20) -> None:
         self.model = model
         self.chunks = readable_chunks(data_dir)
+        self.record_of = chunk_record_ids(data_dir)
         texts = [text for _, text in self.chunks]
         self.bm25 = BM25(texts)
         self.fuzzy = CharNgramIndex(texts)
@@ -196,7 +223,8 @@ class HybridAgent:
         hits = [i for i, _ in fused.most_common(self.k)]
         context = "\n---\n".join(self.chunks[i][1] for i in hits)
         trace = [f"{len(queries)} queries; retrieved {self.chunks[i][0]}" for i in hits[:3]]
-        return AgentResult(self.model.answer(question, context), context, trace)
+        sources = sorted({self.record_of[self.chunks[i][0]] for i in hits})
+        return AgentResult(self.model.answer(question, context), context, trace, sources)
 
 
 class OracleAgent:
@@ -207,22 +235,19 @@ class OracleAgent:
     def __init__(self, model: Model, data_dir: Path, record_entity: dict[str, str]) -> None:
         self.model = model
         root = Path(data_dir)
-        channels = json.loads((root / "slack" / "channels.json").read_text(encoding="utf-8"))
-        if (root / "slack" / "groups.json").exists():
-            channels += json.loads((root / "slack" / "groups.json").read_text(encoding="utf-8"))
-        channel_id = {c["name"]: c["id"] for c in channels}
-        self.by_entity: dict[str, list[tuple[str, str]]] = {}
+        record_of = chunk_record_ids(root)
+        self.by_entity: dict[str, list[tuple[str, str, str]]] = {}
         for locator, text in raw_chunks(root):
-            kind, _, rest = locator.partition(":")
-            rid = f"slack:{channel_id[rest.split('/')[0]]}" if kind == "slack" else locator
+            rid = record_of[locator]
             if rid in record_entity:
-                self.by_entity.setdefault(record_entity[rid], []).append((locator, text))
+                self.by_entity.setdefault(record_entity[rid], []).append((locator, rid, text))
 
     async def run(self, question: str, entity_id: str | None = None) -> AgentResult:
         chunks = self.by_entity.get(entity_id or "", [])
-        context = "\n---\n".join(text for _, text in chunks)
+        context = "\n---\n".join(text for *_, text in chunks)
         trace = [f"oracle: {len(chunks)} raw chunks of {entity_id}"]
-        return AgentResult(self.model.answer(question, context), context, trace)
+        sources = sorted({rid for _, rid, _ in chunks})
+        return AgentResult(self.model.answer(question, context), context, trace, sources)
 
 
 # ---------------------------------------------------------------- canon
@@ -310,4 +335,5 @@ class CanonAgent:
         result = await self.client.call_tool(tool, {arg: entity_id, "caller": self.caller})
         trace.append(f"called {tool}({entity_id})")
         context = json.dumps(result.structured_content, ensure_ascii=False)
-        return AgentResult(self.model.answer(question, context), context, trace)
+        sources = sorted(_cited(result.structured_content or {}))
+        return AgentResult(self.model.answer(question, context), context, trace, sources)
