@@ -33,7 +33,22 @@ same `CRMFieldMap`. XLSX: export to CSV first.
 contracts as 2-page image-only PDFs and reads them back. Full table:
 [`reports/ocr_report.md`](reports/ocr_report.md).
 
-See the table in the report (regenerated with each change to the OCR path).
+| | clean scan | 2% speckle noise |
+|---|---|---|
+| CER, Latin lines | 0.003 | 0.003 |
+| contract number / value / start / renewal / signatory / tax id | 100% correct | 100% correct |
+| Latin party name | 98% correct, **2% wrong** | 96% correct, **4% wrong** |
+| Arabic party name | 95% correct, 0% wrong | 0% read, 0% wrong (refused) |
+| seconds per document | 1.1 | 5.2 |
+
+* Noisy pages are re-read with a median filter when tesseract's confidence is below 80. Without
+  the filter, 2% speckle took Latin CER to 0.43 and contract values to 20% correct.
+* The filter erases the dots that distinguish Arabic letters: Arabic names read from a denoised page
+  were wrong 74% of the time, so they are now dropped with an `arabic_unreliable_after_denoise`
+  warning.
+* The Latin party name is the one field still read **wrong** without a flag (1–2 of 50 documents,
+  e.g. a misread letter). It is an identity field, so entity resolution tolerates it, but it is
+  not quarantined.
 
 ## Install
 `pypdf` and `pillow` are Python dependencies. OCR needs the tesseract binary with French and Arabic:

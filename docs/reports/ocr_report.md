@@ -8,16 +8,16 @@ These are clean renders of a known font. Real scans (skew, stamps, signatures, f
 |---|---|---|
 | documents | 50 | 50 |
 | CER, Latin lines | 0.003 | 0.003 |
-| CER, Arabic line | 0.287 | 0.256 |
-| mean word confidence | 93.8 | 93.9 |
+| CER, Arabic line | 0.100 | 0.256 |
+| mean word confidence | 94.1 | 93.9 |
 | documents flagged `low_ocr_confidence` | 0.00 | 0.00 |
-| seconds per document | 1.36 | 2.21 |
+| seconds per document | 1.11 | 5.24 |
 | `contract_number`: correct / wrong | 1.00 / 0.00 | 1.00 / 0.00 |
 | `contract_value`: correct / wrong | 1.00 / 0.00 | 1.00 / 0.00 |
 | `contract_start`: correct / wrong | 1.00 / 0.00 | 1.00 / 0.00 |
 | `renewal_date`: correct / wrong | 1.00 / 0.00 | 1.00 / 0.00 |
 | `signatory`: correct / wrong | 1.00 / 0.00 | 1.00 / 0.00 |
-| `name`: correct / wrong | 0.96 / 0.04 | 0.96 / 0.04 |
-| `arabic_name`: correct / wrong | 0.16 / 0.84 | 0.11 / 0.74 |
+| `name`: correct / wrong | 0.98 / 0.02 | 0.96 / 0.04 |
+| `arabic_name`: correct / wrong | 0.95 / 0.00 | 0.00 / 0.00 |
 | `tax_id`: correct / wrong | 1.00 / 0.00 | 1.00 / 0.00 |
-| `phone`: correct / wrong | 1.00 / 0.00 | 0.98 / 0.00 |
+| `phone`: correct / wrong | 0.96 / 0.00 | 0.98 / 0.00 |
