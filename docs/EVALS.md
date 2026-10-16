@@ -8,7 +8,12 @@ uv run canon eval                              # stub model, offline, ~2 s (what
 uv run canon eval --seeds 10                   # plus 10 regenerated datasets (held-out check)
 uv sync --extra claude && uv run canon eval --model claude    # real model (needs credentials)
 uv run canon eval --model claude --model-id claude-opus-5-5 --caller salma.el.idrissi
+BASETEN_API_KEY=... uv run canon eval --model baseten --model-id <model slug from Baseten>
 ```
+
+Keys are read from environment variables only (`ANTHROPIC_API_KEY`/`ant auth login` for Claude,
+`BASETEN_API_KEY` for Baseten). Never put them in a repo file; `.env` is gitignored, but prefer
+the environment's secret settings.
 
 Output: `out/eval_report.md` (+ `.json` with every answer and agent trace). The committed
 copy is [`reports/eval_report.md`](reports/eval_report.md).
@@ -54,6 +59,10 @@ differs.
   * Refusal fallback is on (`fallbacks: "default"`, beta `server-side-fallback-2026-07-01`), and a
     `refusal` stop reason is graded as no answer.
   * Any object with `answer(question, context) -> str` plugs in.
+* `OpenAICompatibleModel`: any OpenAI-compatible Chat Completions endpoint, with a `baseten`
+  preset (`https://inference.baseten.co/v1`, key from `BASETEN_API_KEY`). It uses temperature 0
+  and strips inline `<think>` blocks from reasoning models. There is no default model: pass the
+  provider's model slug with `--model-id`.
 
 ## Grading and failure analysis
 

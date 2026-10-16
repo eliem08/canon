@@ -81,8 +81,20 @@ def cmd_serve(args: argparse.Namespace) -> None:
 
 def cmd_eval(args: argparse.Namespace) -> None:
     from canon.evals import ClaudeModel, StubModel, render_report, run_eval
+    from canon.evals.models import OpenAICompatibleModel
 
-    model = StubModel() if args.model == "stub" else ClaudeModel(args.model_id)
+    if args.model == "stub":
+        model = StubModel()
+    elif args.model == "claude":
+        model = ClaudeModel(args.model_id or "claude-opus-5-5")
+    else:  # an OpenAI-compatible provider preset, e.g. baseten
+        if not args.model_id:
+            raise SystemExit(f"--model-id is required with --model {args.model}")
+        model = OpenAICompatibleModel.preset(args.model, args.model_id)
+        if not os.environ.get(model.api_key_env):
+            raise SystemExit(
+                f"Set {model.api_key_env} in the environment (never in a file in the repo)"
+            )
     run = run_eval(Path(args.data), model, caller=args.caller, as_of=date.fromisoformat(args.as_of))
     sweep = None
     if args.seeds:
@@ -131,8 +143,12 @@ def main(argv: list[str] | None = None) -> None:
 
     e = sub.add_parser("eval", help="before/after eval: raw-file RAG agent vs. Canon MCP agent")
     e.add_argument("--data", default=str(_data_dir()))
-    e.add_argument("--model", choices=["stub", "claude"], default="stub")
-    e.add_argument("--model-id", default="claude-opus-5-5", help="Claude model for --model claude")
+    e.add_argument("--model", choices=["stub", "claude", "baseten"], default="stub")
+    e.add_argument(
+        "--model-id",
+        default=None,
+        help="model id (claude: default claude-opus-5-5; baseten: required provider slug)",
+    )
     e.add_argument("--caller", default="revops.admin", help="identity the Canon agent acts for")
     e.add_argument("--as-of", default="2026-10-01")
     e.add_argument("--seeds", type=int, default=0, help="also rerun on N held-out seeds")

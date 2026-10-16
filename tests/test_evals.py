@@ -101,3 +101,33 @@ def test_claude_adapter_refusal_is_unknown():
 
     client = SimpleNamespace(beta=SimpleNamespace(messages=Refusing()))
     assert ClaudeModel(client=client).answer("q", "c") == "unknown"
+
+
+def test_openai_compatible_adapter_reads_key_from_env_only(monkeypatch):
+    from canon.evals import OpenAICompatibleModel
+
+    sent = {}
+
+    def fake_post(url, payload, headers, timeout):
+        sent.update(url=url, payload=payload, headers=headers)
+        content = "<think>check the contract</think>1426000 MAD"
+        return {"choices": [{"message": {"content": content}}]}
+
+    model = OpenAICompatibleModel.preset("baseten", "some/model", post=fake_post)
+    monkeypatch.delenv("BASETEN_API_KEY", raising=False)
+    with pytest.raises(RuntimeError, match="BASETEN_API_KEY"):
+        model.answer("q", "c")
+    monkeypatch.setenv("BASETEN_API_KEY", "test-key")
+    assert model.answer("What is the value?", "ctx") == "1426000 MAD"
+    assert sent["url"] == "https://inference.baseten.co/v1/chat/completions"
+    assert sent["headers"]["Authorization"] == "Bearer test-key"
+    assert sent["payload"]["model"] == "some/model"
+    assert sent["payload"]["messages"][0]["content"] == SYSTEM_PROMPT
+    assert "test-key" not in json.dumps(sent["payload"])
+
+
+def test_openai_compatible_adapter_requires_model_id():
+    from canon.evals import OpenAICompatibleModel
+
+    with pytest.raises(ValueError):
+        OpenAICompatibleModel.preset("baseten", None)

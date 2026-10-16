@@ -145,3 +145,83 @@ class ClaudeModel:
             return "unknown"
         text = "".join(b.text for b in response.content if b.type == "text").strip()
         return text or "unknown"
+
+
+# Providers that expose an OpenAI-compatible Chat Completions API:
+# name -> (base URL, environment variable holding the key).
+OPENAI_COMPATIBLE_PRESETS = {
+    "baseten": ("https://inference.baseten.co/v1", "BASETEN_API_KEY"),
+}
+_THINK_RE = re.compile(r"<think>.*?</think>", re.DOTALL)
+
+
+def _http_post_json(url: str, payload: dict, headers: dict, timeout: float) -> dict:
+    import urllib.request
+
+    request = urllib.request.Request(
+        url,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={"Content-Type": "application/json", **headers},
+        method="POST",
+    )
+    with urllib.request.urlopen(request, timeout=timeout) as response:
+        return json.loads(response.read().decode("utf-8"))
+
+
+class OpenAICompatibleModel:
+    """Any OpenAI-compatible chat endpoint (e.g. Baseten Model APIs serving open models).
+
+    The API key is read from an environment variable at call time and never stored
+    in config, logs or reports.
+    """
+
+    def __init__(
+        self,
+        model: str,
+        base_url: str,
+        api_key_env: str,
+        max_tokens: int = 4096,
+        timeout: float = 120.0,
+        post=_http_post_json,
+    ) -> None:
+        if not model:
+            raise ValueError("model id is required (e.g. --model-id <provider model slug>)")
+        self.model = model
+        self.name = model
+        self.base_url = base_url.rstrip("/")
+        self.api_key_env = api_key_env
+        self.max_tokens = max_tokens
+        self.timeout = timeout
+        self._post = post
+
+    @classmethod
+    def preset(cls, provider: str, model: str, **kwargs) -> OpenAICompatibleModel:
+        base_url, env = OPENAI_COMPATIBLE_PRESETS[provider]
+        return cls(model, base_url, env, **kwargs)
+
+    def answer(self, question: str, context: str) -> str:
+        import os
+
+        key = os.environ.get(self.api_key_env)
+        if not key:
+            raise RuntimeError(f"Set the {self.api_key_env} environment variable")
+        data = self._post(
+            f"{self.base_url}/chat/completions",
+            {
+                "model": self.model,
+                "temperature": 0,
+                "max_tokens": self.max_tokens,
+                "messages": [
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {
+                        "role": "user",
+                        "content": f"<context>\n{context}\n</context>\n\nQuestion: {question}",
+                    },
+                ],
+            },
+            {"Authorization": f"Bearer {key}"},
+            self.timeout,
+        )
+        text = (data["choices"][0]["message"].get("content") or "").strip()
+        text = _THINK_RE.sub("", text).strip()  # reasoning models may inline their thinking
+        return text or "unknown"
