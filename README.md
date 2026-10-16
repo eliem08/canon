@@ -34,12 +34,14 @@ docker build -t canon .                    # client-side image; see docs/DEPLOY.
 | | Keyword RAG | Strong RAG | **Canon** |
 |---|---|---|---|
 | 40 synthetic questions | 55–60% | 92.5% | **97.5%** |
-| 30 hand-written questions | 70–73% | 93–97% | **93–97%** |
+| 30 hand-written questions | 70–73% | 93–97% | **96.7%** |
 | as a sales rep: answers that read text the rep may not see | 27/40 | **35/40** | **0/40** |
+| context the model reads per answer | 2.0k chars | 3.7k chars | **1.3k chars** |
 
 Canon beats keyword retrieval by about 40 points. A well-built RAG over the same raw files gets within
 0–5 points of Canon, and none of those differences is significant. Canon's difference is that it never
-reads what the caller may not see, it cites every fact, and it produces the audit report.
+reads what the caller may not see, it cites every fact, it gives the model a third of the text, and it
+produces the audit report.
 Details and caveats: [`docs/EVALS.md`](docs/EVALS.md).
 
 Entity resolution on the synthetic set (119 records, 25 customers): **pairwise F1 0.991**

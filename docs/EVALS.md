@@ -121,11 +121,15 @@ Four open models, temperature 0, one run each, the same prompt for every agent. 
 view are in [`reports/eval_summary.md`](reports/eval_summary.md) (regenerate with
 `uv run python scripts/eval_summary.py`). Per-question answers are in each `reports/eval_*.json`.
 
-| View | Baseline (BM25) | **Strong RAG** | Oracle | **Canon** | Canon vs strong RAG | Answers that read restricted text (RAG / Canon) |
-|---|---|---|---|---|---|---|
-| 40 synthetic questions, full access | 55–60% | **92.5%** | 92.5–95% | **97.5%** | +5 pts, p = 0.5 (all 4 models) | 0 / 0 |
-| 30 hand-written questions, full access | 70–73% | **93–97%** | 90–93% | **93–97%** | 0 to +3 pts, p = 1 | 0 / 0 |
-| 40 synthetic questions, **as a sales rep** | 52–60% | **92.5%** | 92.5–95% | **82.5–85%** | −7.5 to −10 pts, p ≥ 0.22 | **35/40 / 0/40** |
+| View | Baseline (BM25) | **Strong RAG** | Oracle | **Canon** | Canon vs strong RAG | Answers that read restricted text (RAG / Canon) | Context per answer (RAG / Canon) |
+|---|---|---|---|---|---|---|---|
+| 40 synthetic questions, full access | 55–58% | **92.5%** | 92.5–95% | **97.5%** | +5 pts, p = 0.5 (all 4 models) | 0 / 0 | 3.7k / **1.3k** chars |
+| 30 hand-written questions, full access | 70–73% | **93–97%** | 90–93% | **96.7%** | 0 to +3.3 pts, p = 1 | 0 / 0 | 3.7k / **1.4k** |
+| 40 synthetic questions, **as a sales rep** | 55–58% | **92.5%** | 92.5–95% | **82.5–85%** | −7.5 to −10 pts, p ≥ 0.22 | **35/40 / 0/40** | 3.7k / **0.9k** |
+
+These numbers are from the run with compact tool responses (`fields` filter, locators listed once). The
+earlier run with full responses (7.2k characters per answer) gave the same Canon accuracy within one
+question per model.
 
 ### What this says, plainly
 
@@ -139,9 +143,10 @@ view are in [`reports/eval_summary.md`](reports/eval_summary.md) (regenerate wit
    Canon did so in **0**. Its accuracy is lower in that view (82.5–85%) because some correct answers
    exist only in legal-only contracts. That is the permission model working, and the grading against
    full-access truth counts it as a miss.
-3. **Context cost does not favour Canon here.** Canon's tool output, with sources, alternatives and
-   quotes, is the largest context of all the agents: about 7.2k characters, against 3.7k for strong
-   RAG. The argument that RAG doesn't scale to large histories is not tested by this dataset.
+3. **Canon reads less.** With compact responses and the `fields` filter, Canon gives the model
+   1.3k characters per answer, against 3.7k for strong RAG, at the same or better accuracy. Before
+   compaction it was 7.2k. The dataset is small, so how RAG behaves with long histories is still
+   untested.
 4. **What is still Canon's alone:** typed answers with confidence, conflicts and alternatives;
    per-fact citations; the audit report (stale CRM values, duplicates, quarantine); identity and
    permission enforcement; and an audit log. These are product properties, and accuracy on 40
