@@ -1,4 +1,4 @@
-"""CRM account export connector (Salesforce-style accounts, as a JSON list or a CSV file)."""
+"""CRM account export connector (Salesforce-style accounts: JSON list, CSV or XLSX)."""
 
 from __future__ import annotations
 
@@ -10,7 +10,14 @@ from pathlib import Path
 
 from canon.ingest.common import business_domain
 from canon.ingest.config import IngestConfig
-from canon.ingest.parsing import IssueLog, infer_dayfirst, parse_amount, parse_date, parse_phone
+from canon.ingest.parsing import (
+    IssueLog,
+    infer_dayfirst,
+    parse_amount,
+    parse_date,
+    parse_identifier,
+    parse_phone,
+)
 from canon.models import Fact, SourceRecord
 
 
@@ -37,7 +44,12 @@ DEFAULT_CRM_ACL = ("sales", "exec")
 
 
 def read_rows(path: Path) -> list[dict]:
-    """Rows of a JSON list export or a CSV export (`,` or `;` delimited, optional BOM)."""
+    """Rows of a JSON list export, a CSV export (`,` or `;` delimited, optional BOM) or the
+    first sheet of an XLSX workbook."""
+    if path.suffix.lower() == ".xlsx":
+        from canon.ingest.xlsx import read_xlsx
+
+        return read_xlsx(path)
     if path.suffix.lower() != ".csv":
         return json.loads(path.read_text(encoding="utf-8"))
     text = path.read_text(encoding="utf-8-sig")
@@ -136,7 +148,7 @@ def crm_row_to_record(
         email=email,
         address=row.get(fields.street),
         city=row.get(fields.city),
-        tax_id=row.get(fields.tax_id),
+        tax_id=log.take("tax_id", parse_identifier(row.get(fields.tax_id))),
         updated_at=modified,
         facts=facts,
         acl=list(acl),

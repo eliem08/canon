@@ -39,7 +39,7 @@ generate them.
 > [in your environment / under a DPA and is deleted afterwards]. Would you be open to a 30-minute call to see if it fits?
 
 ## 5. Readiness check for us (before the data arrives)
-- [ ] Their export formats match what our connectors read, or the mapping is a config change, not code (`CRMFieldMap`, `IngestConfig`). The CRM connector reads JSON or CSV (`,`/`;`); XLSX must be saved as CSV.
+- [ ] Their export formats match what our connectors read, or the mapping is a config change, not code (`CRMFieldMap`, `IngestConfig`). The CRM connector reads JSON, CSV (`,`/`;`) or XLSX (first sheet). Ask for tax ids and phones as text: when Excel has stored them as numbers they are refused, because leading zeros may be gone.
 - [ ] Permissions: Slack private-channel membership is read from the export (`groups.json`); contract folders get ACLs from `_acl.json` sidecars written from the role spreadsheet (#4); everything else is per source type. Say which in the report.
 - [ ] Contracts: PDFs (text or scanned), DOCX and images are read; scans go through OCR (`docs/DOCUMENTS.md`). OCR accuracy is only measured on synthetic renders, so measure CER and field accuracy on 10 of their scans on day 1. Unreadable files are listed in the quarantine report.
 - [ ] `canon resolve` on their sample produces a quarantine report we can show them on day 3.

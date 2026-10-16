@@ -658,6 +658,43 @@
    "kind": "contract_date",
    "raw": "31/02/2026",
    "expect": null
+  },
+  {
+   "id": "id01",
+   "kind": "identifier",
+   "raw": "000133528873882",
+   "expect": "000133528873882"
+  },
+  {
+   "id": "id02",
+   "kind": "identifier",
+   "raw": 133528873882,
+   "expect": null,
+   "note": "Excel dropped the leading zeros"
+  },
+  {
+   "id": "id03",
+   "kind": "identifier",
+   "raw": "000 133 528 873 882",
+   "expect": "000133528873882"
+  },
+  {
+   "id": "id04",
+   "kind": "identifier",
+   "raw": "001-525-830-000-091",
+   "expect": "001525830000091"
+  },
+  {
+   "id": "id05",
+   "kind": "identifier",
+   "raw": 133528873882.0,
+   "expect": null
+  },
+  {
+   "id": "id06",
+   "kind": "identifier",
+   "raw": "ICE: n/a ?",
+   "expect": null
   }
  ]
 }

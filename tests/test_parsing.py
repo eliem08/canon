@@ -18,6 +18,7 @@ from canon.ingest.parsing import (
     infer_dayfirst,
     parse_amount,
     parse_date,
+    parse_identifier,
     parse_phone,
 )
 
@@ -41,6 +42,8 @@ def run_case(case):
         return p.value.isoformat() if p.ok else None
     if kind == "phone":
         return parse_phone(raw).value
+    if kind == "identifier":
+        return parse_identifier(raw).value
     record = parse_contract(
         CONTRACT.format(
             sig=raw if kind == "contract_date" else "17/03/2026",

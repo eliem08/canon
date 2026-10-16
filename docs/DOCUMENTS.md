@@ -25,8 +25,11 @@ or a page with no text and no image produces a `ParseIssue` (`unreadable_pdf`, `
 so the Arabic party name is read as "the Arabic words of the line containing الطرف, minus the label
 words". Direction marks are stripped.
 
-**CRM as CSV.** `load_crm` also reads `accounts.csv` (`,` or `;` delimited, BOM tolerated) with the
-same `CRMFieldMap`. XLSX: export to CSV first.
+**CRM as CSV or XLSX.** `load_crm` also reads `accounts.csv` (`,` or `;` delimited, BOM tolerated)
+and `accounts.xlsx` (first sheet; stdlib reader, `canon/ingest/xlsx.py`), with the same `CRMFieldMap`.
+Excel date cells (day serials with a date format) become ISO dates. Identifiers that Excel stored as
+numbers, such as a tax id that lost its leading zeros, are refused (`identifier_stored_as_number`),
+and so are phones stored as numbers.
 
 ## OCR results (synthetic)
 `uv run python scripts/ocr_benchmark.py --out docs/reports/ocr_report.md` renders all 50 synthetic

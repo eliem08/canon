@@ -464,6 +464,26 @@ def find_phones(text: str, default_country: str | None = "212") -> list[str]:
 # ---------------------------------------------------------------- issue logging
 
 # Reasons that just mean "nothing there" (not a refusal worth a human's time).
+# ---------------------------------------------------------------- identifiers
+
+_ID_SEPARATORS = re.compile(r"[\s.\-/]")
+
+
+def parse_identifier(raw: object) -> Parsed[str]:
+    """A registry identifier (tax id / ICE, company number). Identifiers are text: a value that
+    arrives as a number (spreadsheets do this) may have lost leading zeros, so it is refused.
+    Spaces, dots, dashes and slashes between characters are removed."""
+    if raw is None or (isinstance(raw, str) and not raw.strip()):
+        return Parsed("", reason="empty")
+    if isinstance(raw, int | float) and not isinstance(raw, bool):
+        return Parsed(str(raw), reason="identifier_stored_as_number")
+    text = clean_text(raw).strip()
+    compact = _ID_SEPARATORS.sub("", text)
+    if not compact.isalnum():
+        return Parsed(text, reason="malformed_identifier")
+    return Parsed(text, compact.upper())
+
+
 ABSENT_REASONS = frozenset({"empty", "no_amount", "no_date", "no_phone"})
 # Warnings worth surfacing: the value was used, but under an assumption.
 NOTABLE_WARNINGS = ("single_separator_read_as_thousands", "country_unverified", "alternate=")

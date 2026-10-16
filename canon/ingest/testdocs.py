@@ -1,4 +1,4 @@
-"""Build test documents (text PDFs, scanned PDFs, DOCX) from plain text.
+"""Build test documents (text PDFs, scanned PDFs, DOCX, XLSX) from plain text and rows.
 
 Used by the tests and `scripts/ocr_benchmark.py` to exercise the documents connector on synthetic
 contracts. Text PDFs and DOCX need only the standard library; scans need Pillow.
@@ -136,3 +136,75 @@ def cer(reference: str, hypothesis: str) -> float:
 
     ref, hyp = " ".join(reference.split()), " ".join(hypothesis.split())
     return Levenshtein.distance(ref, hyp) / max(len(ref), 1)
+
+
+def xlsx(rows: list[dict], date_columns: tuple[str, ...] = ()) -> bytes:
+    """A minimal XLSX workbook: strings shared, numbers as numbers, ISO dates in `date_columns`
+    stored the way Excel does (day serials with a date number format)."""
+    import io
+    from datetime import date
+
+    columns = list(dict.fromkeys(k for r in rows for k in r))
+    strings: dict[str, int] = {}
+
+    def ref(i: int, j: int) -> str:
+        letters = ""
+        j += 1
+        while j:
+            j, rem = divmod(j - 1, 26)
+            letters = chr(65 + rem) + letters
+        return f"{letters}{i + 1}"
+
+    def cell(i: int, j: int, value, column: str) -> str:
+        if value is None or value == "":
+            return ""
+        if column in date_columns and isinstance(value, str):
+            try:
+                serial = (date.fromisoformat(value[:10]) - date(1899, 12, 30)).days
+                return f'<c r="{ref(i, j)}" s="1"><v>{serial}</v></c>'
+            except ValueError:
+                pass
+        if isinstance(value, int | float) and not isinstance(value, bool):
+            return f'<c r="{ref(i, j)}"><v>{value}</v></c>'
+        idx = strings.setdefault(str(value), len(strings))
+        return f'<c r="{ref(i, j)}" t="s"><v>{idx}</v></c>'
+
+    body = [
+        f'<row r="{i + 1}">' + "".join(cell(i, j, v, c) for j, (c, v) in enumerate(vals)) + "</row>"
+        for i, vals in enumerate(
+            [[(c, c) for c in columns]] + [[(c, r.get(c)) for c in columns] for r in rows]
+        )
+    ]
+    main = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+    rel = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
+    sst = "".join(f"<si><t>{escape(s)}</t></si>" for s in strings)
+    files = {
+        "[Content_Types].xml": (
+            '<?xml version="1.0"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/'
+            'content-types"><Default Extension="xml" ContentType="application/xml"/>'
+            '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.'
+            'relationships+xml"/></Types>'
+        ),
+        "xl/workbook.xml": (
+            f'<workbook xmlns="{main}" xmlns:r="{rel}"><sheets>'
+            '<sheet name="Accounts" sheetId="1" r:id="rId1"/></sheets></workbook>'
+        ),
+        "xl/_rels/workbook.xml.rels": (
+            '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
+            f'<Relationship Id="rId1" Type="{rel}/worksheet" Target="worksheets/sheet1.xml"/>'
+            "</Relationships>"
+        ),
+        "xl/styles.xml": (
+            f'<styleSheet xmlns="{main}"><cellXfs count="2"><xf numFmtId="0"/>'
+            '<xf numFmtId="14" applyNumberFormat="1"/></cellXfs></styleSheet>'
+        ),
+        "xl/worksheets/sheet1.xml": (
+            f'<worksheet xmlns="{main}"><sheetData>{"".join(body)}</sheetData></worksheet>'
+        ),
+        "xl/sharedStrings.xml": f'<sst xmlns="{main}">{sst}</sst>',
+    }
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w") as z:
+        for name, content in files.items():
+            z.writestr(name, content)
+    return buf.getvalue()

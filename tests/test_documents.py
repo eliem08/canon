@@ -140,3 +140,53 @@ def test_load_all_reads_csv_crm(tmp_path):
     _write_csv(tmp_path / "crm" / "accounts.csv")
     records = load_all(tmp_path)
     assert {r.source for r in records} == {"crm"} and len(records) > 20
+
+
+DATE_COLUMNS = ("Renewal Date", "LastModifiedDate")
+
+
+def test_xlsx_crm_matches_json(tmp_path):
+    from canon.ingest.testdocs import xlsx
+
+    rows = json.loads((DATA / "crm" / "accounts.json").read_text(encoding="utf-8"))
+    path = tmp_path / "accounts.xlsx"
+    path.write_bytes(xlsx(rows, DATE_COLUMNS))
+    from_xlsx = {r.record_id: (r.name, r.phone, r.tax_id, _facts(r)) for r in load_crm(path)}
+    from_json = {
+        r.record_id: (r.name, r.phone, r.tax_id, _facts(r))
+        for r in load_crm(DATA / "crm" / "accounts.json")
+    }
+    assert from_xlsx.keys() == from_json.keys()
+    # renewal dates written as ISO in JSON come back from Excel serials unchanged
+    same = sum(from_xlsx[k] == from_json[k] for k in from_json)
+    assert same == len(from_json), [k for k in from_json if from_xlsx[k] != from_json[k]][:3]
+
+
+def test_xlsx_reader_handles_dates_numbers_and_blank_rows(tmp_path):
+    from canon.ingest.testdocs import xlsx
+    from canon.ingest.xlsx import read_xlsx
+
+    rows = [
+        {"Id": "A1", "Renewal Date": "2027-03-01", "Annual Contract Value": 1426000},
+        {"Id": "", "Renewal Date": "", "Annual Contract Value": None},  # blank row is dropped
+        {"Id": "A2", "Renewal Date": "01/03/2027", "Annual Contract Value": "1 426 000 MAD"},
+    ]
+    path = tmp_path / "a.xlsx"
+    path.write_bytes(xlsx(rows, ("Renewal Date",)))
+    got = read_xlsx(path)
+    assert got == [
+        {"Id": "A1", "Renewal Date": "2027-03-01", "Annual Contract Value": 1426000},
+        {"Id": "A2", "Renewal Date": "01/03/2027", "Annual Contract Value": "1 426 000 MAD"},
+    ]
+
+
+def test_xlsx_numeric_tax_id_lost_its_leading_zeros(tmp_path):
+    """Excel turns `000133528873882` into the number 133528873882. The CRM loader must not
+    silently store a different tax id: it refuses it."""
+    from canon.ingest.testdocs import xlsx
+
+    row = {"Id": "X", "Account Name": "Acme", "ICE": 133528873882, "Owner": "A B"}
+    path = tmp_path / "accounts.xlsx"
+    path.write_bytes(xlsx([row]))
+    rec = load_crm(path)[0]
+    assert rec.tax_id in (None, "000133528873882")

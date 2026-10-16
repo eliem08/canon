@@ -20,7 +20,7 @@ def load_all(
     Documents with no readable text are appended to `unreadable` (if given)."""
     root = Path(root)
     records: list[SourceRecord] = []
-    for name in ("accounts.json", "accounts.csv"):
+    for name in ("accounts.json", "accounts.csv", "accounts.xlsx"):
         if (root / "crm" / name).exists():
             records += load_crm(root / "crm" / name, config=config)
     if (root / "slack" / "channels.json").exists():
