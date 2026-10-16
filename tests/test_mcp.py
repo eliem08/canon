@@ -198,3 +198,26 @@ def test_alternatives_keep_the_superseded_source(service):
     value = service.find_contract_terms("Atlas Logistique", "revops.admin").terms["contract_value"]
     statuses = {s.status for a in value.alternatives for s in a.sources}
     assert "superseded" in statuses
+
+
+def test_indexed_lookup_matches_a_full_scan(service, monkeypatch):
+    """The name index is an optimization only: results equal scoring every entity."""
+    import canon.mcp_server.service as svc
+
+    queries = [*NAMES, *(n.lower() for n in NAMES), "atlas logistiqeu sarl", "أطلس لوجيستيك"]
+    queries += ["AFC", "Rif Cement", "chrikat Zitoun", "khg", "Atlas", "no such company"]
+    questions = json.loads((DATA / "ground_truth" / "eval_questions.json").read_text("utf-8"))
+    queries += [q["mention"] for q in questions]
+    paraphrases = json.loads(
+        (DATA.parent / "eval" / "paraphrase_questions.json").read_text("utf-8")
+    )
+    from canon.evals.agents import candidate_spans
+
+    queries += [s for q in paraphrases["questions"] for s in candidate_spans(q["question"], 6)]
+    callers = ("revops.admin", "salma.el.idrissi", "hind.legal")
+    indexed = {
+        (q, c): service._match(q, service.directory.resolve(c)) for q in queries for c in callers
+    }
+    monkeypatch.setattr(svc, "_name_keys", lambda f: set())  # no keys -> score every entity
+    for (q, c), got in indexed.items():
+        assert got == service._match(q, service.directory.resolve(c)), (q, c)

@@ -182,3 +182,9 @@ Restart Claude Desktop, and the four tools appear under the connector.
   tiny amount of information.
 * **Per-request recomputation:** facts are rescored on every request. That's fine at this scale;
   production should cache per (entity, group-set).
+* **Lookup speed:** a name lookup scores only the customers that share a name key with the query.
+  The keys are the entity-resolution blocking keys plus whole name words. In tests this returns
+  exactly what a full scan returns over every name, typo, alias, Arabic form and eval-question span.
+  Latency is 1 ms at 1.2k records, 5 ms at 4.7k and 14 ms at 11.8k
+  ([`reports/scale_report.md`](reports/scale_report.md)). A query with no usable key, which is
+  rare, scores every customer.

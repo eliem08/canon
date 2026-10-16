@@ -20,6 +20,7 @@ from pydantic import BaseModel
 
 from canon.guard import screen
 from canon.models import Evidence, Fact, ResolvedFact, SourceRecord
+from canon.resolve.blocking import blocking_keys
 from canon.resolve.features import features
 from canon.resolve.golden import build_golden
 from canon.resolve.normalize import has_arabic, normalize_name
@@ -107,6 +108,12 @@ class CanonService:
         self.config = config or ServiceConfig()
         self.audit = audit
         self._features = {rid: features(r) for rid, r in self.records.items()}
+        # name-key index (the ER blocking keys) so a lookup scores a few entities, not all
+        self._name_index: dict[str, set[str]] = {}
+        for eid, members in clusters.items():
+            for rid in members:
+                for key in _name_keys(self._features[rid]):
+                    self._name_index.setdefault(key, set()).add(eid)
 
     # ------------------------------------------------------------- construction
     @classmethod
@@ -147,16 +154,12 @@ class CanonService:
                 return CustomerMatch(entity_id=query, name=_name(visible), match_score=1.0), [], ""
             return None, [], "No customer found."
         probe = features(SourceRecord(record_id="query", source="crm", locator="query", name=query))
-        scored = []
-        for eid in self.clusters:
-            visible = self._visible(eid, caller)
-            if not visible:
-                continue
-            best = max(name_similarity(probe, self._features[r.record_id]) for r in visible)
-            if best >= self.config.match_threshold:
-                scored.append(
-                    CustomerMatch(entity_id=eid, name=_name(visible), match_score=round(best, 3))
-                )
+        keys = _name_keys(probe)
+        if keys:  # score only entities sharing a name key with the query (ER blocking keys)
+            candidates = sorted(set().union(*(self._name_index.get(k, set()) for k in keys)))
+        else:  # nothing to index on (e.g. a very short query): score everything
+            candidates = list(self.clusters)
+        scored = self._score_entities(probe, caller, candidates)
         scored.sort(key=lambda m: m.match_score, reverse=True)
         if not scored:
             return None, [], "No customer found."
@@ -170,6 +173,19 @@ class CanonService:
                 f"Ambiguous name; candidates: {names}. Retry with entity_id.",
             )
         return top, rest[:3], ""
+
+    def _score_entities(self, probe, caller: Caller, entity_ids) -> list[CustomerMatch]:
+        scored = []
+        for eid in entity_ids:
+            visible = self._visible(eid, caller)
+            if not visible:
+                continue
+            best = max(name_similarity(probe, self._features[r.record_id]) for r in visible)
+            if best >= self.config.match_threshold:
+                scored.append(
+                    CustomerMatch(entity_id=eid, name=_name(visible), match_score=round(best, 3))
+                )
+        return scored
 
     # ------------------------------------------------------------- tools
     def get_customer(
@@ -425,3 +441,12 @@ def _diverse(sources: list[Evidence]) -> list[Evidence]:
         return []
     other = next((e for e in sources[1:] if e.status != sources[0].status), None)
     return [sources[0], other] if other else [sources[0]]
+
+
+def _name_keys(f) -> set[str]:
+    """Lookup keys of a record's names: the ER blocking keys (consonant-skeleton prefixes,
+    acronyms) plus every whole name word, which catches words whose skeleton is too short to key
+    on (`Hana` -> `n`)."""
+    keys = {k for k in blocking_keys(f) if k.startswith(("sk:", "skj:", "ac:"))}
+    keys |= {f"w:{w}" for name in f.names for w in name.split()}
+    return keys

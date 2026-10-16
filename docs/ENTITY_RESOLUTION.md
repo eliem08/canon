@@ -117,5 +117,7 @@ recall 0.783 → **0.962**.
   name (`زيتون`) vs `Zitoun Cosmetics` with only a shared phone stays apart (pair P22).
 * The 50 adversarial pairs were written by the same team as the guards; a client's labelled sample
   is the real test.
-* Average linkage is O(n² log n) in the worst case per block. Fine for thousands of records, but
-  millions need a block-local implementation.
+* Average linkage is O(n² log n) in the worst case per block. Measured on look-alike synthetic data
+  ([`reports/scale_report.md`](reports/scale_report.md)): 2 s at 1.2k records, 15 s at 4.7k, 52 s at
+  11.8k. That growth is superlinear. It is fine for an offline audit of tens of thousands of
+  records; millions need a block-local implementation.
