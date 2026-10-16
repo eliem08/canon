@@ -254,3 +254,33 @@ def test_revoked_tokens_stop_working(http_server):
 def test_token_file_stores_no_plaintext(http_server):
     _, _, tokens, legal_token = http_server
     assert legal_token not in tokens.read_text(encoding="utf-8")
+
+
+# ---------------------------------------------------------------- ingest hardening
+
+
+def test_symlinked_documents_are_not_ingested(tmp_path):
+    from canon.ingest.contracts import load_contracts
+
+    contracts = tmp_path / "contracts"
+    (contracts / "board").mkdir(parents=True)
+    (contracts / "board" / "_acl.json").write_text(json.dumps({"acl": ["exec"]}))
+    outside = tmp_path / "elsewhere.txt"
+    shutil.copy(DATA / "contracts" / "CN-2024-107_v2.txt", outside)
+    (contracts / "board" / "link.txt").symlink_to(outside)
+    shutil.copy(DATA / "contracts" / "CN-2024-107_v1.txt", contracts / "board" / "real.txt")
+    ids = {r.record_id for r in load_contracts(contracts)}
+    assert ids == {"contract:board/real"}
+
+
+@pytest.mark.parametrize("name", ["../../etc", "a/b", "..", ""])
+def test_unsafe_slack_channel_names_stop_the_ingest(tmp_path, name):
+    from canon.ingest.slack import load_slack
+
+    slack = tmp_path / "slack"
+    shutil.copytree(DATA / "slack", slack)
+    channels = json.loads((slack / "channels.json").read_text(encoding="utf-8"))
+    channels[0]["name"] = name
+    (slack / "channels.json").write_text(json.dumps(channels), encoding="utf-8")
+    with pytest.raises(ValueError, match="unsafe Slack channel name"):
+        load_slack(slack)

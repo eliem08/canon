@@ -212,8 +212,15 @@ def folder_acl(path: Path, root: Path, default: tuple[str, ...]) -> list[str]:
 
 
 def iter_documents(root: Path) -> list[Path]:
+    """Documents under `root`. Symlinks, and anything whose real location is outside `root`,
+    are skipped: a link would take its access rules from wherever it points."""
+    real_root = Path(root).resolve()
     return sorted(
         p
         for p in Path(root).rglob("*")
-        if p.is_file() and p.suffix.lower() in DOCUMENT_SUFFIXES and not p.name.startswith(".")
+        if p.is_file()
+        and not p.is_symlink()
+        and p.suffix.lower() in DOCUMENT_SUFFIXES
+        and not p.name.startswith(".")
+        and real_root in p.resolve().parents
     )

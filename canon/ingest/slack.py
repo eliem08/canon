@@ -46,8 +46,11 @@ def load_slack(
         channels += [{**g, "is_private": True} for g in private]
     records = []
     for channel in channels:
+        name = str(channel.get("name", ""))
+        if not name or "/" in name or "\\" in name or name in (".", "..") or ".." in name:
+            raise ValueError(f"unsafe Slack channel name in export: {name!r}")
         messages = []
-        for day_file in sorted((root / channel["name"]).glob("*.json")):
+        for day_file in sorted((root / name).glob("*.json")):
             messages.extend(json.loads(day_file.read_text(encoding="utf-8")))
         messages.sort(key=lambda m: float(m["ts"]))
         records.append(channel_to_record(channel, messages, users, config, str(root), ingest, llm))

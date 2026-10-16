@@ -14,6 +14,8 @@
 **Citations.** Pages are joined with form feeds, so every contract fact cites `file#p<page>:L<line>`
 plus the line's text (`source_ref`, `quote`). Field captures never run across a page break.
 
+**Symlinks are skipped**, and so is any file whose real location is outside the contracts folder. A link would otherwise take its access rules from wherever it points.
+
 **Access.** The nearest `_acl.json` (`{"acl": ["legal", "exec"]}`) between a file and the contracts
 root sets the ACL of the documents below it; otherwise the connector default (`legal`, `exec`).
 
