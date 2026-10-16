@@ -17,12 +17,18 @@ uv run canon resolve --report  # ingest + entity resolution -> out/ (golden reco
 uv run canon resolve --report --seeds 20   # also sweep 20 held-out generator seeds
 uv run canon serve                         # MCP server over stdio (see docs/MCP_SERVER.md)
 uv run python examples/mcp_client.py       # example client: same questions, four callers
+uv run canon eval --seeds 10               # before/after eval (stub model; --model claude for real)
 ```
 
 ## Results so far
 
+**Before/after eval** (40 questions, same model for both agents): an agent with naive retrieval
+over the raw files answers **60%** correctly. The same agent using Canon's MCP tools answers
+**97.5%** (held-out seeds: 46% → 98%). Contract values, renewal dates and owners are 100% with
+Canon. Details: [`docs/EVALS.md`](docs/EVALS.md), [`docs/reports/eval_report.md`](docs/reports/eval_report.md).
+
 Entity resolution on the synthetic set (119 records, 25 customers): **pairwise F1 0.991**
-(P 1.000 / R 0.983), versus 0.696 for exact-name matching; mean F1 0.992 over 50 held-out seeds.
+(P 1.000 / R 0.983), versus 0.696 for exact-name matching; mean F1 0.994 over 50 held-out seeds.
 Details: [`docs/ENTITY_RESOLUTION.md`](docs/ENTITY_RESOLUTION.md),
 [`docs/reports/er_report.md`](docs/reports/er_report.md).
 
@@ -44,7 +50,7 @@ canon/store.py     SQLite persistence (records, facts, golden fields, lineage)
 canon/synth        seeded synthetic data generator (tooling)
 canon/score        fact freshness, authority, confidence, conflicts
 canon/mcp_server   permission-aware MCP server (service, schemas, MCPServer tools)
-canon/evals        M5
+canon/evals        before/after eval harness (questions, agents, models, grading, report)
 examples           runnable MCP client
 data/synthetic     generated dataset + hidden ground truth
 docs               plan, decisions, method notes, reports
@@ -58,4 +64,4 @@ docs               plan, decisions, method notes, reports
 | 2. Entity resolution | done: F1 0.991 ([report](docs/reports/er_report.md)) |
 | 3. Fact scoring | done: fact accuracy 0.968 ([method](docs/FACT_SCORING.md)) |
 | 4. MCP server | done: 4 permission-aware tools ([docs](docs/MCP_SERVER.md)) |
-| 5. Eval harness | planned |
+| 5. Eval harness | done: 60% → 97.5% ([report](docs/reports/eval_report.md)) |

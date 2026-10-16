@@ -29,7 +29,7 @@ Dataset: 119 records, 25 true entities, 26 predicted clusters.
 
 ## Robustness: held-out seeds
 
-Regenerated the dataset with seeds 1–50 (same generator, different randomness) — pairwise F1 mean **0.992**, min **0.969**, 50/50 seeds ≥ 0.90. Fact accuracy mean **0.971**, min **0.887**.
+Regenerated the dataset with seeds 1–50 (same generator, different randomness) — pairwise F1 mean **0.994**, min **0.975**, 50/50 seeds ≥ 0.90. Fact accuracy mean **0.976**, min **0.887**.
 
 ## Errors
 

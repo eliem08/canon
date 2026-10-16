@@ -8,6 +8,8 @@ Agent-ready data layer: ingest → resolve → score → serve (MCP) → eval. S
 - `uv run ruff check . && uv run ruff format --check .` — lint/format (CI runs both)
 - `uv run canon generate` — regenerate `data/synthetic` (seeded; tests assert it matches the committed copy)
 - `uv run canon resolve --report` — run entity resolution and print P/R/F1
+- `uv run canon eval [--seeds N] [--model claude]` — before/after eval; refresh `docs/reports/eval_report.md` with
+  `uv run canon eval --seeds 10 --out docs/reports/eval_report.md`
 - `uv run canon serve` — MCP server over stdio; `uv run python examples/mcp_client.py` exercises it
 
 ## Rules

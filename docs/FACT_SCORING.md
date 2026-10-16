@@ -45,7 +45,7 @@ Run: `uv run canon resolve --report --as-of 2026-10-01` (default `as_of` is toda
 
 * Mean confidence is 0.74 on correct answers and 0.09 on wrong ones. Every fact with confidence
   ≥ 0.3 is correct (140/140), and all wrong answers sit below 0.3.
-* Held-out seeds 1–50: mean fact accuracy 0.971, min 0.887.
+* Held-out seeds 1–50: mean fact accuracy 0.976, min 0.887.
 * The 0.962 rows are the unresolved `tmf` Slack singleton, which has no observations for those
   fields.
 

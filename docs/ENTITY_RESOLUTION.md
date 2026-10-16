@@ -18,7 +18,8 @@ Run it: `uv run canon resolve --report [--seeds N]` → `out/golden_records.json
   Vowels, `h`, `w`, `y` and the article (`al`/`el`, attached `ال`/`لل`) are dropped, since Arabic
   does not write short vowels. `Atlas Logistique`, `atlas lojistik` and `أطلس لوجيستيك` all give
   `tls ljstk`.
-* **Acronyms** of Latin names (`Tanger Med Freight` → `tmf`).
+* **Acronyms** of Latin names (`Tanger Med Freight` → `tmf`), with and without company nouns
+  (`Atlantic Fishing Company` → `afc` and `af`).
 
 ## 2. Blocking — `blocking.py`
 Records are compared only if they share a key: 3-char prefix of any skeleton token, 4-char
@@ -74,7 +75,7 @@ alternatives kept).
 | Canon, B-cubed | 1.000 | 0.987 | 0.993 |
 | Baseline, exact normalized name | 1.000 | 0.534 | 0.696 |
 
-Held-out seeds 1–50: mean pairwise F1 0.992, min 0.969. Golden field accuracy: owner,
+Held-out seeds 1–50: mean pairwise F1 0.994, min 0.975. Golden field accuracy: owner,
 contract value and renewal date 1.00; domain/phone/tax id/address 0.96 (the one unresolved record).
 
 ## Known gaps
