@@ -6,7 +6,9 @@ from dataclasses import dataclass
 
 from canon.models import SourceRecord
 from canon.resolve.normalize import (
-    acronym,
+    acronyms as acronyms_of,
+)
+from canon.resolve.normalize import (
     normalize_address,
     normalize_city,
     normalize_name,
@@ -31,7 +33,7 @@ def features(record: SourceRecord) -> RecordFeatures:
     names = [n for n in record.all_names() if n]
     normalized = tuple(dict.fromkeys(x for x in (normalize_name(n) for n in names) if x))
     skeletons = tuple(dict.fromkeys(x for x in (skeleton(n) for n in names) if x))
-    acronyms = tuple(dict.fromkeys(x for x in (acronym(n) for n in names) if len(x) >= 2))
+    acronyms = tuple(sorted({a for n in names for a in acronyms_of(n) if len(a) >= 2}))
     phone = record.phone[-9:] if record.phone else None
     tax_id = "".join(c for c in record.tax_id if c.isdigit()) if record.tax_id else None
     return RecordFeatures(

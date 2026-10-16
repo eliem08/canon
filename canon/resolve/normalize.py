@@ -130,7 +130,28 @@ def skeleton(name: str | None) -> str:
     return " ".join(s for s in sk if s)
 
 
+# Company nouns that people keep in acronyms ("AFC" = Atlantic Fishing Company),
+# unlike legal-form abbreviations (SARL, SA, Ltd), which never appear in them.
+ACRONYM_NOUNS = frozenset({"company", "societe", "group", "groupe", "corp"})
+
+
+def acronyms(name: str | None) -> set[str]:
+    """Initials of a Latin-script name, with and without company nouns."""
+    if not name or has_arabic(name):
+        return set()
+    out = set()
+    core = _tokens(name, drop_article=True)
+    if len(core) >= 2:
+        out.add("".join(t[0] for t in core))
+    words = [t for t in re.findall(r"\w+", fold(name)) if t not in ARTICLES and t not in STOPWORDS]
+    kept = [t for t in words if t not in LEGAL_TOKENS or t in ACRONYM_NOUNS]
+    if len(kept) >= 2:
+        out.add("".join(t[0] for t in kept))
+    return out
+
+
 def acronym(name: str | None) -> str:
+    """Primary acronym (legal forms and company nouns removed)."""
     if not name or has_arabic(name):
         return ""
     tokens = _tokens(name, drop_article=True)

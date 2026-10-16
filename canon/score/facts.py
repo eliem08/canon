@@ -37,8 +37,16 @@ DEFAULT_HALF_LIFE_DAYS = {
     "contract_number": 730,
     "signatory": 365,
     "address": 730,
+    # identity attributes (scored at query time by the MCP service) change rarely
+    "phone": 1095,
+    "domain": 1095,
+    "city": 1095,
+    "tax_id": 3650,
 }
-FACT_FIELDS = tuple(DEFAULT_HALF_LIFE_DAYS)
+FACT_FIELDS = (
+    "owner", "contract_value", "renewal_date", "contract_start", "contract_number",
+    "signatory", "address",
+)  # fmt: skip
 
 
 @dataclass(frozen=True)
