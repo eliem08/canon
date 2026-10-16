@@ -12,12 +12,12 @@
 
 | Agent | Correct | Accuracy | 95% CI (Wilson) | Context read (chars, mean) | Answers that read restricted text |
 |---|---|---|---|---|---|
-| Baseline (BM25 over raw files) | 21/40 | 52.5% | 37%–67% | 1,980 | 27/40 |
+| Baseline (BM25 over raw files) | 23/40 | 57.5% | 42%–71% | 1,980 | 27/40 |
 | Strong RAG (hybrid fuzzy retrieval, multi-query, top 10) | 37/40 | 92.5% | 80%–97% | 3,704 | 35/40 |
 | Oracle retrieval (every raw record of the right customer) | 38/40 | 95.0% | 83%–99% | 2,701 | 40/40 |
-| **Canon (MCP tools)** | 34/40 | 85.0% | 71%–93% | 3,537 | 0/40 |
+| **Canon (MCP tools)** | 34/40 | 85.0% | 71%–93% | 883 | 0/40 |
 
-Lift, Canon vs. baseline: **+32.5 pts**. On the same questions, Canon alone is right on 15 and the baseline alone on 2 (exact McNemar p = 0.0023).
+Lift, Canon vs. baseline: **+27.5 pts**. On the same questions, Canon alone is right on 13 and the baseline alone on 2 (exact McNemar p = 0.0074).
 Canon vs. hybrid: **-7.5 pts**; Canon alone right on 1, hybrid alone on 4 (exact McNemar p = 0.38). This is the comparison to quote: the strongest baseline that does not need Canon or the answer key.
 Canon vs. oracle: **-10.0 pts**; Canon alone right on 1, oracle alone on 5 (exact McNemar p = 0.22). The oracle needs the answer key; it bounds what any retrieval over raw files could do.
 
@@ -26,8 +26,8 @@ Canon vs. oracle: **-10.0 pts**; Canon alone right on 1, oracle alone on 5 (exac
 | Type | Questions | baseline | hybrid | oracle | canon |
 |---|---|---|---|---|---|
 | contract_value | 10 | 60% | 100% | 100% | 90% |
-| renewal_date | 10 | 70% | 100% | 100% | 80% |
-| owner | 10 | 30% | 100% | 90% | 100% |
+| renewal_date | 10 | 80% | 100% | 100% | 80% |
+| owner | 10 | 40% | 100% | 90% | 100% |
 | phone | 5 | 40% | 40% | 80% | 60% |
 | address | 5 | 60% | 100% | 100% | 80% |
 
@@ -35,9 +35,9 @@ Canon vs. oracle: **-10.0 pts**; Canon alone right on 1, oracle alone on 5 (exac
 
 | Failure | baseline | hybrid | oracle | canon |
 |---|---|---|---|---|
-| stale / superseded value of the right customer | 4 | 1 | 2 | 4 |
+| stale / superseded value of the right customer | 3 | 1 | 2 | 4 |
 | value belonging to a different customer | 0 | 0 | 0 | 0 |
-| no answer found | 12 | 2 | 0 | 2 |
+| no answer found | 11 | 2 | 0 | 2 |
 | other | 3 | 0 | 0 | 0 |
 
 Accuracy by how the customer was named:
@@ -47,29 +47,27 @@ Accuracy by how the customer was named:
 | alias | 7 | 14% | 71% | 86% | 86% |
 | arabic | 4 | 50% | 100% | 100% | 75% |
 | canonical | 9 | 89% | 89% | 89% | 67% |
-| darija | 3 | 33% | 100% | 100% | 100% |
+| darija | 3 | 67% | 100% | 100% | 100% |
 | legal | 7 | 86% | 100% | 100% | 100% |
 | lower | 8 | 38% | 100% | 100% | 88% |
-| typo | 2 | 0% | 100% | 100% | 100% |
+| typo | 2 | 50% | 100% | 100% | 100% |
 
 ### Every miss
 
 | Q | Question | Expected | baseline | hybrid | oracle | canon |
 |---|---|---|---|---|---|---|
-| Q03 | Ch7al kaykhalsou f l3am daba, نسيج شفشاون? | `872000` | ✗ `800 000 MAD HT` (stale_value) | ✓ | ✓ | ✗ `800000.0 DH` (stale_value) |
+| Q03 | Ch7al kaykhalsou f l3am daba, نسيج شفشاون? | `872000` | ✗ `800 000 MAD HT` (stale_value) | ✓ | ✓ | ✗ `800000` (stale_value) |
 | Q04 | Quel est le montant annuel actuel du contrat de Rif Cement ? | `1666000` | ✗ `unknown` (no_answer) | ✓ | ✓ | ✓ |
 | Q08 | Ch7al kaykhalsou f l3am daba, atlantic fishing company? | `1858000` | ✗ `unknown` (no_answer) | ✓ | ✓ | ✓ |
 | Q10 | Ch7al kaykhalsou f l3am daba, سوس فريش? | `536000` | ✗ `410 000 MAD HT` (stale_value) | ✓ | ✓ | ✓ |
 | Q11 | When is the contract renewal date for Atlas Logisitque? | `2027-12-01` | ✗ `unknown` (no_answer) | ✓ | ✓ | ✓ |
 | Q12 | Quelle est la date de renouvellement du contrat de Boulangerie Al Baraka ? | `2028-03-01` | ✓ | ✓ | ✓ | ✗ `2025-12-01` (stale_value) |
 | Q13 | Quelle est la date de renouvellement du contrat de Nour Packaging ? | `2027-07-01` | ✓ | ✓ | ✓ | ✗ `2026-01-01` (stale_value) |
-| Q15 | Imta ghadi ytjedded contrat dyal chrikat Medina Pharma? | `2027-08-01` | ✗ `2025-06-01` (stale_value) | ✓ | ✓ | ✓ |
 | Q17 | When is the contract renewal date for Argan d'Or S.A.? | `2027-09-01` | ✗ `unknown` (no_answer) | ✓ | ✓ | ✓ |
 | Q21 | Chkoun l'owner dyal sahara tours? | `Omar Fassi` | ✗ `unknown` (no_answer) | ✓ | ✓ | ✓ |
 | Q23 | Who is the account owner for chrikat Dar El Hana Immobilier? | `Salma El Idrissi` | ✗ `unknown` (no_answer) | ✓ | ✓ | ✓ |
 | Q24 | Chkoun l'owner dyal Rif Cement? | `Youssef Benali` | ✗ `<@U01>` (other) | ✓ | ✗ `Imane Chraibi` (stale_value) | ✓ |
-| Q26 | Qui est le responsable du compte Kasbah Hosptiality Group ? | `Imane Chraibi` | ✗ `unknown` (no_answer) | ✓ | ✓ | ✓ |
-| Q27 | Qui est le responsable du compte argan d'or ? | `Nadia Berrada` | ✗ `U07` (other) | ✓ | ✓ | ✓ |
+| Q27 | Qui est le responsable du compte argan d'or ? | `Nadia Berrada` | ✗ `<@U07>` (other) | ✓ | ✓ | ✓ |
 | Q29 | Qui est le responsable du compte atlantic fishing company ? | `Mehdi Alaoui` | ✗ `<@U05>` (other) | ✓ | ✓ | ✓ |
 | Q30 | Chkoun l'owner dyal Al Massira? | `Salma El Idrissi` | ✗ `unknown` (no_answer) | ✓ | ✓ | ✓ |
 | Q31 | What is the main phone number of Sahara Tech? | `+212592846751` | ✗ `unknown` (no_answer) | ✗ `unknown` (no_answer) | ✓ | ✓ |
