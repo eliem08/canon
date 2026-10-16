@@ -31,6 +31,12 @@ def cmd_resolve(args: argparse.Namespace) -> None:
     as_of = date.fromisoformat(args.as_of) if args.as_of else None
     records, res = build_store(data, out, as_of)
     print(f"{len(records)} records -> {len(res.golden)} golden records in {out}")
+    issues = [i for r in records for i in r.issues]
+    held = sum(i.severity == "quarantined" for i in issues)
+    print(
+        f"parse issues: {held} values quarantined, {len(issues) - held} read under an "
+        f"assumption (details: {out / 'quarantine.json'})"
+    )
     truth_path = data / "ground_truth" / "ground_truth.json"
     if args.report and truth_path.exists():
         from canon.resolve.report import render_report, seed_sweep
@@ -60,6 +66,10 @@ def build_store(data: Path, out: Path, as_of: date | None):
         encoding="utf-8",
     )
     write_store(out / "canon.sqlite", records, res.golden)
+    issues = [i.model_dump() for r in records for i in r.issues]
+    (out / "quarantine.json").write_text(
+        json.dumps(issues, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
     return records, res
 
 

@@ -26,6 +26,10 @@ CREATE TABLE IF NOT EXISTS lineage (
     PRIMARY KEY (entity_id, record_id)
 );
 CREATE TABLE IF NOT EXISTS entities (entity_id TEXT PRIMARY KEY, acl TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS parse_issues (
+    record_id TEXT NOT NULL REFERENCES records(record_id), field TEXT NOT NULL,
+    raw TEXT, reason TEXT NOT NULL, severity TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS scored_facts (
     entity_id TEXT NOT NULL, field TEXT NOT NULL, value TEXT, confidence REAL,
     last_updated TEXT, conflict INTEGER NOT NULL, payload TEXT NOT NULL,
@@ -67,6 +71,14 @@ def write_store(path: Path, records: list[SourceRecord], golden: list[GoldenReco
                 )
                 for r in records
                 for f in r.facts
+            ],
+        )
+        db.executemany(
+            "INSERT INTO parse_issues VALUES (?,?,?,?,?)",
+            [
+                (i.record_id, i.field, i.raw, i.reason, i.severity)
+                for r in records
+                for i in r.issues
             ],
         )
         for g in golden:

@@ -13,15 +13,9 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
-from canon.ingest.common import (
-    DMY_RE,
-    business_domain,
-    date_from_ts,
-    find_emails,
-    find_phones,
-    parse_date,
-    parse_money,
-)
+from canon.ingest.common import business_domain, date_from_ts, find_emails, find_phones
+from canon.ingest.config import IngestConfig
+from canon.ingest.parsing import IssueLog, parse_amount, parse_date
 from canon.models import Fact, SourceRecord
 
 
@@ -39,7 +33,9 @@ class SlackConfig:
 USER_MENTION_RE = re.compile(r"<@(U\w+)>")
 
 
-def load_slack(root: Path, config: SlackConfig | None = None) -> list[SourceRecord]:
+def load_slack(
+    root: Path, config: SlackConfig | None = None, ingest: IngestConfig | None = None
+) -> list[SourceRecord]:
     config = config or SlackConfig()
     root = Path(root)
     users = {
@@ -53,7 +49,7 @@ def load_slack(root: Path, config: SlackConfig | None = None) -> list[SourceReco
         for day_file in sorted((root / channel["name"]).glob("*.json")):
             messages.extend(json.loads(day_file.read_text(encoding="utf-8")))
         messages.sort(key=lambda m: float(m["ts"]))
-        records.append(channel_to_record(channel, messages, users, config, str(root)))
+        records.append(channel_to_record(channel, messages, users, config, str(root), ingest))
     return records
 
 
@@ -73,9 +69,17 @@ def _strip_prefix(text: str, prefixes: tuple[str, ...]) -> str:
 
 
 def channel_to_record(
-    channel: dict, messages: list[dict], users: dict[str, str], config: SlackConfig, locator: str
+    channel: dict,
+    messages: list[dict],
+    users: dict[str, str],
+    config: SlackConfig,
+    locator: str,
+    ingest: IngestConfig | None = None,
 ) -> SourceRecord:
+    ingest = ingest or IngestConfig()
+    dayfirst = ingest.dayfirst is not False
     rid = f"slack:{channel['id']}"
+    log = IssueLog(rid)
     archived = bool(channel.get("is_archived"))
     purpose = (channel.get("purpose") or {}).get("value") or ""
     alt = [_strip_prefix(purpose, config.purpose_prefixes)] if purpose else []
@@ -85,15 +89,14 @@ def channel_to_record(
         when = date_from_ts(msg["ts"])
         low = text.lower()
         emails += find_emails(text)
-        if not DMY_RE.search(text):
-            phones += find_phones(text)
+        phones += find_phones(text, ingest.default_country)
         mention = USER_MENTION_RE.search(text)
         if mention and any(c in low for c in config.owner_cues):
             owner = users.get(mention.group(1))
             if owner:
                 facts.append(Fact(field="owner", value=owner, observed_at=when, record_id=rid))
         elif any(c in low for c in config.renewal_cues):
-            renewal = parse_date(text)
+            renewal = log.take("renewal_date", parse_date(text, dayfirst=dayfirst))
             if renewal:
                 facts.append(
                     Fact(
@@ -104,10 +107,15 @@ def channel_to_record(
                     )
                 )
         elif any(c in low for c in config.value_cues):
-            value = parse_money(text)
-            if value and value >= 1000:
+            amount = log.take(
+                "contract_value",
+                parse_amount(text, expected_currency=ingest.currency, require_marker=True),
+            )
+            if amount:
                 facts.append(
-                    Fact(field="contract_value", value=value, observed_at=when, record_id=rid)
+                    Fact(
+                        field="contract_value", value=amount.value, observed_at=when, record_id=rid
+                    )
                 )
     domains = [d for d in (business_domain(e) for e in emails) if d]
     last = date_from_ts(messages[-1]["ts"]) if messages else None
@@ -124,4 +132,5 @@ def channel_to_record(
         updated_at=last,
         facts=facts,
         acl=list(config.archived_acl if archived else config.acl),
+        issues=log.items,
     )

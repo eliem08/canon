@@ -10,7 +10,9 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from canon.ingest.common import business_domain, find_emails, normalize_phone, parse_date
+from canon.ingest.common import business_domain, find_emails
+from canon.ingest.config import IngestConfig
+from canon.ingest.parsing import IssueLog, parse_amount, parse_date, parse_phone
 from canon.models import Fact, SourceRecord
 
 DEFAULT_CONTRACT_ACL = ("legal", "exec")
@@ -18,15 +20,19 @@ DEFAULT_CONTRACT_ACL = ("legal", "exec")
 PATTERNS = {
     "number": r"(?:Contrat N°|Agreement No)\s*:?\s*(\S+)",
     "version": r"^Version\s*:?\s*(\d+)",
-    "signed": r"(?:Date de signature|Signature date)\s*:?\s*(\d{1,2}/\d{1,2}/\d{4})",
+    "signed": r"(?:Date de signature|Signature date)\s*:?\s*([^\n]+)",
     "party": r"^(?:Le Client|Customer)\s*:\s*(.+)$",
     "party_ar": r"^الطرف الثاني\s*:\s*(.+)$",
     "tax_id": r"(?:ICE|Tax ID \(ICE\))\s*:?\s*(\d{15})",
     "address": r"^(?:Siège social|Registered office)\s*:\s*(.+)$",
     "contact": r"^Contact\s*:\s*(.+)$",
-    "value": r"(?:montant annuel est fixé à|annual fee is)\s*([\d .,  ]+)\s*MAD",
-    "start": r"(?:Date d'effet|Effective date)\s*:\s*(\d{1,2}/\d{1,2}/\d{4})",
-    "renewal": r"(?:Date de renouvellement|Renewal date)\s*:\s*(\d{1,2}/\d{1,2}/\d{4})",
+    # amounts and dates are captured loosely and validated by canon.ingest.parsing
+    "value": r"(?:montant annuel est fixé à|annual fee is)\s*([^\n]+?)(?:\.\s|\.?\s*$)",
+    "start": (
+        r"(?:Date d'effet|Effective date)\s*:\s*([^\n]*?)"
+        r"(?=\.?\s*(?:Date de renouvellement|Renewal date)|\.?\s*$)"
+    ),
+    "renewal": r"(?:Date de renouvellement|Renewal date)\s*:\s*([^\n]*?)\.?\s*$",
     "signatory": r"^(?:Représenté par|Represented by)\s*:\s*(.+)$",
     "supersedes": r"(?:annule et remplace|supersedes and replaces)\s+(?:la\s+)?version\s+(\d+)",
 }
@@ -37,9 +43,23 @@ def _grab(text: str, key: str) -> str | None:
     return m.group(1).strip() if m else None
 
 
-def parse_contract(text: str, record_id: str, locator: str, acl=DEFAULT_CONTRACT_ACL) -> dict:
+def parse_contract(
+    text: str,
+    record_id: str,
+    locator: str,
+    acl=DEFAULT_CONTRACT_ACL,
+    config: IngestConfig | None = None,
+) -> dict:
     """Return parsed fields plus a draft record (status fixed up by `load_contracts`)."""
-    signed = parse_date(_grab(text, "signed"))
+    config = config or IngestConfig()
+    dayfirst = config.dayfirst is not False
+    log = IssueLog(record_id)
+
+    def date_of(key: str, field: str):
+        raw = _grab(text, key)
+        return log.take(field, parse_date(raw, dayfirst=dayfirst)) if raw else None
+
+    signed = date_of("signed", "signature_date")
     address_line = _grab(text, "address")
     address, city = address_line, None
     if address_line and "," in address_line:
@@ -47,14 +67,23 @@ def parse_contract(text: str, record_id: str, locator: str, acl=DEFAULT_CONTRACT
     contact = _grab(text, "contact") or ""
     emails = find_emails(contact)
     phone_part = re.split(r"T[ée]l\s*:", contact)
-    phone = normalize_phone(phone_part[1]) if len(phone_part) > 1 else None
+    phone = (
+        log.take("phone", parse_phone(phone_part[1], config.default_country))
+        if len(phone_part) > 1
+        else None
+    )
     raw_value = _grab(text, "value")
-    value = float(re.sub(r"\D", "", raw_value)) if raw_value else None
+    amount = (
+        log.take("contract_value", parse_amount(raw_value, expected_currency=config.currency), True)
+        if raw_value
+        else None
+    )
+    value = amount.value if amount else None
     facts = []
 
     number = _grab(text, "number")
-    start = parse_date(_grab(text, "start"))
-    renewal = parse_date(_grab(text, "renewal"))
+    start = date_of("start", "contract_start")
+    renewal = date_of("renewal", "renewal_date")
 
     def fact(name: str, v) -> None:
         # Contract terms are asserted for the whole contract period.
@@ -90,6 +119,7 @@ def parse_contract(text: str, record_id: str, locator: str, acl=DEFAULT_CONTRACT
         updated_at=signed,
         facts=facts,
         acl=list(acl),
+        issues=log.items,
     )
     version = _grab(text, "version")
     supersedes = _grab(text, "supersedes")
@@ -101,9 +131,11 @@ def parse_contract(text: str, record_id: str, locator: str, acl=DEFAULT_CONTRACT
     }
 
 
-def load_contracts(root: Path, acl=DEFAULT_CONTRACT_ACL) -> list[SourceRecord]:
+def load_contracts(
+    root: Path, acl=DEFAULT_CONTRACT_ACL, config: IngestConfig | None = None
+) -> list[SourceRecord]:
     parsed = [
-        parse_contract(p.read_text(encoding="utf-8"), f"contract:{p.stem}", str(p), acl)
+        parse_contract(p.read_text(encoding="utf-8"), f"contract:{p.stem}", str(p), acl, config)
         for p in sorted(Path(root).glob("*.txt"))
     ]
     by_number: dict[str, list[dict]] = {}
