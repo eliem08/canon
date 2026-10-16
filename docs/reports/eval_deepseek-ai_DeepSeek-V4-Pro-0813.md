@@ -15,7 +15,7 @@
 | Baseline (BM25 over raw files) | 23/40 | 57.5% | 42%–71% | 1,980 | 0/40 |
 | Strong RAG (hybrid fuzzy retrieval, multi-query, top 10) | 37/40 | 92.5% | 80%–97% | 3,704 | 0/40 |
 | Oracle retrieval (every raw record of the right customer) | 38/40 | 95.0% | 83%–99% | 2,701 | 0/40 |
-| **Canon (MCP tools)** | 39/40 | 97.5% | 87%–100% | 7,234 | 0/40 |
+| **Canon (MCP tools)** | 39/40 | 97.5% | 87%–100% | 1,346 | 0/40 |
 
 Lift, Canon vs. baseline: **+40.0 pts**. On the same questions, Canon alone is right on 16 and the baseline alone on 0 (exact McNemar p = 3.1e-05).
 Canon vs. hybrid: **+5.0 pts**; Canon alone right on 2, hybrid alone on 0 (exact McNemar p = 0.5). This is the comparison to quote: the strongest baseline that does not need Canon or the answer key.
@@ -59,7 +59,7 @@ Accuracy by how the customer was named:
 | Q03 | Ch7al kaykhalsou f l3am daba, نسيج شفشاون? | `872000` | ✗ `800 000 MAD HT` (stale_value) | ✓ | ✓ | ✓ |
 | Q04 | Quel est le montant annuel actuel du contrat de Rif Cement ? | `1666000` | ✗ `unknown` (no_answer) | ✓ | ✓ | ✓ |
 | Q08 | Ch7al kaykhalsou f l3am daba, atlantic fishing company? | `1858000` | ✗ `unknown` (no_answer) | ✓ | ✓ | ✓ |
-| Q10 | Ch7al kaykhalsou f l3am daba, سوس فريش? | `536000` | ✗ `410 000 MAD` (stale_value) | ✓ | ✓ | ✓ |
+| Q10 | Ch7al kaykhalsou f l3am daba, سوس فريش? | `536000` | ✗ `410 000 MAD HT` (stale_value) | ✓ | ✓ | ✓ |
 | Q11 | When is the contract renewal date for Atlas Logisitque? | `2027-12-01` | ✗ `unknown` (no_answer) | ✓ | ✓ | ✓ |
 | Q17 | When is the contract renewal date for Argan d'Or S.A.? | `2027-09-01` | ✗ `unknown` (no_answer) | ✓ | ✓ | ✓ |
 | Q21 | Chkoun l'owner dyal sahara tours? | `Omar Fassi` | ✗ `unknown` (no_answer) | ✓ | ✓ | ✓ |
