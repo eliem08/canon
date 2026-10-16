@@ -9,7 +9,8 @@ See [`docs/PLAN.md`](docs/PLAN.md) for the architecture and milestones and
 
 Selling it: [`docs/AUDIT_SCOPE.md`](docs/AUDIT_SCOPE.md) (the MCP Readiness Audit, draft) and
 [`docs/DATA_REQUEST.md`](docs/DATA_REQUEST.md) (what to ask a design partner for). Ingestion refuses values it
-cannot read safely and lists them for review: [`docs/PARSING.md`](docs/PARSING.md).
+cannot read safely and lists them for review: [`docs/PARSING.md`](docs/PARSING.md). Facts in messages are
+extracted by cue/blocker rules, and every fact cites its message, page or row: [`docs/EXTRACTION.md`](docs/EXTRACTION.md).
 
 ## Quickstart
 
@@ -33,7 +34,8 @@ and the Canon agent 90-97.5%. Contract values, renewal dates and owners are 100%
 Canon. Details: [`docs/EVALS.md`](docs/EVALS.md), [`docs/reports/eval_report.md`](docs/reports/eval_report.md).
 
 Entity resolution on the synthetic set (119 records, 25 customers): **pairwise F1 0.991**
-(P 1.000 / R 0.983), versus 0.696 for exact-name matching; mean F1 0.994 over 50 held-out seeds.
+(P 1.000 / R 0.983), versus 0.696 for exact-name matching; mean F1 0.991 over 50 held-out seeds;
+50 adversarial pairs (generic shop names, other cities, FR/AR translations): P 1.000 / R 0.962.
 Details: [`docs/ENTITY_RESOLUTION.md`](docs/ENTITY_RESOLUTION.md),
 [`docs/reports/er_report.md`](docs/reports/er_report.md).
 

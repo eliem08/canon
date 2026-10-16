@@ -236,6 +236,19 @@
    "expect": null
   },
   {
+   "id": "mo40",
+   "kind": "money",
+   "raw": "signé en 2028, 2,6 M MAD",
+   "expect": null,
+   "note": "year and amount separated by ', ' are two numbers, not one token"
+  },
+  {
+   "id": "mo41",
+   "kind": "money",
+   "raw": "2,6 M MAD",
+   "expect": 2600000
+  },
+  {
    "id": "da01",
    "kind": "date",
    "raw": "2027-04-01",

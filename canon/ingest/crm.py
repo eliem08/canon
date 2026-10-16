@@ -82,7 +82,15 @@ def crm_row_to_record(
 
     def fact(name: str, value) -> None:
         if value not in (None, ""):
-            facts.append(Fact(field=name, value=value, observed_at=modified, record_id=rid))
+            facts.append(
+                Fact(
+                    field=name,
+                    value=value,
+                    observed_at=modified,
+                    record_id=rid,
+                    source_ref=f"{locator}#id={row[fields.id]}",
+                )
+            )
 
     fact("owner", row.get(fields.owner))
     row_currency = (row.get(fields.currency) or "").strip().upper() or None

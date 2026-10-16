@@ -43,6 +43,20 @@ def _grab(text: str, key: str) -> str | None:
     return m.group(1).strip() if m else None
 
 
+def _where(text: str, key: str, locator: str) -> tuple[str | None, str | None]:
+    """(`file#p<page>:L<line>`, the line's text) for a pattern; pages are split by form feeds."""
+    m = re.search(PATTERNS[key], text, re.MULTILINE | re.IGNORECASE)
+    if not m:
+        return None, None
+    before = text[: m.start(1)]
+    page = before.count("\f") + 1
+    line_start = max(before.rfind("\n"), before.rfind("\f")) + 1
+    line = before.split("\f")[-1].count("\n") + 1
+    end = text.find("\n", m.start(1))
+    quote = text[line_start : end if end != -1 else len(text)].strip()
+    return f"{locator}#p{page}:L{line}", quote[:300]
+
+
 def parse_contract(
     text: str,
     record_id: str,
@@ -85,9 +99,10 @@ def parse_contract(
     start = date_of("start", "contract_start")
     renewal = date_of("renewal", "renewal_date")
 
-    def fact(name: str, v) -> None:
+    def fact(name: str, v, key: str) -> None:
         # Contract terms are asserted for the whole contract period.
         if v not in (None, ""):
+            ref, quote = _where(text, key, locator)
             facts.append(
                 Fact(
                     field=name,
@@ -95,15 +110,17 @@ def parse_contract(
                     observed_at=signed,
                     valid_until=renewal,
                     record_id=record_id,
+                    source_ref=ref,
+                    quote=quote,
                 )
             )
 
-    fact("contract_number", number)
-    fact("contract_value", value)
-    fact("contract_start", start.isoformat() if start else None)
-    fact("renewal_date", renewal.isoformat() if renewal else None)
-    fact("signatory", _grab(text, "signatory"))
-    fact("address", address)
+    fact("contract_number", number, "number")
+    fact("contract_value", value, "value")
+    fact("contract_start", start.isoformat() if start else None, "start")
+    fact("renewal_date", renewal.isoformat() if renewal else None, "renewal")
+    fact("signatory", _grab(text, "signatory"), "signatory")
+    fact("address", address, "address")
     record = SourceRecord(
         record_id=record_id,
         source="contract",

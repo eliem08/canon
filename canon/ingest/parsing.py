@@ -78,10 +78,10 @@ MULTIPLIERS = (
 )
 _MULT_RE = "|".join(p for p, _ in MULTIPLIERS)
 # A number: digit groups with optional separators. Validation happens in _number().
-_NUM = r"\d[\d.,' ]*\d|\d"
-# Digits glued to letters before them ("m3a", "l3am" in Darija) are not numbers.
+_NUM = r"\d(?:\d|[.,' ](?=\d))*"  # a separator must sit between digits
+# Digits glued to a word before them ("m3a" in Darija, "U07" in a mention) are not numbers.
 _AMOUNT_RE = re.compile(
-    rf"(?<![^\W\d_])(?P<sign>-(?=\d)|\(\s*)?(?P<num>{_NUM})"
+    rf"(?<![^\W_])(?P<sign>-(?=\d)|\(\s*)?(?P<num>{_NUM})"
     rf"(?:\s*(?P<mult>{_MULT_RE})(?![^\W\d_]))?(?P<tail>[^\W\d_]*)",
     re.IGNORECASE,
 )
@@ -156,7 +156,7 @@ def find_amounts(text: str, require_marker: bool = False) -> list[Parsed[Amount]
     if require_marker:  # free text: dates, percentages and phone-like runs are not amounts
         scrub = re.sub(
             r"(?<![\d.,])(?:\d{1,4}[/.\-]\d{1,2}[/.\-]\d{2,4}"
-            r"|\d+(?:[.,]\d+)?\s*%|\+\d[\d ]{7,})(?![\d.,])",
+            r"|\d+(?:[.,]\d+)?\s*%|\+\d[\d ]{7,})(?![.,]?\d)",
             " ",
             clean,
         )

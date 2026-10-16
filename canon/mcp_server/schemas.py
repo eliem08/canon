@@ -19,6 +19,10 @@ class SourceRef(BaseModel):
     observed_at: date | None
     value: str | float | int
     weight: float = Field(description="authority x freshness of this observation, in [0, 1]")
+    source_ref: str | None = Field(
+        default=None, description="Position inside the source: message ts, page/line, CRM row"
+    )
+    quote: str | None = Field(default=None, description="Source text the value was read from")
 
 
 class Alternative(BaseModel):

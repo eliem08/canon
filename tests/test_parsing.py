@@ -191,6 +191,9 @@ def test_free_text_amounts_ignore_darija_words_dates_and_years():
         == 450_000
     )
     assert find_amounts("rappel: meeting ghda 10h, 3 personnes", require_marker=True) == []
+    # a date followed by punctuation, and digits inside a user mention, are not amounts
+    found = find_amounts("contrat: 820k MAD/an, renouvellement le 01/09/2028, owner <@U07>", True)
+    assert [p.value.value for p in found] == [820_000]
 
 
 def test_free_text_phones_drop_amounts_and_dates():

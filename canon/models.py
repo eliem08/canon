@@ -21,6 +21,10 @@ class Fact(BaseModel):
         default=None, description="End of the period the source asserts it for (e.g. contract term)"
     )
     record_id: str
+    source_ref: str | None = Field(
+        default=None, description="Where inside the record: message ts, file page/line, CRM row"
+    )
+    quote: str | None = Field(default=None, description="The source text the value was read from")
 
 
 class ParseIssue(BaseModel):
@@ -85,6 +89,8 @@ class Evidence(BaseModel):
     freshness: float
     weight: float  # authority x freshness, in [0, 1]
     acl: list[str] = Field(default_factory=list)
+    source_ref: str | None = None
+    quote: str | None = None
 
 
 class ScoredValue(BaseModel):

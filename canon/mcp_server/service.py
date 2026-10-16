@@ -250,6 +250,8 @@ class CanonService:
             observed_at=e.observed_at,
             value=e.value,
             weight=e.weight,
+            source_ref=e.source_ref,
+            quote=e.quote,
         )
 
     def _answer(self, fact: ResolvedFact) -> Answer:

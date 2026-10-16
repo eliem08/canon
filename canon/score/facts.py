@@ -126,7 +126,7 @@ def score_field(
             ev = Evidence(
                 record_id=r.record_id, source=r.source, status=r.status, value=f.value,
                 observed_at=f.observed_at, authority=round(a, 4), freshness=round(fr, 4),
-                weight=round(a * fr, 4), acl=list(r.acl),
+                weight=round(a * fr, 4), acl=list(r.acl), source_ref=f.source_ref, quote=f.quote,
             )  # fmt: skip
             for g in groups:
                 if _same(g[0].value, f.value, config.numeric_tolerance):
