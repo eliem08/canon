@@ -186,6 +186,7 @@ class OpenAICompatibleModel:
         proxy_credentials: bool = False,
         retries: int = 3,
         backoff: float = 2.0,
+        require_key: bool = True,
     ) -> None:
         if not model:
             raise ValueError("model id is required (e.g. --model-id <provider model slug>)")
@@ -200,6 +201,8 @@ class OpenAICompatibleModel:
         self.backoff = backoff
         # True when the network proxy injects the Authorization header (cloud secrets).
         self.proxy_credentials = proxy_credentials
+        # False for a model the client hosts itself (vLLM, Ollama, ...) that needs no key.
+        self.require_key = require_key
 
     @classmethod
     def preset(cls, provider: str, model: str, **kwargs) -> OpenAICompatibleModel:
@@ -227,7 +230,7 @@ class OpenAICompatibleModel:
         import os
 
         key = os.environ.get(self.api_key_env)
-        if not key and not self.proxy_credentials:
+        if not key and self.require_key and not self.proxy_credentials:
             raise RuntimeError(f"Set the {self.api_key_env} environment variable")
         headers = {"Authorization": f"Bearer {key}"} if key else {}
         data = self._post_with_retry(

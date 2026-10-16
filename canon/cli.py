@@ -134,6 +134,15 @@ def cmd_eval(args: argparse.Namespace) -> None:
         model = StubModel()
     elif args.model == "claude":
         model = ClaudeModel(args.model_id or "claude-opus-5-5")
+    elif args.model == "openai-compatible":  # e.g. a model the client hosts: no data leaves
+        if not args.model_id or not args.base_url:
+            raise SystemExit("--model openai-compatible needs --model-id and --base-url")
+        model = OpenAICompatibleModel(
+            args.model_id,
+            args.base_url,
+            args.api_key_env,
+            require_key=bool(os.environ.get(args.api_key_env)),
+        )
     else:  # an OpenAI-compatible provider preset, e.g. baseten
         if not args.model_id:
             raise SystemExit(f"--model-id is required with --model {args.model}")
@@ -213,7 +222,15 @@ def main(argv: list[str] | None = None) -> None:
 
     e = sub.add_parser("eval", help="before/after eval: raw-file RAG agent vs. Canon MCP agent")
     e.add_argument("--data", default=str(_data_dir()))
-    e.add_argument("--model", choices=["stub", "claude", "baseten"], default="stub")
+    e.add_argument(
+        "--model", choices=["stub", "claude", "baseten", "openai-compatible"], default="stub"
+    )
+    e.add_argument(
+        "--base-url", default=None, help="openai-compatible: e.g. http://llm.internal:8000/v1"
+    )
+    e.add_argument(
+        "--api-key-env", default="OPENAI_API_KEY", help="openai-compatible: env var with the key"
+    )
     e.add_argument(
         "--model-id",
         default=None,

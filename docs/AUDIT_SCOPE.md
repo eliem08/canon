@@ -30,9 +30,9 @@ See [`DATA_REQUEST.md`](DATA_REQUEST.md). In short:
 ## How it runs
 - **Offline batch, not a hosted product.** We ingest an export, run resolution and scoring, and produce the report. There is no live connection to their systems.
 - **Where the data is processed [FOUNDER DECISION]:**
-  - (A) On the client's machine or VPC. We ship a container and run it with them. This is the strongest data posture; packaging is **(not built yet)**.
+  - (A) On the client's machine or VPC. We ship a container and run it with them. This is the strongest data posture. A container image runs ingestion with `--network none` ([`DEPLOY.md`](DEPLOY.md)).
   - (B) On our infrastructure under a signed DPA, with deletion at the end.
-- **Third-party LLMs** are used only with written consent, otherwise a local model. A local-model mode is **(not built yet)**; the eval currently calls hosted APIs.
+- **Third-party LLMs** are used only with written consent. Otherwise the eval uses a model the client hosts behind an OpenAI-compatible API (`--model openai-compatible --base-url ...`), and no data leaves their network. Ingestion, resolution and serving use no LLM at all.
 
 ## Proposed timeline (10 working days) [FOUNDER DECISION]
 

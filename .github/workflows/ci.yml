@@ -19,3 +19,16 @@ jobs:
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run pytest -q
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t canon .
+      - name: Offline resolve inside the image
+        run: |
+          mkdir -m 777 out
+          docker run --rm --network none -v "$PWD/data/synthetic:/data:ro" -v "$PWD/out:/out" \
+            canon resolve --as-of 2026-10-01 | tee resolve.log
+          grep -q "26 golden records" resolve.log
+          test -s out/canon.sqlite

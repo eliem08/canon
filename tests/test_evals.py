@@ -244,3 +244,19 @@ def test_report_quotes_canon_against_the_strong_baseline(run):
     report = render_report(run)
     assert "Canon vs. hybrid" in report and "Context read" in report
     assert run.accuracy("canon") > run.accuracy("hybrid") >= run.accuracy("baseline") - 0.05
+
+
+def test_client_hosted_model_needs_no_key(monkeypatch):
+    from canon.evals.models import OpenAICompatibleModel
+
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    sent = {}
+
+    def post(url, payload, headers, timeout):
+        sent.update(url=url, headers=headers)
+        return {"choices": [{"message": {"content": "461000"}}]}
+
+    m = OpenAICompatibleModel("local", "http://llm.internal:8000/v1/", "OPENAI_API_KEY",
+                              post=post, require_key=False)  # fmt: skip
+    assert m.answer("q", "c") == "461000"
+    assert sent == {"url": "http://llm.internal:8000/v1/chat/completions", "headers": {}}
