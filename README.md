@@ -7,6 +7,10 @@ and exposes them through a permission-aware MCP server.
 See [`docs/PLAN.md`](docs/PLAN.md) for the architecture and milestones and
 [`docs/DECISIONS.md`](docs/DECISIONS.md) for recorded design choices.
 
+Selling it: [`docs/AUDIT_SCOPE.md`](docs/AUDIT_SCOPE.md) (the MCP Readiness Audit, draft) and
+[`docs/DATA_REQUEST.md`](docs/DATA_REQUEST.md) (what to ask a design partner for). Ingestion refuses values it
+cannot read safely and lists them for review: [`docs/PARSING.md`](docs/PARSING.md).
+
 ## Quickstart
 
 ```bash

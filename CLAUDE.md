@@ -29,3 +29,5 @@ Agent-ready data layer: ingest → resolve → score → serve (MCP) → eval. S
 - Fact scoring: `docs/FACT_SCORING.md`; tunables in `canon/score/facts.py::FactScoringConfig`.
 - MCP server: `docs/MCP_SERVER.md`; ACLs are enforced in `canon/mcp_server/service.py` *before* scoring —
   never answer from precomputed golden facts in a caller-facing path.
+- Value parsing: `canon/ingest/parsing.py` (`docs/PARSING.md`). Never guess a value: refuse it with a reason code
+  (`ParseIssue`) and add an adversarial case to `tests/fixtures/parsing_cases.json` for every new format.
