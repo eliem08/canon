@@ -15,7 +15,7 @@
 | Baseline (BM25 over raw files) | 22/40 | 55.0% | 40%–69% | 1,980 | 0/40 |
 | Strong RAG (hybrid fuzzy retrieval, multi-query, top 10) | 37/40 | 92.5% | 80%–97% | 3,704 | 0/40 |
 | Oracle retrieval (every raw record of the right customer) | 38/40 | 95.0% | 83%–99% | 2,701 | 0/40 |
-| **Canon (MCP tools)** | 39/40 | 97.5% | 87%–100% | 7,234 | 0/40 |
+| **Canon (MCP tools)** | 39/40 | 97.5% | 87%–100% | 1,346 | 0/40 |
 
 Lift, Canon vs. baseline: **+42.5 pts**. On the same questions, Canon alone is right on 17 and the baseline alone on 0 (exact McNemar p = 1.5e-05).
 Canon vs. hybrid: **+5.0 pts**; Canon alone right on 2, hybrid alone on 0 (exact McNemar p = 0.5). This is the comparison to quote: the strongest baseline that does not need Canon or the answer key.
@@ -37,8 +37,8 @@ Canon vs. oracle: **+2.5 pts**; Canon alone right on 1, oracle alone on 0 (exact
 |---|---|---|---|---|
 | stale / superseded value of the right customer | 4 | 1 | 2 | 1 |
 | value belonging to a different customer | 0 | 0 | 0 | 0 |
-| no answer found | 10 | 2 | 0 | 0 |
-| other | 4 | 0 | 0 | 0 |
+| no answer found | 11 | 2 | 0 | 0 |
+| other | 3 | 0 | 0 | 0 |
 
 Accuracy by how the customer was named:
 
@@ -64,9 +64,9 @@ Accuracy by how the customer was named:
 | Q15 | Imta ghadi ytjedded contrat dyal chrikat Medina Pharma? | `2027-08-01` | ✗ `2025-06-01` (stale_value) | ✓ | ✓ | ✓ |
 | Q17 | When is the contract renewal date for Argan d'Or S.A.? | `2027-09-01` | ✗ `unknown` (no_answer) | ✓ | ✓ | ✓ |
 | Q21 | Chkoun l'owner dyal sahara tours? | `Omar Fassi` | ✗ `unknown` (no_answer) | ✓ | ✓ | ✓ |
-| Q23 | Who is the account owner for chrikat Dar El Hana Immobilier? | `Salma El Idrissi` | ✗ `U03` (other) | ✓ | ✓ | ✓ |
-| Q24 | Chkoun l'owner dyal Rif Cement? | `Youssef Benali` | ✗ `rif cement` (other) | ✓ | ✗ `Imane Chraibi` (stale_value) | ✓ |
-| Q27 | Qui est le responsable du compte argan d'or ? | `Nadia Berrada` | ✗ `U07` (other) | ✓ | ✓ | ✓ |
+| Q23 | Who is the account owner for chrikat Dar El Hana Immobilier? | `Salma El Idrissi` | ✗ `unknown` (no_answer) | ✓ | ✓ | ✓ |
+| Q24 | Chkoun l'owner dyal Rif Cement? | `Youssef Benali` | ✗ `<@U01>` (other) | ✓ | ✗ `Imane Chraibi` (stale_value) | ✓ |
+| Q27 | Qui est le responsable du compte argan d'or ? | `Nadia Berrada` | ✗ `<@U07>` (other) | ✓ | ✓ | ✓ |
 | Q29 | Qui est le responsable du compte atlantic fishing company ? | `Mehdi Alaoui` | ✗ `<@U05>` (other) | ✓ | ✓ | ✓ |
 | Q30 | Chkoun l'owner dyal Al Massira? | `Salma El Idrissi` | ✗ `unknown` (no_answer) | ✓ | ✓ | ✓ |
 | Q31 | What is the main phone number of Sahara Tech? | `+212592846751` | ✗ `unknown` (no_answer) | ✗ `unknown` (no_answer) | ✓ | ✓ |
