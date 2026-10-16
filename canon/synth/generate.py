@@ -24,6 +24,17 @@ from pathlib import Path
 from canon.synth.seeds import REPS, SEEDS, SIGNATORIES, CustomerSeed
 
 REFERENCE_DATE = date(2026, 10, 1)
+# Fictional callers of the MCP server and the ACL groups they belong to.
+# Sources carry ACLs: CRM -> sales, exec; Slack -> sales; contracts -> legal, exec.
+IDENTITIES = {
+    "callers": {
+        **{name.lower().replace(" ", "."): {"name": name, "groups": ["sales"]} for _, name in REPS},
+        "hind.legal": {"name": "Hind Amrani (legal counsel)", "groups": ["legal"]},
+        "ceo": {"name": "Chief Executive Officer", "groups": ["exec"]},
+        "revops.admin": {"name": "RevOps admin", "groups": ["sales", "legal", "exec"]},
+        "intern": {"name": "Summer intern", "groups": []},
+    }
+}
 DEFAULT_SEED = 20261001
 VENDOR = "Tadamon Solutions SARL"
 
@@ -578,6 +589,7 @@ class Generator:
             "record_notes": dict(sorted(self.notes.items())),
         }
         _write_json(out_dir / "ground_truth" / "ground_truth.json", truth)
+        _write_json(out_dir / "identities.json", IDENTITIES)
         return truth
 
 

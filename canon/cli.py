@@ -24,21 +24,12 @@ def cmd_generate(args: argparse.Namespace) -> None:
 def cmd_resolve(args: argparse.Namespace) -> None:
     import json
 
-    from canon.ingest import load_all
-    from canon.resolve.pipeline import ResolverConfig, resolve
+    from canon.resolve.pipeline import ResolverConfig
     from canon.score import FactScoringConfig
-    from canon.store import write_store
 
     data, out = Path(args.data), Path(args.out)
-    records = load_all(data)
     as_of = date.fromisoformat(args.as_of) if args.as_of else None
-    res = resolve(records, ResolverConfig(facts=FactScoringConfig(as_of=as_of)))
-    out.mkdir(parents=True, exist_ok=True)
-    (out / "golden_records.json").write_text(
-        json.dumps([g.model_dump(mode="json") for g in res.golden], ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
-    write_store(out / "canon.sqlite", records, res.golden)
+    records, res = build_store(data, out, as_of)
     print(f"{len(records)} records -> {len(res.golden)} golden records in {out}")
     truth_path = data / "ground_truth" / "ground_truth.json"
     if args.report and truth_path.exists():
@@ -50,6 +41,42 @@ def cmd_resolve(args: argparse.Namespace) -> None:
         report = render_report(records, res, truth, sweep)
         (out / "er_report.md").write_text(report, encoding="utf-8")
         print(report)
+
+
+def build_store(data: Path, out: Path, as_of: date | None):
+    """Ingest + resolve + score, persist to out/canon.sqlite; returns (records, resolution)."""
+    import json
+
+    from canon.ingest import load_all
+    from canon.resolve.pipeline import ResolverConfig, resolve
+    from canon.score import FactScoringConfig
+    from canon.store import write_store
+
+    records = load_all(data)
+    res = resolve(records, ResolverConfig(facts=FactScoringConfig(as_of=as_of)))
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "golden_records.json").write_text(
+        json.dumps([g.model_dump(mode="json") for g in res.golden], ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    write_store(out / "canon.sqlite", records, res.golden)
+    return records, res
+
+
+def cmd_serve(args: argparse.Namespace) -> None:
+    from canon.mcp_server import CallerDirectory, CanonService, ServiceConfig, build_server
+    from canon.score import FactScoringConfig
+
+    as_of = date.fromisoformat(args.as_of) if args.as_of else None
+    store = Path(args.store)
+    if args.rebuild or not store.exists():
+        build_store(Path(args.data), store.parent, as_of)  # never print: stdout is the MCP channel
+    service = CanonService.from_store(
+        store,
+        CallerDirectory.from_file(Path(args.identities)),
+        ServiceConfig(facts=FactScoringConfig(as_of=as_of)),
+    )
+    build_server(service, pinned_caller=args.caller).run()
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -68,6 +95,21 @@ def main(argv: list[str] | None = None) -> None:
     r.add_argument("--seeds", type=int, default=0, help="also sweep N held-out seeds")
     r.add_argument("--as-of", default=None, help="reference date for freshness (default: today)")
     r.set_defaults(func=cmd_resolve)
+
+    s = sub.add_parser("serve", help="run the permission-aware MCP server over stdio")
+    s.add_argument("--data", default=str(_data_dir()))
+    s.add_argument(
+        "--store", default=str(Path(os.environ.get("CANON_OUT_DIR", "out")) / "canon.sqlite")
+    )
+    s.add_argument("--identities", default=str(_data_dir() / "identities.json"))
+    s.add_argument("--as-of", default=None, help="reference date for freshness (default: today)")
+    s.add_argument("--rebuild", action="store_true", help="rebuild the store from --data first")
+    s.add_argument(
+        "--caller",
+        default=None,
+        help="pin every request to this identity (ignore the tool argument)",
+    )
+    s.set_defaults(func=cmd_serve)
 
     args = parser.parse_args(argv)
     if getattr(args, "seed", 0) is None:
