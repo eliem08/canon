@@ -145,3 +145,31 @@ def test_openai_compatible_adapter_requires_model_id():
 
     with pytest.raises(ValueError):
         OpenAICompatibleModel.preset("baseten", None)
+
+
+def test_openai_compatible_adapter_retries_transient_errors_only(monkeypatch):
+    import urllib.error
+
+    from canon.evals import OpenAICompatibleModel
+
+    monkeypatch.setenv("BASETEN_API_KEY", "k")
+    calls = []
+
+    def flaky(url, payload, headers, timeout):
+        calls.append(1)
+        if len(calls) < 3:
+            raise urllib.error.HTTPError(url, 502, "Bad Gateway", {}, None)
+        return {"choices": [{"message": {"content": "ok"}}]}
+
+    model = OpenAICompatibleModel.preset("baseten", "m", post=flaky, backoff=0)
+    assert model.answer("q", "c") == "ok" and len(calls) == 3
+
+    def forbidden(url, payload, headers, timeout):
+        calls.append(1)
+        raise urllib.error.HTTPError(url, 403, "Forbidden", {}, None)
+
+    calls.clear()
+    model = OpenAICompatibleModel.preset("baseten", "m", post=forbidden, backoff=0)
+    with pytest.raises(urllib.error.HTTPError):
+        model.answer("q", "c")
+    assert len(calls) == 1  # client errors are not retried

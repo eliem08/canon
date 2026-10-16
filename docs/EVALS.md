@@ -64,8 +64,8 @@ differs.
   * Any object with `answer(question, context) -> str` plugs in.
 * `OpenAICompatibleModel`: any OpenAI-compatible Chat Completions endpoint, with a `baseten`
   preset (`https://inference.baseten.co/v1`, key from `BASETEN_API_KEY`). It uses temperature 0
-  and strips inline `<think>` blocks from reasoning models. There is no default model: pass the
-  provider's model slug with `--model-id`.
+  and strips inline `<think>` blocks from reasoning models. It retries 429/5xx
+  with backoff. There is no default model: pass the provider's model slug with `--model-id`.
 
 ## Grading and failure analysis
 
@@ -108,10 +108,42 @@ field, while the contract lists the switchboard. Canon returns the mobile at low
 with the switchboard as the alternative. Companies have several numbers, and Canon doesn't model
 "main" vs. "contact" phone yet.
 
+## Results with real models (Baseten, 2026-10-16)
+
+Same 40 questions, same prompt, temperature 0, one run per model (per-model reports in
+`reports/eval_<model>.md`, with per-question answers in the matching `.json`).
+
+| Model | Baseline (raw files) | Canon (MCP) | Lift |
+|---|---|---|---|
+| `moonshotai/Kimi-K3` | 23/40 (57.5%) | **39/40 (97.5%)** | +40.0 pts |
+| `deepseek-ai/DeepSeek-V4-Pro-0813` | 23/40 (57.5%) | **36/40 (90.0%)** | +32.5 pts |
+| `nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B` | 23/40 (57.5%) | **39/40 (97.5%)** | +40.0 pts |
+| `zai-org/GLM-5.3` | 22/40 (55.0%) | **39/40 (97.5%)** | +42.5 pts |
+
+* **The lift holds with real models:** raw-file RAG is stuck at 55-58% whichever model reads it
+  (the stub gave 60%). Canon gives 90-97.5%, so the gap comes from the context, not model
+  reasoning. A stronger model can't recover facts that retrieval never surfaced.
+* **Baseline failures are mostly retrieval:** 9-12 of its 17-18 misses per model are
+  "no answer" (aliases, lowercase or Arabic names, Slack mentions stored as user IDs), and 3-4 are
+  stale values. Models do not rescue a bad context.
+* **Canon's shared miss is Q34**, the mobile-vs-switchboard phone number (see above). All four
+  models answer with the mobile; it comes back at confidence 0.46 with the switchboard as the
+  alternative.
+* **DeepSeek-V4-Pro's three extra Canon misses** are "unknown" on contract-value questions,
+  where the right value was in the context. I re-ran two of them: Q03 (a Darija question about an
+  Arabic-script name) reproduced as "unknown" after normal completion, with plenty of token
+  budget left, and Q06 came back correct. So this is model variance on non-English phrasing, not
+  an adapter problem.
+* **Single runs, 40 questions:** one question is 2.5 points, so differences of one or two
+  questions between models are noise. Models were chosen as the flagship tier by price from
+  Baseten's catalog, with no tuning. Neither agent's prompt was tuned for any model.
+* **Cost:** about 80 short calls per model (roughly 2-3K tokens each); the four runs together
+  took about 10 minutes.
+
 ## Caveats
 
-* The stub numbers are a deterministic regression check, not the headline. The headline should be
-  a real-model run.
+* The stub numbers are a deterministic regression check; the real-model table above is the
+  headline.
 * Questions, data and pipeline come from the same author, so the lift is an upper bound until it
   is reproduced on a customer's data with questions written by their team.
 * Entity linking relies on the customer mention ending the question. A real model would extract

@@ -1,0 +1,1367 @@
+{
+  "model": "moonshotai/Kimi-K3",
+  "caller": "revops.admin",
+  "as_of": "2026-10-01",
+  "results": [
+    {
+      "question": {
+        "id": "Q01",
+        "type": "contract_value",
+        "question": "Quel est le montant annuel actuel du contrat de Atlas Logistique ?",
+        "entity_id": "E01",
+        "mention": "Atlas Logistique",
+        "mention_style": "canonical",
+        "expected": 461000
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "461 000 MAD HT",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "retrieved contract:CN-2024-107_v2",
+            "retrieved contract:CN-2024-107_v1",
+            "retrieved contract:CN-2024-114_v2",
+            "retrieved contract:CN-2024-114_v1",
+            "retrieved contract:CN-2023-170_v2"
+          ]
+        },
+        "canon": {
+          "answer": "461000",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0015 (score 1.00, span of 2 words)",
+            "called find_contract_terms(C0015)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q02",
+        "type": "contract_value",
+        "question": "Quel est le montant annuel actuel du contrat de Sahara Tech Solutions S.A. ?",
+        "entity_id": "E03",
+        "mention": "Sahara Tech Solutions S.A.",
+        "mention_style": "legal",
+        "expected": 1579000
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "1 579 000 MAD",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "retrieved slack:deal-sahara-tech-solutions/2026-09-02",
+            "retrieved slack:deal-sahara-tech-solutions/2026-02-07",
+            "retrieved slack:deal-sahara-tech-solutions/2026-05-18",
+            "retrieved contract:CN-2024-121_v2",
+            "retrieved slack:deal-sahara-tech-solutions/2026-08-28"
+          ]
+        },
+        "canon": {
+          "answer": "1 579 000,00 (devise non précisée)",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0017 (score 1.00, span of 4 words)",
+            "called find_contract_terms(C0017)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q03",
+        "type": "contract_value",
+        "question": "Ch7al kaykhalsou f l3am daba, نسيج شفشاون?",
+        "entity_id": "E11",
+        "mention": "نسيج شفشاون",
+        "mention_style": "arabic",
+        "expected": 872000
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "800 000 MAD HT",
+          "correct": false,
+          "failure": "stale_value",
+          "trace": [
+            "retrieved slack:old-khg/2025-01-14",
+            "retrieved slack:client-oasisagro/2026-09-10",
+            "retrieved slack:old-zitoun/2024-04-20",
+            "retrieved slack:ext-al-massira-transport/2026-09-26",
+            "retrieved contract:CN-2023-177_v1"
+          ]
+        },
+        "canon": {
+          "answer": "872000",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0004 (score 1.00, span of 2 words)",
+            "called find_contract_terms(C0004)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q04",
+        "type": "contract_value",
+        "question": "Quel est le montant annuel actuel du contrat de Rif Cement ?",
+        "entity_id": "E12",
+        "mention": "Rif Cement",
+        "mention_style": "alias",
+        "expected": 1666000
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "unknown",
+          "correct": false,
+          "failure": "no_answer",
+          "trace": [
+            "retrieved slack:deal-rif-cement/2025-05-21",
+            "retrieved slack:deal-rif-cement/2026-07-08",
+            "retrieved slack:deal-rif-cement/2026-05-20",
+            "retrieved slack:deal-rif-cement/2025-09-06",
+            "retrieved slack:deal-rif-cement/2025-08-18"
+          ]
+        },
+        "canon": {
+          "answer": "1 666 000",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0005 (score 1.00, span of 2 words)",
+            "called find_contract_terms(C0005)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q05",
+        "type": "contract_value",
+        "question": "Quel est le montant annuel actuel du contrat de Tanger Med Freight SARL ?",
+        "entity_id": "E13",
+        "mention": "Tanger Med Freight SARL",
+        "mention_style": "legal",
+        "expected": 1341000
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "1 341 000 MAD",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "retrieved crm:0015g0000C324EP",
+            "retrieved contract:CN-2024-142_v2",
+            "retrieved contract:CN-2023-275_v2",
+            "retrieved contract:CN-2024-142_v1",
+            "retrieved contract:CN-2023-275_v1"
+          ]
+        },
+        "canon": {
+          "answer": "1341000.0",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0022 (score 1.00, span of 4 words)",
+            "called find_contract_terms(C0022)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q06",
+        "type": "contract_value",
+        "question": "Quel est le montant annuel actuel du contrat de مدينة فارما ?",
+        "entity_id": "E14",
+        "mention": "مدينة فارما",
+        "mention_style": "arabic",
+        "expected": 600000
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "600 000 MAD HT",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "retrieved contract:CN-2023-198_v2",
+            "retrieved contract:CN-2023-198_v1",
+            "retrieved contract:CN-2023-170_v2",
+            "retrieved contract:CN-2024-212_v2",
+            "retrieved contract:CN-2024-114_v2"
+          ]
+        },
+        "canon": {
+          "answer": "600000",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0006 (score 1.00, span of 2 words)",
+            "called find_contract_terms(C0006)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q07",
+        "type": "contract_value",
+        "question": "Ch7al kaykhalsou f l3am daba, Bab Rayan Consulting SARL?",
+        "entity_id": "E18",
+        "mention": "Bab Rayan Consulting SARL",
+        "mention_style": "legal",
+        "expected": 487000
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "487000 MAD",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "retrieved crm:0015g0000ZS34AB",
+            "retrieved crm:0015g0000R111H6",
+            "retrieved contract:CN-2023-226_v1",
+            "retrieved contract:CN-2023-226_v2",
+            "retrieved slack:old-khg/2025-01-14"
+          ]
+        },
+        "canon": {
+          "answer": "487000",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0009 (score 1.00, span of 4 words)",
+            "called find_contract_terms(C0009)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q08",
+        "type": "contract_value",
+        "question": "Ch7al kaykhalsou f l3am daba, atlantic fishing company?",
+        "entity_id": "E20",
+        "mention": "atlantic fishing company",
+        "mention_style": "lower",
+        "expected": 1858000
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "unknown",
+          "correct": false,
+          "failure": "no_answer",
+          "trace": [
+            "retrieved slack:deal-atlantic-fishing/2026-06-19",
+            "retrieved slack:deal-atlantic-fishing/2026-09-23",
+            "retrieved slack:deal-atlantic-fishing/2026-01-01",
+            "retrieved slack:deal-atlantic-fishing/2025-06-29",
+            "retrieved slack:deal-atlantic-fishing/2026-08-28"
+          ]
+        },
+        "canon": {
+          "answer": "1858000.0",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0010 (score 1.00, span of 3 words)",
+            "called find_contract_terms(C0010)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q09",
+        "type": "contract_value",
+        "question": "Ch7al kaykhalsou f l3am daba, Riad Digital Agency?",
+        "entity_id": "E21",
+        "mention": "Riad Digital Agency",
+        "mention_style": "canonical",
+        "expected": 1382000
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "1,382,000 MAD",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "retrieved crm:0015g0000YR8NH2",
+            "retrieved crm:0015g00003Q1548",
+            "retrieved contract:CN-2023-247_v1",
+            "retrieved crm:0015g0000ES4QTK",
+            "retrieved contract:CN-2023-247_v2"
+          ]
+        },
+        "canon": {
+          "answer": "1382000",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0011 (score 1.00, span of 3 words)",
+            "called find_contract_terms(C0011)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q10",
+        "type": "contract_value",
+        "question": "Ch7al kaykhalsou f l3am daba, سوس فريش?",
+        "entity_id": "E22",
+        "mention": "سوس فريش",
+        "mention_style": "arabic",
+        "expected": 536000
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "410 000 MAD HT",
+          "correct": false,
+          "failure": "stale_value",
+          "trace": [
+            "retrieved slack:old-khg/2025-01-14",
+            "retrieved slack:client-oasisagro/2026-09-10",
+            "retrieved slack:old-zitoun/2024-04-20",
+            "retrieved slack:ext-al-massira-transport/2026-09-26",
+            "retrieved contract:CN-2023-254_v1"
+          ]
+        },
+        "canon": {
+          "answer": "536000 MAD",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0012 (score 1.00, span of 2 words)",
+            "called find_contract_terms(C0012)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q11",
+        "type": "renewal_date",
+        "question": "When is the contract renewal date for Atlas Logisitque?",
+        "entity_id": "E01",
+        "mention": "Atlas Logisitque",
+        "mention_style": "typo",
+        "expected": "2027-12-01"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "unknown",
+          "correct": false,
+          "failure": "no_answer",
+          "trace": [
+            "retrieved contract:CN-2024-268_v1",
+            "retrieved contract:CN-2023-226_v1",
+            "retrieved contract:CN-2023-240_v1",
+            "retrieved contract:CN-2024-191_v1",
+            "retrieved contract:CN-2023-240_v2"
+          ]
+        },
+        "canon": {
+          "answer": "2027-12-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0015 (score 0.97, span of 2 words)",
+            "called find_contract_terms(C0015)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q12",
+        "type": "renewal_date",
+        "question": "Quelle est la date de renouvellement du contrat de Boulangerie Al Baraka ?",
+        "entity_id": "E05",
+        "mention": "Boulangerie Al Baraka",
+        "mention_style": "canonical",
+        "expected": "2028-03-01"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "2028-03-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "retrieved contract:CN-2023-135_v2",
+            "retrieved contract:CN-2023-135_v1",
+            "retrieved crm:0015g0000AGRRWC",
+            "retrieved crm:0015g0000AQSZBV",
+            "retrieved contract:CN-2023-261_v2"
+          ]
+        },
+        "canon": {
+          "answer": "2028-03-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0001 (score 1.00, span of 3 words)",
+            "called find_contract_terms(C0001)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q13",
+        "type": "renewal_date",
+        "question": "Quelle est la date de renouvellement du contrat de Nour Packaging ?",
+        "entity_id": "E08",
+        "mention": "Nour Packaging",
+        "mention_style": "canonical",
+        "expected": "2027-07-01"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "2027-07-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "retrieved contract:CN-2024-156_v2",
+            "retrieved contract:CN-2024-156_v1",
+            "retrieved contract:CN-2024-149_v2",
+            "retrieved contract:CN-2023-261_v2",
+            "retrieved contract:CN-2023-170_v2"
+          ]
+        },
+        "canon": {
+          "answer": "2027-07-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0021 (score 1.00, span of 2 words)",
+            "called find_contract_terms(C0021)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q14",
+        "type": "renewal_date",
+        "question": "Quelle est la date de renouvellement du contrat de oasis agro export ?",
+        "entity_id": "E10",
+        "mention": "oasis agro export",
+        "mention_style": "lower",
+        "expected": "2027-06-01"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "2027-06-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "retrieved contract:CN-2023-170_v2",
+            "retrieved slack:client-oasisagro/2026-09-05",
+            "retrieved contract:CN-2023-170_v1",
+            "retrieved slack:client-oasisagro/2026-06-18",
+            "retrieved crm:0015g0000MS430H"
+          ]
+        },
+        "canon": {
+          "answer": "2027-06-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0003 (score 1.00, span of 3 words)",
+            "called find_contract_terms(C0003)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q15",
+        "type": "renewal_date",
+        "question": "Imta ghadi ytjedded contrat dyal chrikat Medina Pharma?",
+        "entity_id": "E14",
+        "mention": "chrikat Medina Pharma",
+        "mention_style": "darija",
+        "expected": "2027-08-01"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "2027-08-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "retrieved slack:client-medina-pharm/2025-12-24",
+            "retrieved slack:client-medina-pharm/2025-08-23",
+            "retrieved crm:0015g0000PNDMSR",
+            "retrieved crm:0015g00008EEL0X",
+            "retrieved slack:old-saharatech/2024-05-27"
+          ]
+        },
+        "canon": {
+          "answer": "2027-08-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0006 (score 1.00, span of 2 words)",
+            "called find_contract_terms(C0006)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q16",
+        "type": "renewal_date",
+        "question": "When is the contract renewal date for zitoun cosmetics?",
+        "entity_id": "E15",
+        "mention": "zitoun cosmetics",
+        "mention_style": "lower",
+        "expected": "2027-05-01"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "2027-05-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "retrieved crm:0015g0000W8BEM4",
+            "retrieved crm:0015g0000PXAUW0",
+            "retrieved contract:CN-2024-268_v1",
+            "retrieved contract:CN-2023-226_v1",
+            "retrieved contract:CN-2023-240_v1"
+          ]
+        },
+        "canon": {
+          "answer": "2027-05-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0007 (score 1.00, span of 2 words)",
+            "called find_contract_terms(C0007)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q17",
+        "type": "renewal_date",
+        "question": "When is the contract renewal date for Argan d'Or S.A.?",
+        "entity_id": "E17",
+        "mention": "Argan d'Or S.A.",
+        "mention_style": "legal",
+        "expected": "2027-09-01"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "unknown",
+          "correct": false,
+          "failure": "no_answer",
+          "trace": [
+            "retrieved contract:CN-2024-268_v1",
+            "retrieved contract:CN-2023-226_v1",
+            "retrieved contract:CN-2023-240_v1",
+            "retrieved contract:CN-2024-191_v1",
+            "retrieved contract:CN-2023-240_v2"
+          ]
+        },
+        "canon": {
+          "answer": "2027-09-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0008 (score 1.00, span of 3 words)",
+            "called find_contract_terms(C0008)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q18",
+        "type": "renewal_date",
+        "question": "Imta ghadi ytjedded contrat dyal chrikat Atlantic Fishing Company?",
+        "entity_id": "E20",
+        "mention": "chrikat Atlantic Fishing Company",
+        "mention_style": "darija",
+        "expected": "2027-04-01"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "2027-04-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "retrieved slack:deal-atlantic-fishing/2026-08-28",
+            "retrieved slack:deal-atlantic-fishing/2026-06-19",
+            "retrieved slack:deal-atlantic-fishing/2026-09-23",
+            "retrieved slack:deal-atlantic-fishing/2026-01-01",
+            "retrieved slack:deal-atlantic-fishing/2025-06-29"
+          ]
+        },
+        "canon": {
+          "answer": "2027-04-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0010 (score 1.00, span of 3 words)",
+            "called find_contract_terms(C0010)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q19",
+        "type": "renewal_date",
+        "question": "Quelle est la date de renouvellement du contrat de سوس فريش ?",
+        "entity_id": "E22",
+        "mention": "سوس فريش",
+        "mention_style": "arabic",
+        "expected": "2027-08-01"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "2027-08-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "retrieved contract:CN-2023-254_v2",
+            "retrieved contract:CN-2023-254_v1",
+            "retrieved contract:CN-2023-261_v2",
+            "retrieved contract:CN-2023-170_v2",
+            "retrieved contract:CN-2023-198_v2"
+          ]
+        },
+        "canon": {
+          "answer": "2027-08-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0012 (score 1.00, span of 2 words)",
+            "called find_contract_terms(C0012)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q20",
+        "type": "renewal_date",
+        "question": "When is the contract renewal date for Yasmine Hotels?",
+        "entity_id": "E25",
+        "mention": "Yasmine Hotels",
+        "mention_style": "alias",
+        "expected": "2027-05-01"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "2027-05-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "retrieved crm:0015g000074H9BX",
+            "retrieved contract:CN-2024-268_v1",
+            "retrieved crm:0015g0000DT29PZ",
+            "retrieved contract:CN-2023-226_v1",
+            "retrieved contract:CN-2023-240_v1"
+          ]
+        },
+        "canon": {
+          "answer": "2027-05-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0014 (score 1.00, span of 2 words)",
+            "called find_contract_terms(C0014)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q21",
+        "type": "owner",
+        "question": "Chkoun l'owner dyal sahara tours?",
+        "entity_id": "E04",
+        "mention": "sahara tours",
+        "mention_style": "lower",
+        "expected": "Omar Fassi"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "unknown",
+          "correct": false,
+          "failure": "no_answer",
+          "trace": [
+            "retrieved slack:old-saharatour/2024-02-12",
+            "retrieved slack:old-saharatour/2025-03-16",
+            "retrieved slack:old-saharatour/2025-03-01",
+            "retrieved slack:old-zitoun/2024-04-20",
+            "retrieved slack:old-saharatour/2026-02-02"
+          ]
+        },
+        "canon": {
+          "answer": "Omar Fassi",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0018 (score 1.00, span of 2 words)",
+            "called who_owns(C0018)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q22",
+        "type": "owner",
+        "question": "Chkoun l'owner dyal marjana distribution?",
+        "entity_id": "E06",
+        "mention": "marjana distribution",
+        "mention_style": "lower",
+        "expected": "Imane Chraibi"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "Imane Chraibi",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "retrieved crm:0015g00007K2RCW",
+            "retrieved slack:old-zitoun/2024-04-20",
+            "retrieved slack:old-khg/2025-01-14",
+            "retrieved slack:client-oasisagro/2026-09-10",
+            "retrieved slack:ext-al-massira-transport/2026-09-26"
+          ]
+        },
+        "canon": {
+          "answer": "Imane Chraibi",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0019 (score 1.00, span of 2 words)",
+            "called who_owns(C0019)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q23",
+        "type": "owner",
+        "question": "Who is the account owner for chrikat Dar El Hana Immobilier?",
+        "entity_id": "E09",
+        "mention": "chrikat Dar El Hana Immobilier",
+        "mention_style": "darija",
+        "expected": "Salma El Idrissi"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "<@U03>",
+          "correct": false,
+          "failure": "other",
+          "trace": [
+            "retrieved slack:old-dar-el-hana/2025-03-25",
+            "retrieved slack:old-dar-el-hana/2023-08-29",
+            "retrieved slack:old-dar-el-hana/2023-11-22",
+            "retrieved slack:old-dar-el-hana/2023-09-18",
+            "retrieved slack:old-dar-el-hana/2025-10-03"
+          ]
+        },
+        "canon": {
+          "answer": "Salma El Idrissi",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0002 (score 1.00, span of 4 words)",
+            "called who_owns(C0002)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q24",
+        "type": "owner",
+        "question": "Chkoun l'owner dyal Rif Cement?",
+        "entity_id": "E12",
+        "mention": "Rif Cement",
+        "mention_style": "alias",
+        "expected": "Youssef Benali"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "<@U01>",
+          "correct": false,
+          "failure": "other",
+          "trace": [
+            "retrieved slack:deal-rif-cement/2026-07-08",
+            "retrieved slack:deal-rif-cement/2025-04-25",
+            "retrieved slack:deal-rif-cement/2026-05-20",
+            "retrieved slack:deal-rif-cement/2025-09-06",
+            "retrieved slack:deal-rif-cement/2025-08-18"
+          ]
+        },
+        "canon": {
+          "answer": "Youssef Benali",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0005 (score 1.00, span of 2 words)",
+            "called who_owns(C0005)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q25",
+        "type": "owner",
+        "question": "Chkoun l'owner dyal Tanger Med Freight S.A.?",
+        "entity_id": "E13",
+        "mention": "Tanger Med Freight S.A.",
+        "mention_style": "legal",
+        "expected": "Nadia Berrada"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "Nadia Berrada",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "retrieved crm:0015g0000C324EP",
+            "retrieved contract:CN-2024-191_v1",
+            "retrieved contract:CN-2024-191_v2",
+            "retrieved crm:0015g00005CDPYT",
+            "retrieved slack:old-zitoun/2024-04-20"
+          ]
+        },
+        "canon": {
+          "answer": "Nadia Berrada",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0022 (score 1.00, span of 4 words)",
+            "called who_owns(C0022)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q26",
+        "type": "owner",
+        "question": "Qui est le responsable du compte Kasbah Hosptiality Group ?",
+        "entity_id": "E16",
+        "mention": "Kasbah Hosptiality Group",
+        "mention_style": "typo",
+        "expected": "Imane Chraibi"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "Imane Chraibi",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "retrieved contract:CN-2024-212_v2",
+            "retrieved contract:CN-2024-212_v1",
+            "retrieved crm:0015g0000LQLZ0P",
+            "retrieved slack:deal-zitoun/2026-07-18",
+            "retrieved slack:client-khg/2026-09-21"
+          ]
+        },
+        "canon": {
+          "answer": "Imane Chraibi",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0023 (score 0.97, span of 3 words)",
+            "called who_owns(C0023)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q27",
+        "type": "owner",
+        "question": "Qui est le responsable du compte argan d'or ?",
+        "entity_id": "E17",
+        "mention": "argan d'or",
+        "mention_style": "lower",
+        "expected": "Nadia Berrada"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "unknown",
+          "correct": false,
+          "failure": "no_answer",
+          "trace": [
+            "retrieved slack:old-argan-dor/2023-12-08",
+            "retrieved slack:deal-zitoun/2026-07-18",
+            "retrieved slack:client-khg/2026-09-21",
+            "retrieved slack:old-saharatour/2024-03-28",
+            "retrieved slack:old-saharatech/2024-08-29"
+          ]
+        },
+        "canon": {
+          "answer": "Nadia Berrada",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0008 (score 1.00, span of 2 words)",
+            "called who_owns(C0008)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q28",
+        "type": "owner",
+        "question": "Who is the account owner for Bab Rayan Consulting?",
+        "entity_id": "E18",
+        "mention": "Bab Rayan Consulting",
+        "mention_style": "canonical",
+        "expected": "Youssef Benali"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "Youssef Benali",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "retrieved contract:CN-2023-226_v1",
+            "retrieved crm:0015g0000ZS34AB",
+            "retrieved contract:CN-2023-226_v2",
+            "retrieved crm:0015g0000R111H6",
+            "retrieved contract:CN-2024-268_v1"
+          ]
+        },
+        "canon": {
+          "answer": "Youssef Benali",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0009 (score 1.00, span of 3 words)",
+            "called who_owns(C0009)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q29",
+        "type": "owner",
+        "question": "Qui est le responsable du compte atlantic fishing company ?",
+        "entity_id": "E20",
+        "mention": "atlantic fishing company",
+        "mention_style": "lower",
+        "expected": "Mehdi Alaoui"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "<@U05>",
+          "correct": false,
+          "failure": "other",
+          "trace": [
+            "retrieved slack:deal-atlantic-fishing/2026-09-23",
+            "retrieved slack:deal-atlantic-fishing/2026-01-01",
+            "retrieved slack:deal-atlantic-fishing/2025-06-29",
+            "retrieved slack:deal-atlantic-fishing/2026-08-28",
+            "retrieved slack:deal-atlantic-fishing/2026-06-19"
+          ]
+        },
+        "canon": {
+          "answer": "Mehdi Alaoui",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0010 (score 1.00, span of 3 words)",
+            "called who_owns(C0010)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q30",
+        "type": "owner",
+        "question": "Chkoun l'owner dyal Al Massira?",
+        "entity_id": "E23",
+        "mention": "Al Massira",
+        "mention_style": "alias",
+        "expected": "Salma El Idrissi"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "<@U02>",
+          "correct": false,
+          "failure": "other",
+          "trace": [
+            "retrieved slack:ext-al-massira-transport/2026-09-26",
+            "retrieved slack:ext-al-massira-transport/2026-09-18",
+            "retrieved slack:ext-al-massira-transport/2026-09-09",
+            "retrieved slack:ext-al-massira-transport/2026-06-21",
+            "retrieved slack:ext-al-massira-transport/2026-04-12"
+          ]
+        },
+        "canon": {
+          "answer": "Salma El Idrissi",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0013 (score 1.00, span of 2 words)",
+            "called who_owns(C0013)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q31",
+        "type": "phone",
+        "question": "What is the main phone number of Sahara Tech?",
+        "entity_id": "E03",
+        "mention": "Sahara Tech",
+        "mention_style": "alias",
+        "expected": "+212592846751"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "unknown",
+          "correct": false,
+          "failure": "no_answer",
+          "trace": [
+            "retrieved slack:deal-sahara-tech-solutions/2026-02-07",
+            "retrieved slack:deal-sahara-tech-solutions/2026-05-03",
+            "retrieved slack:deal-sahara-tech-solutions/2026-08-28",
+            "retrieved slack:deal-sahara-tech-solutions/2026-05-18",
+            "retrieved slack:deal-sahara-tech-solutions/2026-09-02"
+          ]
+        },
+        "canon": {
+          "answer": "+212592846751",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0017 (score 1.00, span of 2 words)",
+            "called get_customer(C0017)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q32",
+        "type": "phone",
+        "question": "Quel est le numéro de téléphone de Tanger Med Freight SARL ?",
+        "entity_id": "E13",
+        "mention": "Tanger Med Freight SARL",
+        "mention_style": "legal",
+        "expected": "+212544469797"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "05 44 46 97 97",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "retrieved crm:0015g0000C324EP",
+            "retrieved contract:CN-2024-191_v1",
+            "retrieved contract:CN-2024-191_v2",
+            "retrieved contract:CN-2024-142_v1",
+            "retrieved contract:CN-2023-275_v1"
+          ]
+        },
+        "canon": {
+          "answer": "+212544469797",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0022 (score 1.00, span of 4 words)",
+            "called get_customer(C0022)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q33",
+        "type": "phone",
+        "question": "What is the main phone number of Medina Pharma S.A.?",
+        "entity_id": "E14",
+        "mention": "Medina Pharma S.A.",
+        "mention_style": "legal",
+        "expected": "+212545140939"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "0545140939",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "retrieved crm:0015g0000PNDMSR",
+            "retrieved contract:CN-2023-240_v2",
+            "retrieved contract:CN-2024-268_v2",
+            "retrieved contract:CN-2023-226_v2",
+            "retrieved contract:CN-2024-191_v2"
+          ]
+        },
+        "canon": {
+          "answer": "+212545140939",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0006 (score 1.00, span of 3 words)",
+            "called get_customer(C0006)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q34",
+        "type": "phone",
+        "question": "Quel est le numéro de téléphone de Zitoun Cosmetics ?",
+        "entity_id": "E15",
+        "mention": "Zitoun Cosmetics",
+        "mention_style": "canonical",
+        "expected": "+212579101995"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "06 70 91 46 07",
+          "correct": false,
+          "failure": "stale_value",
+          "trace": [
+            "retrieved contract:CN-2023-205_v1",
+            "retrieved slack:deal-zitoun/2025-09-11",
+            "retrieved slack:old-zitoun/2023-07-19",
+            "retrieved contract:CN-2023-205_v2",
+            "retrieved crm:0015g0000W8BEM4"
+          ]
+        },
+        "canon": {
+          "answer": "+212670914607",
+          "correct": false,
+          "failure": "stale_value",
+          "trace": [
+            "linked to C0007 (score 1.00, span of 2 words)",
+            "called get_customer(C0007)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q35",
+        "type": "phone",
+        "question": "Quel est le numéro de téléphone de AFC ?",
+        "entity_id": "E20",
+        "mention": "AFC",
+        "mention_style": "alias",
+        "expected": "+212524415035"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "unknown",
+          "correct": false,
+          "failure": "no_answer",
+          "trace": [
+            "retrieved contract:CN-2023-170_v1",
+            "retrieved contract:CN-2024-212_v1",
+            "retrieved contract:CN-2024-149_v1",
+            "retrieved contract:CN-2023-170_v2",
+            "retrieved contract:CN-2024-142_v1"
+          ]
+        },
+        "canon": {
+          "answer": "+212524415035",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0010 (score 0.85, span of 1 words)",
+            "called get_customer(C0010)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q36",
+        "type": "address",
+        "question": "Quelle est l'adresse du siège social de Sahara Tours ?",
+        "entity_id": "E04",
+        "mention": "Sahara Tours",
+        "mention_style": "canonical",
+        "expected": "Route de Rissani"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "Route de Rissani, Merzouga",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "retrieved slack:old-saharatour/2025-03-16",
+            "retrieved slack:old-saharatour/2025-03-01",
+            "retrieved contract:CN-2024-128_v2",
+            "retrieved slack:old-saharatour/2026-02-02",
+            "retrieved slack:old-saharatour/2024-02-12"
+          ]
+        },
+        "canon": {
+          "answer": "Route de Rissani",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0018 (score 1.00, span of 2 words)",
+            "called get_customer(C0018)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q37",
+        "type": "address",
+        "question": "Quelle est l'adresse du siège social de dar el hana immobilier ?",
+        "entity_id": "E09",
+        "mention": "dar el hana immobilier",
+        "mention_style": "lower",
+        "expected": "21 Avenue Hassan II"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "unknown",
+          "correct": false,
+          "failure": "no_answer",
+          "trace": [
+            "retrieved slack:old-dar-el-hana/2023-09-18",
+            "retrieved slack:old-dar-el-hana/2025-03-25",
+            "retrieved slack:old-dar-el-hana/2025-10-03",
+            "retrieved slack:old-dar-el-hana/2023-08-29",
+            "retrieved slack:old-dar-el-hana/2023-11-22"
+          ]
+        },
+        "canon": {
+          "answer": "21 Avenue Hassan II",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0002 (score 1.00, span of 4 words)",
+            "called get_customer(C0002)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q38",
+        "type": "address",
+        "question": "Quelle est l'adresse du siège social de Oasis Agro Export ?",
+        "entity_id": "E10",
+        "mention": "Oasis Agro Export",
+        "mention_style": "canonical",
+        "expected": "9 Rue de Marrakech"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "9 Rue de Marrakech, Meknès",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "retrieved slack:client-oasisagro/2026-09-05",
+            "retrieved slack:client-oasisagro/2026-06-18",
+            "retrieved slack:client-oasisagro/2026-09-10",
+            "retrieved contract:CN-2023-170_v1",
+            "retrieved contract:CN-2023-170_v2"
+          ]
+        },
+        "canon": {
+          "answer": "9 Rue de Marrakech",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0003 (score 1.00, span of 3 words)",
+            "called get_customer(C0003)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q39",
+        "type": "address",
+        "question": "Quelle est l'adresse du siège social de Tanger Med Freight ?",
+        "entity_id": "E13",
+        "mention": "Tanger Med Freight",
+        "mention_style": "canonical",
+        "expected": "Tanger Med Port Zone, Building B4"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "Tanger Med Port Zone, Building B4, Tanger",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "retrieved crm:0015g0000C324EP",
+            "retrieved contract:CN-2024-191_v1",
+            "retrieved contract:CN-2024-191_v2",
+            "retrieved contract:CN-2024-142_v2",
+            "retrieved contract:CN-2023-275_v2"
+          ]
+        },
+        "canon": {
+          "answer": "Tanger Med Port Zone, Building B4",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0022 (score 1.00, span of 3 words)",
+            "called get_customer(C0022)"
+          ]
+        }
+      }
+    },
+    {
+      "question": {
+        "id": "Q40",
+        "type": "address",
+        "question": "What is the registered office address of Yasmine?",
+        "entity_id": "E25",
+        "mention": "Yasmine",
+        "mention_style": "alias",
+        "expected": "Avenue Mohammed VI, Malabata"
+      },
+      "outcomes": {
+        "baseline": {
+          "answer": "unknown",
+          "correct": false,
+          "failure": "no_answer",
+          "trace": [
+            "retrieved contract:CN-2023-240_v2",
+            "retrieved contract:CN-2024-268_v2",
+            "retrieved contract:CN-2023-226_v2",
+            "retrieved contract:CN-2024-191_v2",
+            "retrieved contract:CN-2024-268_v1"
+          ]
+        },
+        "canon": {
+          "answer": "Avenue Mohammed VI, Malabata",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "linked to C0014 (score 0.88, span of 1 words)",
+            "called get_customer(C0014)"
+          ]
+        }
+      }
+    }
+  ]
+}

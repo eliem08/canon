@@ -184,6 +184,8 @@ class OpenAICompatibleModel:
         timeout: float = 120.0,
         post=_http_post_json,
         proxy_credentials: bool = False,
+        retries: int = 3,
+        backoff: float = 2.0,
     ) -> None:
         if not model:
             raise ValueError("model id is required (e.g. --model-id <provider model slug>)")
@@ -194,6 +196,8 @@ class OpenAICompatibleModel:
         self.max_tokens = max_tokens
         self.timeout = timeout
         self._post = post
+        self.retries = retries
+        self.backoff = backoff
         # True when the network proxy injects the Authorization header (cloud secrets).
         self.proxy_credentials = proxy_credentials
 
@@ -202,6 +206,23 @@ class OpenAICompatibleModel:
         base_url, env = OPENAI_COMPATIBLE_PRESETS[provider]
         return cls(model, base_url, env, **kwargs)
 
+    def _post_with_retry(self, url: str, payload: dict, headers: dict, timeout: float) -> dict:
+        """Retry transient failures (429, 5xx, network) with exponential backoff."""
+        import time
+        import urllib.error
+
+        for attempt in range(self.retries + 1):
+            try:
+                return self._post(url, payload, headers, timeout)
+            except urllib.error.HTTPError as e:
+                if (e.code != 429 and e.code < 500) or attempt == self.retries:
+                    raise
+            except (urllib.error.URLError, TimeoutError):
+                if attempt == self.retries:
+                    raise
+            time.sleep(self.backoff * 2**attempt)
+        raise AssertionError("unreachable")
+
     def answer(self, question: str, context: str) -> str:
         import os
 
@@ -209,7 +230,7 @@ class OpenAICompatibleModel:
         if not key and not self.proxy_credentials:
             raise RuntimeError(f"Set the {self.api_key_env} environment variable")
         headers = {"Authorization": f"Bearer {key}"} if key else {}
-        data = self._post(
+        data = self._post_with_retry(
             f"{self.base_url}/chat/completions",
             {
                 "model": self.model,

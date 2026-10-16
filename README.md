@@ -24,7 +24,8 @@ uv run canon eval --seeds 10               # before/after eval (stub model; --mo
 
 **Before/after eval** (40 questions, same model for both agents): an agent with naive retrieval
 over the raw files answers **60%** correctly. The same agent using Canon's MCP tools answers
-**97.5%** (held-out seeds: 46% → 98%). Contract values, renewal dates and owners are 100% with
+**97.5%** (held-out seeds: 46% → 98%). With four real open models served by Baseten the raw-file agent gets 55-58%
+and the Canon agent 90-97.5%. Contract values, renewal dates and owners are 100% with
 Canon. Details: [`docs/EVALS.md`](docs/EVALS.md), [`docs/reports/eval_report.md`](docs/reports/eval_report.md).
 
 Entity resolution on the synthetic set (119 records, 25 customers): **pairwise F1 0.991**
@@ -64,4 +65,4 @@ docs               plan, decisions, method notes, reports
 | 2. Entity resolution | done: F1 0.991 ([report](docs/reports/er_report.md)) |
 | 3. Fact scoring | done: fact accuracy 0.968 ([method](docs/FACT_SCORING.md)) |
 | 4. MCP server | done: 4 permission-aware tools ([docs](docs/MCP_SERVER.md)) |
-| 5. Eval harness | done: 60% → 97.5% ([report](docs/reports/eval_report.md)) |
+| 5. Eval harness | done: 55-60% → 90-97.5%, stub and 4 real models ([report](docs/reports/eval_report.md)) |
