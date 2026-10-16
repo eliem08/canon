@@ -58,6 +58,11 @@ All agents use the same model and prompt. Only the context differs.
 
 * **Baseline:** BM25 over raw chunks (CRM rows, individual Slack messages, contract texts),
   top 5 chunks.
+* **Strong RAG (`hybrid`):** what a careful engineer would build without Canon. It runs BM25 plus
+  fuzzy character-trigram retrieval and queries with the whole question and every candidate customer
+  span (the same span heuristic Canon's linker uses). Results are merged by reciprocal-rank fusion and
+  the top 10 chunks are kept. Slack `<@U..>` mentions are replaced with names and every message is
+  dated.
 * **Oracle:** every raw chunk of the question's true customer, taken from the answer key, and
   nothing else. This is perfect retrieval. Whatever it still gets wrong comes from the raw data
   itself: stale CRM values, superseded contracts, owner changes buried in chat.
@@ -68,7 +73,11 @@ All agents use the same model and prompt. Only the context differs.
   It passes the structured result as context. It acts as `revops.admin` by default (`--caller` to
   change).
 
-**Statistics:** each accuracy has a 95% Wilson interval. Canon vs. baseline is compared with an
+**Permissions:** each agent reports which source records reached the model. The report counts the
+answers whose context included a record the caller may not read. Raw-file agents ignore
+permissions; Canon filters before scoring.
+
+**Statistics:** each accuracy has a 95% Wilson interval. Canon vs. each other agent is compared with an
 exact McNemar test on the questions where exactly one of them is right, which is the right test for
 paired answers. `--runs N` repeats the eval and tabulates every run, since real models vary.
 
@@ -106,63 +115,61 @@ Wrong answers are classified against the ground truth and the raw source values:
 * **no answer**
 * **other**
 
-## Results with real models (Baseten, eval v2, 2026-10-16)
+## Results with real models (Baseten, eval v2.1, 2026-10-16)
 
-Same prompt for every agent, temperature 0, one run per model. Per-model reports with every answer:
-`reports/eval_<model>.md` (40 synthetic questions) and `reports/eval_paraphrase_<model>.md`
-(30 hand-written questions).
+Four open models, temperature 0, one run each, the same prompt for every agent. Full tables per model and
+view are in [`reports/eval_summary.md`](reports/eval_summary.md) (regenerate with
+`uv run python scripts/eval_summary.py`). Per-question answers are in each `reports/eval_*.json`.
 
-**40 synthetic questions**
-
-| Model | Baseline (BM25, raw) | Oracle retrieval (raw) | **Canon** | Canon vs. baseline (McNemar p) |
-|---|---|---|---|---|
-| `moonshotai/Kimi-K3` | 57.5% | 95.0% | **97.5%** | +40.0 pts (3e-05) |
-| `deepseek-ai/DeepSeek-V4-Pro-0813` | 55.0% | 95.0% | **97.5%** | +42.5 pts (2e-05) |
-| `nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B` | 57.5% | 92.5% | **97.5%** | +40.0 pts (1e-04) |
-| `zai-org/GLM-5.3` | 55.0% | 95.0% | **97.5%** | +42.5 pts (2e-05) |
-
-**30 hand-written questions (customer named mid-sentence)**
-
-| Model | Baseline (BM25, raw) | Oracle retrieval (raw) | **Canon** | Canon vs. baseline (McNemar p) |
-|---|---|---|---|---|
-| `moonshotai/Kimi-K3` | 70.0% | 93.3% | **96.7%** | +26.7 pts (0.008) |
-| `deepseek-ai/DeepSeek-V4-Pro-0813` | 73.3% | 93.3% | **96.7%** | +23.3 pts (0.016) |
-| `nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B` | 66.7% | 90.0% | **96.7%** | +30.0 pts (0.004) |
-| `zai-org/GLM-5.3` | 73.3% | 90.0% | **96.7%** | +23.3 pts (0.016) |
-
-95% Wilson intervals at n = 40 are roughly ±10 points around 97.5% and ±15 around 55%; the paired
-McNemar test is the meaningful comparison.
+| View | Baseline (BM25) | **Strong RAG** | Oracle | **Canon** | Canon vs strong RAG | Answers that read restricted text (RAG / Canon) |
+|---|---|---|---|---|---|---|
+| 40 synthetic questions, full access | 55–60% | **92.5%** | 92.5–95% | **97.5%** | +5 pts, p = 0.5 (all 4 models) | 0 / 0 |
+| 30 hand-written questions, full access | 70–73% | **93–97%** | 90–93% | **93–97%** | 0 to +3 pts, p = 1 | 0 / 0 |
+| 40 synthetic questions, **as a sales rep** | 52–60% | **92.5%** | 92.5–95% | **82.5–85%** | −7.5 to −10 pts, p ≥ 0.22 | **35/40 / 0/40** |
 
 ### What this says, plainly
 
-* **Most of the lift is retrieval.** With *perfect* retrieval over the raw exports, real models reach
-  90–95%. Canon adds only 2.5–6.7 points over that oracle. The baseline's misses are mostly
-  "no answer": aliases, Arabic-script and lowercase names, and Slack owner mentions stored as
-  `<@U03>`, which keyword search can't connect to the customer. Canon wins mainly by *finding the
-  right records* (entity resolution + linking). Resolving conflicts helps much less on this data.
-* **What reconciliation still buys** shows in the oracle's misses, which are always the same
-  questions: an owner change announced only in Slack (Q24, P01, P09, Q22) and a stale contact
-  mobile in the CRM (Q34, P27). Canon gets the owner changes right, except E11/P09 (a documented
-  fact-scoring miss), and also misses the phone question (Q34: mobile vs. switchboard).
-* **Honest positioning:** on clean, small synthetic data, an agent that gets every relevant record
-  in its context does nearly as well as Canon. Real deployments can't do that: thousands of
-  records per customer, permissions, tokens, cost. That is a claim to prove on client data, not
-  something this eval shows. The oracle also needs the answer key, so it is an upper bound, not a
-  product.
-* **Stub vs. real models:** the stub's oracle score (50%) is meaningless, because it takes the
-  first value it sees. Real models weigh dates and supersession, so they reach 90–95%.
-* Models are not compared to each other: differences of 1–2 questions are noise at this size.
+1. **Against a well-built RAG, Canon is not more accurate on this benchmark.** Canon beats keyword
+   retrieval by 35–42 points (p < 1e-4). Strong RAG, though, gets within 0–5 points of Canon, and
+   every difference is far from significant. Strong RAG is what a careful engineer builds without
+   Canon: fuzzy and multi-query retrieval, Slack mentions resolved to names, messages dated.
+   **The "+40 points" claim only holds against a weak baseline, so it should not be made.**
+2. **Where Canon differs is permissions.** Asked as a sales rep, RAG over the raw export put
+   contract text the rep may not read into **35 of 40** answers; perfect retrieval did so in all 40.
+   Canon did so in **0**. Its accuracy is lower in that view (82.5–85%) because some correct answers
+   exist only in legal-only contracts. That is the permission model working, and the grading against
+   full-access truth counts it as a miss.
+3. **Context cost does not favour Canon here.** Canon's tool output, with sources, alternatives and
+   quotes, is the largest context of all the agents: about 7.2k characters, against 3.7k for strong
+   RAG. The argument that RAG doesn't scale to large histories is not tested by this dataset.
+4. **What is still Canon's alone:** typed answers with confidence, conflicts and alternatives;
+   per-fact citations; the audit report (stale CRM values, duplicates, quarantine); identity and
+   permission enforcement; and an audit log. These are product properties, and accuracy on 40
+   synthetic questions doesn't measure them.
+
+### Pitch implication (founder decision)
+Sell the **audit and the permission-safe layer**, not an accuracy lift: "your agent can be as accurate
+as good RAG *without* reading what the user may not see, and here is what's wrong in your data." Re-test
+the accuracy claim on a client's data and questions, where histories are longer and names messier.
 
 ## Results (stub model, CI)
 
-`reports/eval_report.md` (40 questions, with held-out seeds) and `reports/eval_paraphrase.md`
-(30 hand-written). Baseline 60.0% / Canon 97.5% (held-out seeds 1–10: 45.8% / 97.2%);
-hand-written: 63.3% / 96.7%. The stub is a deterministic regression check, not the headline.
+`reports/eval_report.md` (40 questions, with held-out seeds), `reports/eval_paraphrase.md`
+(30 hand-written) and `reports/eval_sales.md` (as a sales rep).
+
+| | Baseline | Strong RAG | Canon |
+|---|---|---|---|
+| 40 synthetic questions | 60.0% | 65.0% | 97.5% |
+| 30 hand-written questions | 63.3% | 76.7% | 96.7% |
+
+Held-out seeds 1–10: baseline 45.8%, Canon 97.2%. The stub takes the first value it finds, so it
+understates every raw-file agent (strong RAG gets 65% with the stub and 92.5% with real models). It is a
+deterministic regression check, not the headline.
 
 ## Caveats
 
-* The stub numbers are a deterministic regression check; the real-model tables are the headline,
-  and the oracle column is the honest frame for them.
+* The stub numbers are a deterministic regression check. The real-model tables are the headline,
+  and the strong-RAG column is the honest frame for them.
 * Questions, data and pipeline come from the same author, so the lift is an upper bound until it
   is reproduced on a customer's data with questions written by their team.
 * The router's cue list was extended after the paraphrase questions were written (owner: "looks

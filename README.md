@@ -29,13 +29,18 @@ docker build -t canon .                    # client-side image; see docs/DEPLOY.
 
 ## Results so far
 
-**Before/after eval** (same model for every agent, four open models on Baseten): on 40 synthetic
-questions, an agent with keyword retrieval over the raw files answers **55–58%** correctly, and the
-same agent using Canon's MCP tools answers **97.5%** (McNemar p ≤ 1e-04). On 30 hand-written
-questions that name the customer mid-sentence: 67–73% → **96.7%**. **Caveat:** given *perfect*
-retrieval over the raw files (every record of the right customer, taken from the answer key), the same
-models reach 90–95%. On this data, most of Canon's value is *finding the right records*; reconciling
-stale values adds the last few points. Details: [`docs/EVALS.md`](docs/EVALS.md).
+**Before/after eval** (four open models on Baseten, same model and prompt for every agent):
+
+| | Keyword RAG | Strong RAG | **Canon** |
+|---|---|---|---|
+| 40 synthetic questions | 55–60% | 92.5% | **97.5%** |
+| 30 hand-written questions | 70–73% | 93–97% | **93–97%** |
+| as a sales rep: answers that read text the rep may not see | 27/40 | **35/40** | **0/40** |
+
+Canon beats keyword retrieval by about 40 points. A well-built RAG over the same raw files gets within
+0–5 points of Canon, and none of those differences is significant. Canon's difference is that it never
+reads what the caller may not see, it cites every fact, and it produces the audit report.
+Details and caveats: [`docs/EVALS.md`](docs/EVALS.md).
 
 Entity resolution on the synthetic set (119 records, 25 customers): **pairwise F1 0.991**
 (P 1.000 / R 0.983), versus 0.696 for exact-name matching; mean F1 0.991 over 50 held-out seeds;
@@ -86,4 +91,4 @@ docs               plan, decisions, method notes, reports
 | 2. Entity resolution | done: F1 0.991 ([report](docs/reports/er_report.md)) |
 | 3. Fact scoring | done: fact accuracy 0.968 ([method](docs/FACT_SCORING.md)) |
 | 4. MCP server | done: 4 permission-aware tools ([docs](docs/MCP_SERVER.md)) |
-| 5. Eval harness | done: 55–58% → 97.5% with 4 real models; oracle retrieval 92.5–95% ([evals](docs/EVALS.md)) |
+| 5. Eval harness | done: keyword RAG 55–60%, strong RAG 92.5%, Canon 97.5% (4 real models); permission leaks 35/40 vs 0/40 ([evals](docs/EVALS.md)) |
