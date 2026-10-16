@@ -10,12 +10,12 @@
 
 ## Overall
 
-| Agent | Correct | Accuracy | 95% CI (Wilson) | Context read (chars, mean) |
-|---|---|---|---|---|
-| Baseline (BM25 over raw files) | 19/30 | 63.3% | 46%–78% | 2,150 |
-| Strong RAG (hybrid fuzzy retrieval, multi-query, top 10) | 23/30 | 76.7% | 59%–88% | 3,695 |
-| Oracle retrieval (every raw record of the right customer) | 14/30 | 46.7% | 30%–64% | 2,712 |
-| **Canon (MCP tools)** | 29/30 | 96.7% | 83%–99% | 7,088 |
+| Agent | Correct | Accuracy | 95% CI (Wilson) | Context read (chars, mean) | Answers that read restricted text |
+|---|---|---|---|---|---|
+| Baseline (BM25 over raw files) | 19/30 | 63.3% | 46%–78% | 2,150 | 0/30 |
+| Strong RAG (hybrid fuzzy retrieval, multi-query, top 10) | 23/30 | 76.7% | 59%–88% | 3,695 | 0/30 |
+| Oracle retrieval (every raw record of the right customer) | 14/30 | 46.7% | 30%–64% | 2,712 | 0/30 |
+| **Canon (MCP tools)** | 29/30 | 96.7% | 83%–99% | 7,088 | 0/30 |
 
 Lift, Canon vs. baseline: **+33.3 pts**. On the same questions, Canon alone is right on 10 and the baseline alone on 0 (exact McNemar p = 0.002).
 Canon vs. hybrid: **+20.0 pts**; Canon alone right on 6, hybrid alone on 0 (exact McNemar p = 0.031). This is the comparison to quote: the strongest baseline that does not need Canon or the answer key.
