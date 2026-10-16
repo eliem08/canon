@@ -183,6 +183,7 @@ class OpenAICompatibleModel:
         max_tokens: int = 4096,
         timeout: float = 120.0,
         post=_http_post_json,
+        proxy_credentials: bool = False,
     ) -> None:
         if not model:
             raise ValueError("model id is required (e.g. --model-id <provider model slug>)")
@@ -193,6 +194,8 @@ class OpenAICompatibleModel:
         self.max_tokens = max_tokens
         self.timeout = timeout
         self._post = post
+        # True when the network proxy injects the Authorization header (cloud secrets).
+        self.proxy_credentials = proxy_credentials
 
     @classmethod
     def preset(cls, provider: str, model: str, **kwargs) -> OpenAICompatibleModel:
@@ -203,8 +206,9 @@ class OpenAICompatibleModel:
         import os
 
         key = os.environ.get(self.api_key_env)
-        if not key:
+        if not key and not self.proxy_credentials:
             raise RuntimeError(f"Set the {self.api_key_env} environment variable")
+        headers = {"Authorization": f"Bearer {key}"} if key else {}
         data = self._post(
             f"{self.base_url}/chat/completions",
             {
@@ -219,7 +223,7 @@ class OpenAICompatibleModel:
                     },
                 ],
             },
-            {"Authorization": f"Bearer {key}"},
+            headers,
             self.timeout,
         )
         text = (data["choices"][0]["message"].get("content") or "").strip()

@@ -90,8 +90,10 @@ def cmd_eval(args: argparse.Namespace) -> None:
     else:  # an OpenAI-compatible provider preset, e.g. baseten
         if not args.model_id:
             raise SystemExit(f"--model-id is required with --model {args.model}")
-        model = OpenAICompatibleModel.preset(args.model, args.model_id)
-        if not os.environ.get(model.api_key_env):
+        model = OpenAICompatibleModel.preset(
+            args.model, args.model_id, proxy_credentials=args.proxy_credentials
+        )
+        if not args.proxy_credentials and not os.environ.get(model.api_key_env):
             raise SystemExit(
                 f"Set {model.api_key_env} in the environment (never in a file in the repo)"
             )
@@ -148,6 +150,11 @@ def main(argv: list[str] | None = None) -> None:
         "--model-id",
         default=None,
         help="model id (claude: default claude-opus-5-5; baseten: required provider slug)",
+    )
+    e.add_argument(
+        "--proxy-credentials",
+        action="store_true",
+        help="the network proxy injects the provider Authorization header (cloud secrets)",
     )
     e.add_argument("--caller", default="revops.admin", help="identity the Canon agent acts for")
     e.add_argument("--as-of", default="2026-10-01")

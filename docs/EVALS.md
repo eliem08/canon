@@ -11,7 +11,10 @@ uv run canon eval --model claude --model-id claude-opus-5-5 --caller salma.el.id
 BASETEN_API_KEY=... uv run canon eval --model baseten --model-id <model slug from Baseten>
 ```
 
-Keys are read from environment variables only (`ANTHROPIC_API_KEY`/`ant auth login` for Claude,
+In a cloud session where the key is stored as an environment *secret* (injected by the network
+proxy, so it never enters the sandbox), add `--proxy-credentials`.
+
+Otherwise keys are read from environment variables only (`ANTHROPIC_API_KEY`/`ant auth login` for Claude,
 `BASETEN_API_KEY` for Baseten). Never put them in a repo file; `.env` is gitignored, but prefer
 the environment's secret settings.
 

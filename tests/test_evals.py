@@ -126,6 +126,20 @@ def test_openai_compatible_adapter_reads_key_from_env_only(monkeypatch):
     assert "test-key" not in json.dumps(sent["payload"])
 
 
+def test_openai_compatible_adapter_with_proxy_injected_credentials(monkeypatch):
+    from canon.evals import OpenAICompatibleModel
+
+    sent = {}
+
+    def fake_post(url, payload, headers, timeout):
+        sent["headers"] = headers
+        return {"choices": [{"message": {"content": "ok"}}]}
+
+    monkeypatch.delenv("BASETEN_API_KEY", raising=False)
+    model = OpenAICompatibleModel.preset("baseten", "m", post=fake_post, proxy_credentials=True)
+    assert model.answer("q", "c") == "ok" and "Authorization" not in sent["headers"]
+
+
 def test_openai_compatible_adapter_requires_model_id():
     from canon.evals import OpenAICompatibleModel
 
