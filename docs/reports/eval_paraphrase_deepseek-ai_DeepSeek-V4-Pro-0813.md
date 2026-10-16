@@ -4,58 +4,61 @@
 - Model: `deepseek-ai/DeepSeek-V4-Pro-0813` (same model and prompt for every agent)
 - Canon caller: `revops.admin`; facts as of 2026-10-01
 - Baseline: BM25 keyword retrieval over raw CRM rows, Slack messages and contract texts (top 5 chunks)
+- Strong RAG: BM25 + fuzzy character-trigram retrieval, queried with the question and every candidate customer span, reciprocal-rank fusion, top 10 chunks; Slack mentions resolved to names and messages dated
 - Oracle: every raw chunk of the right customer and nothing else (perfect retrieval, from the answer key). It shows what raw data supports at best.
 - Canon: MCP tools (`get_customer` for linking any span of the question, then `find_contract_terms` / `who_owns` / `get_customer`)
 
 ## Overall
 
-| Agent | Correct | Accuracy | 95% CI (Wilson) |
-|---|---|---|---|
-| Baseline (BM25 over raw files) | 22/30 | 73.3% | 56%–86% |
-| Oracle retrieval (every raw record of the right customer) | 28/30 | 93.3% | 79%–98% |
-| **Canon (MCP tools)** | 29/30 | 96.7% | 83%–99% |
+| Agent | Correct | Accuracy | 95% CI (Wilson) | Context read (chars, mean) | Answers that read restricted text |
+|---|---|---|---|---|---|
+| Baseline (BM25 over raw files) | 21/30 | 70.0% | 52%–83% | 2,150 | 0/30 |
+| Strong RAG (hybrid fuzzy retrieval, multi-query, top 10) | 28/30 | 93.3% | 79%–98% | 3,695 | 0/30 |
+| Oracle retrieval (every raw record of the right customer) | 28/30 | 93.3% | 79%–98% | 2,712 | 0/30 |
+| **Canon (MCP tools)** | 28/30 | 93.3% | 79%–98% | 7,088 | 0/30 |
 
 Lift, Canon vs. baseline: **+23.3 pts**. On the same questions, Canon alone is right on 7 and the baseline alone on 0 (exact McNemar p = 0.016).
-Canon vs. oracle retrieval: **+3.3 pts**. That is the part of the lift that better retrieval alone would not give.
+Canon vs. hybrid: **+0.0 pts**; Canon alone right on 1, hybrid alone on 1 (exact McNemar p = 1). This is the comparison to quote: the strongest baseline that does not need Canon or the answer key.
+Canon vs. oracle: **+0.0 pts**; Canon alone right on 0, oracle alone on 0 (exact McNemar p = 1). The oracle needs the answer key; it bounds what any retrieval over raw files could do.
 
 ## Accuracy by question type
 
-| Type | Questions | baseline | oracle | canon |
-|---|---|---|---|---|
-| contract_value | 8 | 62% | 100% | 100% |
-| renewal_date | 7 | 71% | 100% | 100% |
-| owner | 8 | 62% | 88% | 88% |
-| phone | 4 | 100% | 75% | 100% |
-| address | 3 | 100% | 100% | 100% |
+| Type | Questions | baseline | hybrid | oracle | canon |
+|---|---|---|---|---|---|
+| contract_value | 8 | 62% | 88% | 100% | 100% |
+| renewal_date | 7 | 71% | 100% | 100% | 100% |
+| owner | 8 | 62% | 100% | 88% | 88% |
+| phone | 4 | 75% | 75% | 75% | 75% |
+| address | 3 | 100% | 100% | 100% | 100% |
 
 ## Failure analysis
 
-| Failure | baseline | oracle | canon |
-|---|---|---|---|
-| stale / superseded value of the right customer | 4 | 2 | 1 |
-| value belonging to a different customer | 0 | 0 | 0 |
-| no answer found | 4 | 0 | 0 |
-| other | 0 | 0 | 0 |
+| Failure | baseline | hybrid | oracle | canon |
+|---|---|---|---|---|
+| stale / superseded value of the right customer | 4 | 2 | 2 | 2 |
+| value belonging to a different customer | 0 | 0 | 0 | 0 |
+| no answer found | 5 | 0 | 0 | 0 |
+| other | 0 | 0 | 0 | 0 |
 
 Accuracy by how the customer was named:
 
-| Mention style | Questions | baseline | oracle | canon |
-|---|---|---|---|---|
-| hand-written | 30 | 73% | 93% | 97% |
+| Mention style | Questions | baseline | hybrid | oracle | canon |
+|---|---|---|---|---|---|
+| hand-written | 30 | 70% | 93% | 93% | 93% |
 
 ### Every miss
 
-| Q | Question | Expected | baseline | oracle | canon |
-|---|---|---|---|---|---|
-| P07 | Dar El Hana Immobilier, c'est combien par an leur contrat ? | `190000` | ✗ `155.000 DH` (stale_value) | ✓ | ✓ |
-| P08 | Is the Oasis Agro Export contract up for renewal soon, and when? | `2027-06-01` | ✗ `unknown` (no_answer) | ✓ | ✓ |
-| P09 | chkoun li kaytkellef b Chefchaouen Textiles daba? | `Nadia Berrada` | ✗ `Omar Fassi` (stale_value) | ✗ `Omar Fassi` (stale_value) | ✗ `Omar Fassi` (stale_value) |
-| P18 | What did we sign with Atlantic Fishing Company for, per year? | `1858000` | ✗ `unknown` (no_answer) | ✓ | ✓ |
-| P21 | Who looks after Al Massira Transport these days? | `Salma El Idrissi` | ✗ `unknown` (no_answer) | ✓ | ✓ |
-| P24 | Is Atlas Tours still handled by the same account owner? Who is it? | `Nadia Berrada` | ✗ `unknown` (no_answer) | ✓ | ✓ |
-| P25 | Sahara Tours ch7al kaykhalsou f l3am? | `968000` | ✗ `920.000 DH par an` (stale_value) | ✓ | ✓ |
-| P27 | Quel est le numéro de Boulangerie Al Baraka ? | `+212546677565` | ✓ | ✗ `+212 (0)6 29 98 03 18` (stale_value) | ✓ |
-| P30 | My manager asked when Fennec Software renews - do you know? | `2027-09-01` | ✗ `2026-06-01` (stale_value) | ✓ | ✓ |
+| Q | Question | Expected | baseline | hybrid | oracle | canon |
+|---|---|---|---|---|---|---|
+| P07 | Dar El Hana Immobilier, c'est combien par an leur contrat ? | `190000` | ✗ `155.000 DH` (stale_value) | ✓ | ✓ | ✓ |
+| P08 | Is the Oasis Agro Export contract up for renewal soon, and when? | `2027-06-01` | ✗ `unknown` (no_answer) | ✓ | ✓ | ✓ |
+| P09 | chkoun li kaytkellef b Chefchaouen Textiles daba? | `Nadia Berrada` | ✗ `unknown` (no_answer) | ✓ | ✗ `Omar Fassi` (stale_value) | ✗ `Omar Fassi` (stale_value) |
+| P18 | What did we sign with Atlantic Fishing Company for, per year? | `1858000` | ✗ `unknown` (no_answer) | ✓ | ✓ | ✓ |
+| P21 | Who looks after Al Massira Transport these days? | `Salma El Idrissi` | ✗ `unknown` (no_answer) | ✓ | ✓ | ✓ |
+| P24 | Is Atlas Tours still handled by the same account owner? Who is it? | `Nadia Berrada` | ✗ `unknown` (no_answer) | ✓ | ✓ | ✓ |
+| P25 | Sahara Tours ch7al kaykhalsou f l3am? | `968000` | ✗ `920.000 DH par an` (stale_value) | ✗ `920,000 MAD` (stale_value) | ✓ | ✓ |
+| P27 | Quel est le numéro de Boulangerie Al Baraka ? | `+212546677565` | ✗ `+212 (0)6 29 98 03 18` (stale_value) | ✗ `+212 (0)6 29 98 03 18` (stale_value) | ✗ `+212 (0)6 29 98 03 18` (stale_value) | ✗ `+212629980318` (stale_value) |
+| P30 | My manager asked when Fennec Software renews - do you know? | `2027-09-01` | ✗ `2026-06-01` (stale_value) | ✓ | ✓ | ✓ |
 
 ## Reading this report
 
