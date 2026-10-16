@@ -5,6 +5,7 @@ description = "Agent-ready data layer: ingest, resolve, score and serve company 
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
+    "mcp>=2.3",
     "pydantic>=2.7",
     "rapidfuzz>=3.9",
 ]
