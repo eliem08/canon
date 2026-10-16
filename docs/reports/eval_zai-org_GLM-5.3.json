@@ -24,7 +24,21 @@
             "retrieved contract:CN-2024-114_v2",
             "retrieved contract:CN-2024-114_v1",
             "retrieved contract:CN-2023-170_v2"
-          ]
+          ],
+          "context_chars": 3864,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "461 000 MAD HT",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "4 queries; retrieved contract:CN-2024-107_v1",
+            "4 queries; retrieved contract:CN-2024-107_v2",
+            "4 queries; retrieved crm:0015g0000M0HJ0E"
+          ],
+          "context_chars": 4627,
+          "restricted": 0
         },
         "oracle": {
           "answer": "461 000 MAD",
@@ -32,16 +46,20 @@
           "failure": null,
           "trace": [
             "oracle: 12 raw chunks of E01"
-          ]
+          ],
+          "context_chars": 3269,
+          "restricted": 0
         },
         "canon": {
-          "answer": "461 000 MAD",
+          "answer": "461000.00 MAD",
           "correct": true,
           "failure": null,
           "trace": [
             "linked to E5a17c5e932 (score 1.00, span of 2 words)",
             "called find_contract_terms(E5a17c5e932)"
-          ]
+          ],
+          "context_chars": 8211,
+          "restricted": 0
         }
       }
     },
@@ -66,7 +84,21 @@
             "retrieved slack:deal-sahara-tech-solutions/2026-05-18",
             "retrieved contract:CN-2024-121_v2",
             "retrieved slack:deal-sahara-tech-solutions/2026-08-28"
-          ]
+          ],
+          "context_chars": 1181,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "1579000 MAD",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "11 queries; retrieved slack:deal-sahara-tech-solutions/2026-02-07",
+            "11 queries; retrieved slack:deal-sahara-tech-solutions/2026-08-28",
+            "11 queries; retrieved crm:0015g0000K3QV1Y"
+          ],
+          "context_chars": 3985,
+          "restricted": 0
         },
         "oracle": {
           "answer": "1 579 000 MAD",
@@ -74,7 +106,9 @@
           "failure": null,
           "trace": [
             "oracle: 14 raw chunks of E03"
-          ]
+          ],
+          "context_chars": 3254,
+          "restricted": 0
         },
         "canon": {
           "answer": "1 579 000 MAD",
@@ -83,7 +117,9 @@
           "trace": [
             "linked to Ea6a2457c12 (score 1.00, span of 4 words)",
             "called find_contract_terms(Ea6a2457c12)"
-          ]
+          ],
+          "context_chars": 8082,
+          "restricted": 0
         }
       }
     },
@@ -108,24 +144,42 @@
             "retrieved slack:old-zitoun/2024-04-20",
             "retrieved slack:ext-al-massira-transport/2026-09-26",
             "retrieved contract:CN-2023-177_v1"
-          ]
+          ],
+          "context_chars": 1011,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "872 000 MAD HT",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "7 queries; retrieved contract:CN-2023-177_v1",
+            "7 queries; retrieved contract:CN-2023-177_v2",
+            "7 queries; retrieved slack:old-khg/2025-01-14"
+          ],
+          "context_chars": 4161,
+          "restricted": 0
         },
         "oracle": {
-          "answer": "872,000 MAD",
+          "answer": "872 000 MAD",
           "correct": true,
           "failure": null,
           "trace": [
             "oracle: 11 raw chunks of E11"
-          ]
+          ],
+          "context_chars": 2959,
+          "restricted": 0
         },
         "canon": {
-          "answer": "872 000 MAD",
+          "answer": "872000 MAD",
           "correct": true,
           "failure": null,
           "trace": [
             "linked to E6ac4ca59c0 (score 1.00, span of 2 words)",
             "called find_contract_terms(E6ac4ca59c0)"
-          ]
+          ],
+          "context_chars": 7687,
+          "restricted": 0
         }
       }
     },
@@ -150,7 +204,21 @@
             "retrieved slack:deal-rif-cement/2026-05-20",
             "retrieved slack:deal-rif-cement/2025-09-06",
             "retrieved slack:deal-rif-cement/2025-08-18"
-          ]
+          ],
+          "context_chars": 276,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "1666000 MAD",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "4 queries; retrieved slack:deal-rif-cement/2026-05-20",
+            "4 queries; retrieved slack:deal-rif-cement/2026-07-08",
+            "4 queries; retrieved slack:deal-rif-cement/2025-09-06"
+          ],
+          "context_chars": 2379,
+          "restricted": 0
         },
         "oracle": {
           "answer": "1 666 000 MAD",
@@ -158,16 +226,20 @@
           "failure": null,
           "trace": [
             "oracle: 11 raw chunks of E12"
-          ]
+          ],
+          "context_chars": 2741,
+          "restricted": 0
         },
         "canon": {
-          "answer": "1 666 000 MAD HT",
+          "answer": "1666000 MAD",
           "correct": true,
           "failure": null,
           "trace": [
             "linked to Ed780791203 (score 1.00, span of 2 words)",
             "called find_contract_terms(Ed780791203)"
-          ]
+          ],
+          "context_chars": 7297,
+          "restricted": 0
         }
       }
     },
@@ -192,7 +264,21 @@
             "retrieved contract:CN-2023-275_v2",
             "retrieved contract:CN-2024-142_v1",
             "retrieved contract:CN-2023-275_v1"
-          ]
+          ],
+          "context_chars": 3477,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "1 341 000 MAD",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "11 queries; retrieved crm:0015g0000C324EP",
+            "11 queries; retrieved contract:CN-2024-191_v1",
+            "11 queries; retrieved contract:CN-2024-191_v2"
+          ],
+          "context_chars": 6627,
+          "restricted": 0
         },
         "oracle": {
           "answer": "1 341 000 MAD",
@@ -200,7 +286,9 @@
           "failure": null,
           "trace": [
             "oracle: 10 raw chunks of E13"
-          ]
+          ],
+          "context_chars": 2434,
+          "restricted": 0
         },
         "canon": {
           "answer": "1 341 000 MAD",
@@ -209,7 +297,9 @@
           "trace": [
             "linked to Ee8a34a7a4c (score 1.00, span of 4 words)",
             "called find_contract_terms(Ee8a34a7a4c)"
-          ]
+          ],
+          "context_chars": 6952,
+          "restricted": 0
         }
       }
     },
@@ -234,7 +324,21 @@
             "retrieved contract:CN-2023-170_v2",
             "retrieved contract:CN-2024-212_v2",
             "retrieved contract:CN-2024-114_v2"
-          ]
+          ],
+          "context_chars": 3899,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "600 000 MAD HT",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "4 queries; retrieved contract:CN-2023-198_v1",
+            "4 queries; retrieved contract:CN-2023-198_v2",
+            "4 queries; retrieved contract:CN-2024-142_v2"
+          ],
+          "context_chars": 7524,
+          "restricted": 0
         },
         "oracle": {
           "answer": "600 000 MAD",
@@ -242,7 +346,9 @@
           "failure": null,
           "trace": [
             "oracle: 13 raw chunks of E14"
-          ]
+          ],
+          "context_chars": 3445,
+          "restricted": 0
         },
         "canon": {
           "answer": "600000 MAD",
@@ -251,7 +357,9 @@
           "trace": [
             "linked to E5f5fac9e03 (score 1.00, span of 2 words)",
             "called find_contract_terms(E5f5fac9e03)"
-          ]
+          ],
+          "context_chars": 8213,
+          "restricted": 0
         }
       }
     },
@@ -276,7 +384,21 @@
             "retrieved contract:CN-2023-226_v1",
             "retrieved contract:CN-2023-226_v2",
             "retrieved slack:old-khg/2025-01-14"
-          ]
+          ],
+          "context_chars": 2226,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "487,000 MAD",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "16 queries; retrieved crm:0015g0000ZS34AB",
+            "16 queries; retrieved crm:0015g0000R111H6",
+            "16 queries; retrieved contract:CN-2023-226_v1"
+          ],
+          "context_chars": 2706,
+          "restricted": 0
         },
         "oracle": {
           "answer": "487,000 MAD",
@@ -284,7 +406,9 @@
           "failure": null,
           "trace": [
             "oracle: 4 raw chunks of E18"
-          ]
+          ],
+          "context_chars": 2168,
+          "restricted": 0
         },
         "canon": {
           "answer": "487,000 MAD",
@@ -293,7 +417,9 @@
           "trace": [
             "linked to E22e43d15c3 (score 1.00, span of 4 words)",
             "called find_contract_terms(E22e43d15c3)"
-          ]
+          ],
+          "context_chars": 6979,
+          "restricted": 0
         }
       }
     },
@@ -318,15 +444,31 @@
             "retrieved slack:deal-atlantic-fishing/2026-01-01",
             "retrieved slack:deal-atlantic-fishing/2025-06-29",
             "retrieved slack:deal-atlantic-fishing/2026-08-28"
-          ]
+          ],
+          "context_chars": 378,
+          "restricted": 0
         },
-        "oracle": {
+        "hybrid": {
           "answer": "1,858,000 MAD",
           "correct": true,
           "failure": null,
           "trace": [
+            "11 queries; retrieved crm:0015g0000K55VT4",
+            "11 queries; retrieved contract:CN-2023-240_v1",
+            "11 queries; retrieved slack:deal-atlantic-fishing/2025-06-29"
+          ],
+          "context_chars": 2390,
+          "restricted": 0
+        },
+        "oracle": {
+          "answer": "1 858 000 MAD",
+          "correct": true,
+          "failure": null,
+          "trace": [
             "oracle: 9 raw chunks of E20"
-          ]
+          ],
+          "context_chars": 2239,
+          "restricted": 0
         },
         "canon": {
           "answer": "1,858,000 MAD",
@@ -335,7 +477,9 @@
           "trace": [
             "linked to E88150301f2 (score 1.00, span of 3 words)",
             "called find_contract_terms(E88150301f2)"
-          ]
+          ],
+          "context_chars": 7079,
+          "restricted": 0
         }
       }
     },
@@ -360,24 +504,42 @@
             "retrieved contract:CN-2023-247_v1",
             "retrieved crm:0015g0000ES4QTK",
             "retrieved contract:CN-2023-247_v2"
-          ]
+          ],
+          "context_chars": 2862,
+          "restricted": 0
         },
-        "oracle": {
+        "hybrid": {
           "answer": "1 382 000 MAD",
           "correct": true,
           "failure": null,
           "trace": [
+            "11 queries; retrieved crm:0015g0000YR8NH2",
+            "11 queries; retrieved contract:CN-2023-247_v1",
+            "11 queries; retrieved contract:CN-2023-247_v2"
+          ],
+          "context_chars": 4793,
+          "restricted": 0
+        },
+        "oracle": {
+          "answer": "1382000 MAD",
+          "correct": true,
+          "failure": null,
+          "trace": [
             "oracle: 5 raw chunks of E21"
-          ]
+          ],
+          "context_chars": 2862,
+          "restricted": 0
         },
         "canon": {
-          "answer": "1 382 000 MAD",
+          "answer": "1382000 MAD",
           "correct": true,
           "failure": null,
           "trace": [
             "linked to Eadd4d540f5 (score 1.00, span of 3 words)",
             "called find_contract_terms(Eadd4d540f5)"
-          ]
+          ],
+          "context_chars": 7620,
+          "restricted": 0
         }
       }
     },
@@ -402,15 +564,31 @@
             "retrieved slack:old-zitoun/2024-04-20",
             "retrieved slack:ext-al-massira-transport/2026-09-26",
             "retrieved contract:CN-2023-254_v1"
-          ]
+          ],
+          "context_chars": 993,
+          "restricted": 0
         },
-        "oracle": {
+        "hybrid": {
           "answer": "536 000 MAD HT",
           "correct": true,
           "failure": null,
           "trace": [
+            "7 queries; retrieved contract:CN-2023-254_v1",
+            "7 queries; retrieved contract:CN-2023-254_v2",
+            "7 queries; retrieved slack:old-khg/2025-01-14"
+          ],
+          "context_chars": 3807,
+          "restricted": 0
+        },
+        "oracle": {
+          "answer": "536 000 MAD",
+          "correct": true,
+          "failure": null,
+          "trace": [
             "oracle: 3 raw chunks of E22"
-          ]
+          ],
+          "context_chars": 1997,
+          "restricted": 0
         },
         "canon": {
           "answer": "536000 MAD",
@@ -419,7 +597,9 @@
           "trace": [
             "linked to Ec1194c4c12 (score 1.00, span of 2 words)",
             "called find_contract_terms(Ec1194c4c12)"
-          ]
+          ],
+          "context_chars": 6453,
+          "restricted": 0
         }
       }
     },
@@ -444,7 +624,21 @@
             "retrieved contract:CN-2023-240_v1",
             "retrieved contract:CN-2024-191_v1",
             "retrieved contract:CN-2023-240_v2"
-          ]
+          ],
+          "context_chars": 3132,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "2027-12-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "4 queries; retrieved crm:0015g0000M0HJ0E",
+            "4 queries; retrieved crm:0015g0000SKPBB3",
+            "4 queries; retrieved crm:0015g000098EZ1H"
+          ],
+          "context_chars": 3960,
+          "restricted": 0
         },
         "oracle": {
           "answer": "2027-12-01",
@@ -452,7 +646,9 @@
           "failure": null,
           "trace": [
             "oracle: 12 raw chunks of E01"
-          ]
+          ],
+          "context_chars": 3269,
+          "restricted": 0
         },
         "canon": {
           "answer": "2027-12-01",
@@ -461,7 +657,9 @@
           "trace": [
             "linked to E5a17c5e932 (score 0.97, span of 2 words)",
             "called find_contract_terms(E5a17c5e932)"
-          ]
+          ],
+          "context_chars": 8211,
+          "restricted": 0
         }
       }
     },
@@ -486,7 +684,21 @@
             "retrieved crm:0015g0000AGRRWC",
             "retrieved crm:0015g0000AQSZBV",
             "retrieved contract:CN-2023-261_v2"
-          ]
+          ],
+          "context_chars": 3246,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "2028-03-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "6 queries; retrieved crm:0015g0000AGRRWC",
+            "6 queries; retrieved crm:0015g0000KG51J5",
+            "6 queries; retrieved crm:0015g0000AQSZBV"
+          ],
+          "context_chars": 4007,
+          "restricted": 0
         },
         "oracle": {
           "answer": "2028-03-01",
@@ -494,7 +706,9 @@
           "failure": null,
           "trace": [
             "oracle: 5 raw chunks of E05"
-          ]
+          ],
+          "context_chars": 2826,
+          "restricted": 0
         },
         "canon": {
           "answer": "2028-03-01",
@@ -503,7 +717,9 @@
           "trace": [
             "linked to Eacdf3bf222 (score 1.00, span of 3 words)",
             "called find_contract_terms(Eacdf3bf222)"
-          ]
+          ],
+          "context_chars": 7588,
+          "restricted": 0
         }
       }
     },
@@ -528,7 +744,21 @@
             "retrieved contract:CN-2024-149_v2",
             "retrieved contract:CN-2023-261_v2",
             "retrieved contract:CN-2023-170_v2"
-          ]
+          ],
+          "context_chars": 3996,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "2027-07-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "4 queries; retrieved contract:CN-2024-156_v1",
+            "4 queries; retrieved contract:CN-2024-156_v2",
+            "4 queries; retrieved crm:0015g0000MPK8DF"
+          ],
+          "context_chars": 4685,
+          "restricted": 0
         },
         "oracle": {
           "answer": "2027-07-01",
@@ -536,7 +766,9 @@
           "failure": null,
           "trace": [
             "oracle: 3 raw chunks of E08"
-          ]
+          ],
+          "context_chars": 2017,
+          "restricted": 0
         },
         "canon": {
           "answer": "2027-07-01",
@@ -545,7 +777,9 @@
           "trace": [
             "linked to E1c42679cb9 (score 1.00, span of 2 words)",
             "called find_contract_terms(E1c42679cb9)"
-          ]
+          ],
+          "context_chars": 6475,
+          "restricted": 0
         }
       }
     },
@@ -570,7 +804,21 @@
             "retrieved contract:CN-2023-170_v1",
             "retrieved slack:client-oasisagro/2026-06-18",
             "retrieved crm:0015g0000MS430H"
-          ]
+          ],
+          "context_chars": 2028,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "2027-06-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "7 queries; retrieved crm:0015g0000MS430H",
+            "7 queries; retrieved contract:CN-2023-170_v1",
+            "7 queries; retrieved contract:CN-2023-170_v2"
+          ],
+          "context_chars": 3099,
+          "restricted": 0
         },
         "oracle": {
           "answer": "2027-06-01",
@@ -578,7 +826,9 @@
           "failure": null,
           "trace": [
             "oracle: 10 raw chunks of E10"
-          ]
+          ],
+          "context_chars": 3039,
+          "restricted": 0
         },
         "canon": {
           "answer": "2027-06-01",
@@ -587,7 +837,9 @@
           "trace": [
             "linked to Ede7c1c956e (score 1.00, span of 3 words)",
             "called find_contract_terms(Ede7c1c956e)"
-          ]
+          ],
+          "context_chars": 8223,
+          "restricted": 0
         }
       }
     },
@@ -612,7 +864,21 @@
             "retrieved crm:0015g0000PNDMSR",
             "retrieved crm:0015g00008EEL0X",
             "retrieved slack:old-saharatech/2024-05-27"
-          ]
+          ],
+          "context_chars": 1110,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "2027-08-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "11 queries; retrieved crm:0015g00008EEL0X",
+            "11 queries; retrieved slack:client-medina-pharm/2025-12-24",
+            "11 queries; retrieved slack:client-medina-pharm/2026-06-11"
+          ],
+          "context_chars": 1601,
+          "restricted": 0
         },
         "oracle": {
           "answer": "2027-08-01",
@@ -620,7 +886,9 @@
           "failure": null,
           "trace": [
             "oracle: 13 raw chunks of E14"
-          ]
+          ],
+          "context_chars": 3445,
+          "restricted": 0
         },
         "canon": {
           "answer": "2027-08-01",
@@ -629,7 +897,9 @@
           "trace": [
             "linked to E5f5fac9e03 (score 1.00, span of 3 words)",
             "called find_contract_terms(E5f5fac9e03)"
-          ]
+          ],
+          "context_chars": 8213,
+          "restricted": 0
         }
       }
     },
@@ -654,7 +924,21 @@
             "retrieved contract:CN-2024-268_v1",
             "retrieved contract:CN-2023-226_v1",
             "retrieved contract:CN-2023-240_v1"
-          ]
+          ],
+          "context_chars": 2681,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "2027-05-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "4 queries; retrieved slack:deal-zitoun/2025-09-11",
+            "4 queries; retrieved slack:old-zitoun/2023-07-19",
+            "4 queries; retrieved crm:0015g0000W8BEM4"
+          ],
+          "context_chars": 2843,
+          "restricted": 0
         },
         "oracle": {
           "answer": "2027-05-01",
@@ -662,7 +946,9 @@
           "failure": null,
           "trace": [
             "oracle: 15 raw chunks of E15"
-          ]
+          ],
+          "context_chars": 3112,
+          "restricted": 0
         },
         "canon": {
           "answer": "2027-05-01",
@@ -671,7 +957,9 @@
           "trace": [
             "linked to E604b5d1a92 (score 1.00, span of 2 words)",
             "called find_contract_terms(E604b5d1a92)"
-          ]
+          ],
+          "context_chars": 8271,
+          "restricted": 0
         }
       }
     },
@@ -696,7 +984,21 @@
             "retrieved contract:CN-2023-240_v1",
             "retrieved contract:CN-2024-191_v1",
             "retrieved contract:CN-2023-240_v2"
-          ]
+          ],
+          "context_chars": 3132,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "2027-09-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "7 queries; retrieved slack:old-argan-dor/2024-05-16",
+            "7 queries; retrieved crm:0015g00009CNXAW",
+            "7 queries; retrieved slack:old-argan-dor/2023-07-20"
+          ],
+          "context_chars": 2514,
+          "restricted": 0
         },
         "oracle": {
           "answer": "2027-09-01",
@@ -704,7 +1006,9 @@
           "failure": null,
           "trace": [
             "oracle: 19 raw chunks of E17"
-          ]
+          ],
+          "context_chars": 3004,
+          "restricted": 0
         },
         "canon": {
           "answer": "2027-09-01",
@@ -713,7 +1017,9 @@
           "trace": [
             "linked to E16106be8f5 (score 1.00, span of 3 words)",
             "called find_contract_terms(E16106be8f5)"
-          ]
+          ],
+          "context_chars": 7706,
+          "restricted": 0
         }
       }
     },
@@ -738,7 +1044,21 @@
             "retrieved slack:deal-atlantic-fishing/2026-09-23",
             "retrieved slack:deal-atlantic-fishing/2026-01-01",
             "retrieved slack:deal-atlantic-fishing/2025-06-29"
-          ]
+          ],
+          "context_chars": 378,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "2027-04-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "15 queries; retrieved slack:deal-atlantic-fishing/2026-06-19",
+            "15 queries; retrieved slack:deal-atlantic-fishing/2026-08-28",
+            "15 queries; retrieved slack:deal-atlantic-fishing/2025-06-29"
+          ],
+          "context_chars": 2751,
+          "restricted": 0
         },
         "oracle": {
           "answer": "2027-04-01",
@@ -746,7 +1066,9 @@
           "failure": null,
           "trace": [
             "oracle: 9 raw chunks of E20"
-          ]
+          ],
+          "context_chars": 2239,
+          "restricted": 0
         },
         "canon": {
           "answer": "2027-04-01",
@@ -755,7 +1077,9 @@
           "trace": [
             "linked to E88150301f2 (score 1.00, span of 4 words)",
             "called find_contract_terms(E88150301f2)"
-          ]
+          ],
+          "context_chars": 7079,
+          "restricted": 0
         }
       }
     },
@@ -780,7 +1104,21 @@
             "retrieved contract:CN-2023-261_v2",
             "retrieved contract:CN-2023-170_v2",
             "retrieved contract:CN-2023-198_v2"
-          ]
+          ],
+          "context_chars": 3975,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "2027-08-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "4 queries; retrieved contract:CN-2023-254_v1",
+            "4 queries; retrieved contract:CN-2023-254_v2",
+            "4 queries; retrieved contract:CN-2023-261_v2"
+          ],
+          "context_chars": 8040,
+          "restricted": 0
         },
         "oracle": {
           "answer": "2027-08-01",
@@ -788,7 +1126,9 @@
           "failure": null,
           "trace": [
             "oracle: 3 raw chunks of E22"
-          ]
+          ],
+          "context_chars": 1997,
+          "restricted": 0
         },
         "canon": {
           "answer": "2027-08-01",
@@ -797,7 +1137,9 @@
           "trace": [
             "linked to Ec1194c4c12 (score 1.00, span of 2 words)",
             "called find_contract_terms(Ec1194c4c12)"
-          ]
+          ],
+          "context_chars": 6453,
+          "restricted": 0
         }
       }
     },
@@ -822,7 +1164,21 @@
             "retrieved crm:0015g0000DT29PZ",
             "retrieved contract:CN-2023-226_v1",
             "retrieved contract:CN-2023-240_v1"
-          ]
+          ],
+          "context_chars": 2711,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "2027-05-01",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "4 queries; retrieved crm:0015g000074H9BX",
+            "4 queries; retrieved crm:0015g0000DT29PZ",
+            "4 queries; retrieved contract:CN-2023-275_v1"
+          ],
+          "context_chars": 3958,
+          "restricted": 0
         },
         "oracle": {
           "answer": "2027-05-01",
@@ -830,7 +1186,9 @@
           "failure": null,
           "trace": [
             "oracle: 4 raw chunks of E25"
-          ]
+          ],
+          "context_chars": 2420,
+          "restricted": 0
         },
         "canon": {
           "answer": "2027-05-01",
@@ -839,7 +1197,9 @@
           "trace": [
             "linked to Ef031fca955 (score 1.00, span of 2 words)",
             "called find_contract_terms(Ef031fca955)"
-          ]
+          ],
+          "context_chars": 6980,
+          "restricted": 0
         }
       }
     },
@@ -864,7 +1224,21 @@
             "retrieved slack:old-saharatour/2025-03-01",
             "retrieved slack:old-zitoun/2024-04-20",
             "retrieved slack:old-saharatour/2026-02-02"
-          ]
+          ],
+          "context_chars": 327,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "Omar Fassi",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "7 queries; retrieved slack:old-saharatour/2025-03-01",
+            "7 queries; retrieved slack:old-saharatour/2025-03-16",
+            "7 queries; retrieved slack:old-saharatour/2024-02-12"
+          ],
+          "context_chars": 1178,
+          "restricted": 0
         },
         "oracle": {
           "answer": "Omar Fassi",
@@ -872,7 +1246,9 @@
           "failure": null,
           "trace": [
             "oracle: 11 raw chunks of E04"
-          ]
+          ],
+          "context_chars": 2815,
+          "restricted": 0
         },
         "canon": {
           "answer": "Omar Fassi",
@@ -881,7 +1257,9 @@
           "trace": [
             "linked to E2dc070a02d (score 1.00, span of 2 words)",
             "called who_owns(E2dc070a02d)"
-          ]
+          ],
+          "context_chars": 1512,
+          "restricted": 0
         }
       }
     },
@@ -906,7 +1284,21 @@
             "retrieved slack:old-khg/2025-01-14",
             "retrieved slack:client-oasisagro/2026-09-10",
             "retrieved slack:ext-al-massira-transport/2026-09-26"
-          ]
+          ],
+          "context_chars": 729,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "Imane Chraibi",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "7 queries; retrieved crm:0015g00007K2RCW",
+            "7 queries; retrieved contract:CN-2024-142_v1",
+            "7 queries; retrieved contract:CN-2024-142_v2"
+          ],
+          "context_chars": 2974,
+          "restricted": 0
         },
         "oracle": {
           "answer": "Imane Chraibi",
@@ -914,7 +1306,9 @@
           "failure": null,
           "trace": [
             "oracle: 4 raw chunks of E06"
-          ]
+          ],
+          "context_chars": 2426,
+          "restricted": 0
         },
         "canon": {
           "answer": "Imane Chraibi",
@@ -923,7 +1317,9 @@
           "trace": [
             "linked to E0f3554aac5 (score 1.00, span of 2 words)",
             "called who_owns(E0f3554aac5)"
-          ]
+          ],
+          "context_chars": 1175,
+          "restricted": 0
         }
       }
     },
@@ -948,7 +1344,21 @@
             "retrieved slack:old-dar-el-hana/2023-11-22",
             "retrieved slack:old-dar-el-hana/2023-09-18",
             "retrieved slack:old-dar-el-hana/2025-10-03"
-          ]
+          ],
+          "context_chars": 387,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "Salma El Idrissi",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "15 queries; retrieved slack:old-dar-el-hana/2023-11-22",
+            "15 queries; retrieved slack:old-dar-el-hana/2023-08-29",
+            "15 queries; retrieved slack:old-dar-el-hana/2025-10-03"
+          ],
+          "context_chars": 3245,
+          "restricted": 0
         },
         "oracle": {
           "answer": "Salma El Idrissi",
@@ -956,7 +1366,9 @@
           "failure": null,
           "trace": [
             "oracle: 8 raw chunks of E09"
-          ]
+          ],
+          "context_chars": 2358,
+          "restricted": 0
         },
         "canon": {
           "answer": "Salma El Idrissi",
@@ -965,7 +1377,9 @@
           "trace": [
             "linked to E7060296576 (score 1.00, span of 5 words)",
             "called who_owns(E7060296576)"
-          ]
+          ],
+          "context_chars": 1224,
+          "restricted": 0
         }
       }
     },
@@ -981,7 +1395,7 @@
       },
       "outcomes": {
         "baseline": {
-          "answer": "<@U01>",
+          "answer": "rif cement",
           "correct": false,
           "failure": "other",
           "trace": [
@@ -990,7 +1404,21 @@
             "retrieved slack:deal-rif-cement/2026-05-20",
             "retrieved slack:deal-rif-cement/2025-09-06",
             "retrieved slack:deal-rif-cement/2025-08-18"
-          ]
+          ],
+          "context_chars": 269,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "Youssef Benali",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "7 queries; retrieved slack:deal-rif-cement/2026-07-08",
+            "7 queries; retrieved slack:deal-rif-cement/2025-04-25",
+            "7 queries; retrieved slack:deal-rif-cement/2026-05-20"
+          ],
+          "context_chars": 743,
+          "restricted": 0
         },
         "oracle": {
           "answer": "Imane Chraibi",
@@ -998,7 +1426,9 @@
           "failure": "stale_value",
           "trace": [
             "oracle: 11 raw chunks of E12"
-          ]
+          ],
+          "context_chars": 2741,
+          "restricted": 0
         },
         "canon": {
           "answer": "Youssef Benali",
@@ -1007,7 +1437,9 @@
           "trace": [
             "linked to Ed780791203 (score 1.00, span of 2 words)",
             "called who_owns(Ed780791203)"
-          ]
+          ],
+          "context_chars": 1480,
+          "restricted": 0
         }
       }
     },
@@ -1032,7 +1464,21 @@
             "retrieved contract:CN-2024-191_v2",
             "retrieved crm:0015g00005CDPYT",
             "retrieved slack:old-zitoun/2024-04-20"
-          ]
+          ],
+          "context_chars": 2241,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "Nadia Berrada",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "16 queries; retrieved crm:0015g0000C324EP",
+            "16 queries; retrieved contract:CN-2024-191_v1",
+            "16 queries; retrieved crm:0015g00005CDPYT"
+          ],
+          "context_chars": 4487,
+          "restricted": 0
         },
         "oracle": {
           "answer": "Nadia Berrada",
@@ -1040,7 +1486,9 @@
           "failure": null,
           "trace": [
             "oracle: 10 raw chunks of E13"
-          ]
+          ],
+          "context_chars": 2434,
+          "restricted": 0
         },
         "canon": {
           "answer": "Nadia Berrada",
@@ -1049,7 +1497,9 @@
           "trace": [
             "linked to Ee8a34a7a4c (score 1.00, span of 4 words)",
             "called who_owns(Ee8a34a7a4c)"
-          ]
+          ],
+          "context_chars": 1154,
+          "restricted": 0
         }
       }
     },
@@ -1074,7 +1524,21 @@
             "retrieved crm:0015g0000LQLZ0P",
             "retrieved slack:deal-zitoun/2026-07-18",
             "retrieved slack:client-khg/2026-09-21"
-          ]
+          ],
+          "context_chars": 2097,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "Imane Chraibi",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "11 queries; retrieved crm:0015g0000LQLZ0P",
+            "11 queries; retrieved contract:CN-2024-212_v2",
+            "11 queries; retrieved contract:CN-2024-212_v1"
+          ],
+          "context_chars": 3259,
+          "restricted": 0
         },
         "oracle": {
           "answer": "Imane Chraibi",
@@ -1082,7 +1546,9 @@
           "failure": null,
           "trace": [
             "oracle: 16 raw chunks of E16"
-          ]
+          ],
+          "context_chars": 2719,
+          "restricted": 0
         },
         "canon": {
           "answer": "Imane Chraibi",
@@ -1091,7 +1557,9 @@
           "trace": [
             "linked to Ef37f90a6c6 (score 0.97, span of 3 words)",
             "called who_owns(Ef37f90a6c6)"
-          ]
+          ],
+          "context_chars": 1526,
+          "restricted": 0
         }
       }
     },
@@ -1116,7 +1584,21 @@
             "retrieved slack:client-khg/2026-09-21",
             "retrieved slack:old-saharatour/2024-03-28",
             "retrieved slack:old-saharatech/2024-08-29"
-          ]
+          ],
+          "context_chars": 409,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "Nadia Berrada",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "7 queries; retrieved slack:old-argan-dor/2023-12-08",
+            "7 queries; retrieved slack:old-argan-dor/2024-10-04",
+            "7 queries; retrieved slack:acc-argan-dor/2026-03-16"
+          ],
+          "context_chars": 1500,
+          "restricted": 0
         },
         "oracle": {
           "answer": "Nadia Berrada",
@@ -1124,7 +1606,9 @@
           "failure": null,
           "trace": [
             "oracle: 19 raw chunks of E17"
-          ]
+          ],
+          "context_chars": 3004,
+          "restricted": 0
         },
         "canon": {
           "answer": "Nadia Berrada",
@@ -1133,7 +1617,9 @@
           "trace": [
             "linked to E16106be8f5 (score 1.00, span of 2 words)",
             "called who_owns(E16106be8f5)"
-          ]
+          ],
+          "context_chars": 1507,
+          "restricted": 0
         }
       }
     },
@@ -1158,7 +1644,21 @@
             "retrieved contract:CN-2023-226_v2",
             "retrieved crm:0015g0000R111H6",
             "retrieved contract:CN-2024-268_v1"
-          ]
+          ],
+          "context_chars": 2758,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "Youssef Benali",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "7 queries; retrieved crm:0015g0000ZS34AB",
+            "7 queries; retrieved crm:0015g0000R111H6",
+            "7 queries; retrieved contract:CN-2023-226_v1"
+          ],
+          "context_chars": 2628,
+          "restricted": 0
         },
         "oracle": {
           "answer": "Youssef Benali",
@@ -1166,7 +1666,9 @@
           "failure": null,
           "trace": [
             "oracle: 4 raw chunks of E18"
-          ]
+          ],
+          "context_chars": 2168,
+          "restricted": 0
         },
         "canon": {
           "answer": "Youssef Benali",
@@ -1175,7 +1677,9 @@
           "trace": [
             "linked to E22e43d15c3 (score 1.00, span of 3 words)",
             "called who_owns(E22e43d15c3)"
-          ]
+          ],
+          "context_chars": 1160,
+          "restricted": 0
         }
       }
     },
@@ -1191,7 +1695,7 @@
       },
       "outcomes": {
         "baseline": {
-          "answer": "@U05",
+          "answer": "<@U05>",
           "correct": false,
           "failure": "other",
           "trace": [
@@ -1200,7 +1704,21 @@
             "retrieved slack:deal-atlantic-fishing/2025-06-29",
             "retrieved slack:deal-atlantic-fishing/2026-08-28",
             "retrieved slack:deal-atlantic-fishing/2026-06-19"
-          ]
+          ],
+          "context_chars": 378,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "Mehdi Alaoui",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "11 queries; retrieved crm:0015g0000K55VT4",
+            "11 queries; retrieved slack:deal-atlantic-fishing/2026-09-23",
+            "11 queries; retrieved slack:deal-atlantic-fishing/2025-06-29"
+          ],
+          "context_chars": 2404,
+          "restricted": 0
         },
         "oracle": {
           "answer": "Mehdi Alaoui",
@@ -1208,7 +1726,9 @@
           "failure": null,
           "trace": [
             "oracle: 9 raw chunks of E20"
-          ]
+          ],
+          "context_chars": 2239,
+          "restricted": 0
         },
         "canon": {
           "answer": "Mehdi Alaoui",
@@ -1217,7 +1737,9 @@
           "trace": [
             "linked to E88150301f2 (score 1.00, span of 3 words)",
             "called who_owns(E88150301f2)"
-          ]
+          ],
+          "context_chars": 1013,
+          "restricted": 0
         }
       }
     },
@@ -1242,7 +1764,21 @@
             "retrieved slack:ext-al-massira-transport/2026-09-09",
             "retrieved slack:ext-al-massira-transport/2026-06-21",
             "retrieved slack:ext-al-massira-transport/2026-04-12"
-          ]
+          ],
+          "context_chars": 370,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "Salma El Idrissi",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "6 queries; retrieved slack:ext-al-massira-transport/2026-09-26",
+            "6 queries; retrieved slack:ext-al-massira-transport/2026-09-18",
+            "6 queries; retrieved slack:ext-al-massira-transport/2026-09-09"
+          ],
+          "context_chars": 1551,
+          "restricted": 0
         },
         "oracle": {
           "answer": "Salma El Idrissi",
@@ -1250,7 +1786,9 @@
           "failure": null,
           "trace": [
             "oracle: 10 raw chunks of E23"
-          ]
+          ],
+          "context_chars": 2859,
+          "restricted": 0
         },
         "canon": {
           "answer": "Salma El Idrissi",
@@ -1259,7 +1797,9 @@
           "trace": [
             "linked to E82151253c7 (score 1.00, span of 2 words)",
             "called who_owns(E82151253c7)"
-          ]
+          ],
+          "context_chars": 1536,
+          "restricted": 0
         }
       }
     },
@@ -1284,7 +1824,21 @@
             "retrieved slack:deal-sahara-tech-solutions/2026-08-28",
             "retrieved slack:deal-sahara-tech-solutions/2026-05-18",
             "retrieved slack:deal-sahara-tech-solutions/2026-09-02"
-          ]
+          ],
+          "context_chars": 446,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "unknown",
+          "correct": false,
+          "failure": "no_answer",
+          "trace": [
+            "4 queries; retrieved slack:deal-sahara-tech-solutions/2026-02-07",
+            "4 queries; retrieved slack:deal-sahara-tech-solutions/2026-05-18",
+            "4 queries; retrieved slack:deal-sahara-tech-solutions/2026-05-03"
+          ],
+          "context_chars": 1260,
+          "restricted": 0
         },
         "oracle": {
           "answer": "05 92 84 67 51",
@@ -1292,7 +1846,9 @@
           "failure": null,
           "trace": [
             "oracle: 14 raw chunks of E03"
-          ]
+          ],
+          "context_chars": 3254,
+          "restricted": 0
         },
         "canon": {
           "answer": "+212592846751",
@@ -1301,7 +1857,9 @@
           "trace": [
             "linked to Ea6a2457c12 (score 1.00, span of 2 words)",
             "called get_customer(Ea6a2457c12)"
-          ]
+          ],
+          "context_chars": 14072,
+          "restricted": 0
         }
       }
     },
@@ -1326,7 +1884,21 @@
             "retrieved contract:CN-2024-191_v2",
             "retrieved contract:CN-2024-142_v1",
             "retrieved contract:CN-2023-275_v1"
-          ]
+          ],
+          "context_chars": 3168,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "05 44 46 97 97",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "11 queries; retrieved crm:0015g0000C324EP",
+            "11 queries; retrieved contract:CN-2024-191_v1",
+            "11 queries; retrieved contract:CN-2024-191_v2"
+          ],
+          "context_chars": 6627,
+          "restricted": 0
         },
         "oracle": {
           "answer": "05 44 46 97 97",
@@ -1334,7 +1906,9 @@
           "failure": null,
           "trace": [
             "oracle: 10 raw chunks of E13"
-          ]
+          ],
+          "context_chars": 2434,
+          "restricted": 0
         },
         "canon": {
           "answer": "+212544469797",
@@ -1343,7 +1917,9 @@
           "trace": [
             "linked to Ee8a34a7a4c (score 1.00, span of 4 words)",
             "called get_customer(Ee8a34a7a4c)"
-          ]
+          ],
+          "context_chars": 11283,
+          "restricted": 0
         }
       }
     },
@@ -1368,7 +1944,21 @@
             "retrieved contract:CN-2024-268_v2",
             "retrieved contract:CN-2023-226_v2",
             "retrieved contract:CN-2024-191_v2"
-          ]
+          ],
+          "context_chars": 3371,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "0545140939",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "7 queries; retrieved crm:0015g0000PNDMSR",
+            "7 queries; retrieved contract:CN-2023-198_v1",
+            "7 queries; retrieved crm:0015g0000WAX21R"
+          ],
+          "context_chars": 2916,
+          "restricted": 0
         },
         "oracle": {
           "answer": "0545140939",
@@ -1376,7 +1966,9 @@
           "failure": null,
           "trace": [
             "oracle: 13 raw chunks of E14"
-          ]
+          ],
+          "context_chars": 3445,
+          "restricted": 0
         },
         "canon": {
           "answer": "+212545140939",
@@ -1385,7 +1977,9 @@
           "trace": [
             "linked to E5f5fac9e03 (score 1.00, span of 3 words)",
             "called get_customer(E5f5fac9e03)"
-          ]
+          ],
+          "context_chars": 15101,
+          "restricted": 0
         }
       }
     },
@@ -1410,7 +2004,21 @@
             "retrieved slack:old-zitoun/2023-07-19",
             "retrieved contract:CN-2023-205_v2",
             "retrieved crm:0015g0000W8BEM4"
-          ]
+          ],
+          "context_chars": 2105,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "06 70 91 46 07",
+          "correct": false,
+          "failure": "stale_value",
+          "trace": [
+            "4 queries; retrieved slack:deal-zitoun/2025-09-11",
+            "4 queries; retrieved slack:old-zitoun/2023-07-19",
+            "4 queries; retrieved crm:0015g0000W8BEM4"
+          ],
+          "context_chars": 2859,
+          "restricted": 0
         },
         "oracle": {
           "answer": "06 70 91 46 07",
@@ -1418,7 +2026,9 @@
           "failure": "stale_value",
           "trace": [
             "oracle: 15 raw chunks of E15"
-          ]
+          ],
+          "context_chars": 3112,
+          "restricted": 0
         },
         "canon": {
           "answer": "+212670914607",
@@ -1427,7 +2037,9 @@
           "trace": [
             "linked to E604b5d1a92 (score 1.00, span of 2 words)",
             "called get_customer(E604b5d1a92)"
-          ]
+          ],
+          "context_chars": 14335,
+          "restricted": 0
         }
       }
     },
@@ -1452,7 +2064,21 @@
             "retrieved contract:CN-2024-149_v1",
             "retrieved contract:CN-2023-170_v2",
             "retrieved contract:CN-2024-142_v1"
-          ]
+          ],
+          "context_chars": 3535,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "unknown",
+          "correct": false,
+          "failure": "no_answer",
+          "trace": [
+            "2 queries; retrieved contract:CN-2023-170_v1",
+            "2 queries; retrieved contract:CN-2024-142_v1",
+            "2 queries; retrieved contract:CN-2023-170_v2"
+          ],
+          "context_chars": 7043,
+          "restricted": 0
         },
         "oracle": {
           "answer": "00212524415035",
@@ -1460,7 +2086,9 @@
           "failure": null,
           "trace": [
             "oracle: 9 raw chunks of E20"
-          ]
+          ],
+          "context_chars": 2239,
+          "restricted": 0
         },
         "canon": {
           "answer": "+212524415035",
@@ -1469,7 +2097,9 @@
           "trace": [
             "linked to E88150301f2 (score 0.85, span of 1 words)",
             "called get_customer(E88150301f2)"
-          ]
+          ],
+          "context_chars": 10622,
+          "restricted": 0
         }
       }
     },
@@ -1494,7 +2124,21 @@
             "retrieved contract:CN-2024-128_v2",
             "retrieved slack:old-saharatour/2026-02-02",
             "retrieved slack:old-saharatour/2024-02-12"
-          ]
+          ],
+          "context_chars": 1071,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "Route de Rissani, Merzouga",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "10 queries; retrieved slack:old-saharatour/2025-03-01",
+            "10 queries; retrieved slack:old-saharatour/2025-03-16",
+            "10 queries; retrieved contract:CN-2024-128_v1"
+          ],
+          "context_chars": 2841,
+          "restricted": 0
         },
         "oracle": {
           "answer": "Route de Rissani, Merzouga",
@@ -1502,7 +2146,9 @@
           "failure": null,
           "trace": [
             "oracle: 11 raw chunks of E04"
-          ]
+          ],
+          "context_chars": 2815,
+          "restricted": 0
         },
         "canon": {
           "answer": "Route de Rissani",
@@ -1511,7 +2157,9 @@
           "trace": [
             "linked to E2dc070a02d (score 1.00, span of 2 words)",
             "called get_customer(E2dc070a02d)"
-          ]
+          ],
+          "context_chars": 12863,
+          "restricted": 0
         }
       }
     },
@@ -1536,7 +2184,21 @@
             "retrieved slack:old-dar-el-hana/2025-10-03",
             "retrieved slack:old-dar-el-hana/2023-08-29",
             "retrieved slack:old-dar-el-hana/2023-11-22"
-          ]
+          ],
+          "context_chars": 387,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "21 Avenue Hassan II, Agadir",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "18 queries; retrieved slack:old-dar-el-hana/2025-10-03",
+            "18 queries; retrieved contract:CN-2023-163_v1",
+            "18 queries; retrieved contract:CN-2023-163_v2"
+          ],
+          "context_chars": 3963,
+          "restricted": 0
         },
         "oracle": {
           "answer": "21 Avenue Hassan II, Agadir",
@@ -1544,7 +2206,9 @@
           "failure": null,
           "trace": [
             "oracle: 8 raw chunks of E09"
-          ]
+          ],
+          "context_chars": 2358,
+          "restricted": 0
         },
         "canon": {
           "answer": "21 Avenue Hassan II",
@@ -1553,7 +2217,9 @@
           "trace": [
             "linked to E7060296576 (score 1.00, span of 4 words)",
             "called get_customer(E7060296576)"
-          ]
+          ],
+          "context_chars": 10796,
+          "restricted": 0
         }
       }
     },
@@ -1578,7 +2244,21 @@
             "retrieved slack:client-oasisagro/2026-09-10",
             "retrieved contract:CN-2023-170_v1",
             "retrieved contract:CN-2023-170_v2"
-          ]
+          ],
+          "context_chars": 1669,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "9 Rue de Marrakech, Meknès",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "14 queries; retrieved contract:CN-2023-170_v1",
+            "14 queries; retrieved contract:CN-2023-170_v2",
+            "14 queries; retrieved slack:client-oasisagro/2026-06-18"
+          ],
+          "context_chars": 3099,
+          "restricted": 0
         },
         "oracle": {
           "answer": "9 Rue de Marrakech, Meknès",
@@ -1586,7 +2266,9 @@
           "failure": null,
           "trace": [
             "oracle: 10 raw chunks of E10"
-          ]
+          ],
+          "context_chars": 3039,
+          "restricted": 0
         },
         "canon": {
           "answer": "9 Rue de Marrakech",
@@ -1595,7 +2277,9 @@
           "trace": [
             "linked to Ede7c1c956e (score 1.00, span of 3 words)",
             "called get_customer(Ede7c1c956e)"
-          ]
+          ],
+          "context_chars": 13805,
+          "restricted": 0
         }
       }
     },
@@ -1620,7 +2304,21 @@
             "retrieved contract:CN-2024-191_v2",
             "retrieved contract:CN-2024-142_v2",
             "retrieved contract:CN-2023-275_v2"
-          ]
+          ],
+          "context_chars": 3412,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "Tanger Med Port Zone, Building B4, Tanger",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "14 queries; retrieved crm:0015g0000C324EP",
+            "14 queries; retrieved contract:CN-2024-191_v1",
+            "14 queries; retrieved contract:CN-2024-191_v2"
+          ],
+          "context_chars": 6613,
+          "restricted": 0
         },
         "oracle": {
           "answer": "Tanger Med Port Zone, Building B4, Tanger",
@@ -1628,7 +2326,9 @@
           "failure": null,
           "trace": [
             "oracle: 10 raw chunks of E13"
-          ]
+          ],
+          "context_chars": 2434,
+          "restricted": 0
         },
         "canon": {
           "answer": "Tanger Med Port Zone, Building B4",
@@ -1637,7 +2337,9 @@
           "trace": [
             "linked to Ee8a34a7a4c (score 1.00, span of 3 words)",
             "called get_customer(Ee8a34a7a4c)"
-          ]
+          ],
+          "context_chars": 11283,
+          "restricted": 0
         }
       }
     },
@@ -1662,7 +2364,21 @@
             "retrieved contract:CN-2023-226_v2",
             "retrieved contract:CN-2024-191_v2",
             "retrieved contract:CN-2024-268_v1"
-          ]
+          ],
+          "context_chars": 3496,
+          "restricted": 0
+        },
+        "hybrid": {
+          "answer": "Avenue Mohammed VI, Malabata, Tanger",
+          "correct": true,
+          "failure": null,
+          "trace": [
+            "2 queries; retrieved crm:0015g000074H9BX",
+            "2 queries; retrieved crm:0015g0000DT29PZ",
+            "2 queries; retrieved contract:CN-2023-275_v1"
+          ],
+          "context_chars": 6528,
+          "restricted": 0
         },
         "oracle": {
           "answer": "Avenue Mohammed VI, Malabata, Tanger",
@@ -1670,22 +2386,27 @@
           "failure": null,
           "trace": [
             "oracle: 4 raw chunks of E25"
-          ]
+          ],
+          "context_chars": 2420,
+          "restricted": 0
         },
         "canon": {
-          "answer": "Avenue Mohammed VI, Malabata, Tanger",
+          "answer": "Avenue Mohammed VI, Malabata",
           "correct": true,
           "failure": null,
           "trace": [
             "linked to Ef031fca955 (score 0.88, span of 1 words)",
             "called get_customer(Ef031fca955)"
-          ]
+          ],
+          "context_chars": 12123,
+          "restricted": 0
         }
       }
     }
   ],
   "agents": [
     "baseline",
+    "hybrid",
     "oracle",
     "canon"
   ],
