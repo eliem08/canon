@@ -221,3 +221,22 @@ def test_indexed_lookup_matches_a_full_scan(service, monkeypatch):
     monkeypatch.setattr(svc, "_name_keys", lambda f: set())  # no keys -> score every entity
     for (q, c), got in indexed.items():
         assert got == service._match(q, service.directory.resolve(c)), (q, c)
+
+
+def test_example_client_runs_against_the_server(service, capsys):
+    """examples/mcp_client.py is what a prospect sees in the demo: keep it working."""
+    import importlib.util
+
+    path = DATA.parents[1] / "examples" / "mcp_client.py"
+    spec = importlib.util.spec_from_file_location("mcp_client_example", path)
+    example = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(example)
+
+    async def scenario():
+        async with Client(build_server(service)) as client:
+            await example.show(client, "Boulangerie Al Baraka")
+
+    anyio.run(scenario)
+    out = capsys.readouterr().out
+    assert "1426000.0" in out and "restricted for this caller" in out
+    assert "intern asks" in out and "No customer found." in out
