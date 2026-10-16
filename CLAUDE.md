@@ -8,6 +8,7 @@ Agent-ready data layer: ingest → resolve → score → serve (MCP) → eval. S
 - `uv run ruff check . && uv run ruff format --check .` — lint/format (CI runs both)
 - `uv run canon generate` — regenerate `data/synthetic` (seeded; tests assert it matches the committed copy)
 - `uv run canon resolve --report` — run entity resolution and print P/R/F1
+- `uv run canon serve` — MCP server over stdio; `uv run python examples/mcp_client.py` exercises it
 
 ## Rules
 - Python 3.12, pydantic v2, stdlib SQLite, rapidfuzz. No heavy frameworks.
@@ -24,3 +25,5 @@ Agent-ready data layer: ingest → resolve → score → serve (MCP) → eval. S
 - Method notes for ER: `docs/ENTITY_RESOLUTION.md`; latest metrics: `docs/reports/er_report.md`
   (regenerate with `uv run canon resolve --report --seeds 50 --as-of 2026-10-01 && cp out/er_report.md docs/reports/`).
 - Fact scoring: `docs/FACT_SCORING.md`; tunables in `canon/score/facts.py::FactScoringConfig`.
+- MCP server: `docs/MCP_SERVER.md`; ACLs are enforced in `canon/mcp_server/service.py` *before* scoring —
+  never answer from precomputed golden facts in a caller-facing path.
