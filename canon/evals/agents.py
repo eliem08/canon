@@ -2,6 +2,9 @@
 
 * `BaselineAgent`: naive RAG. BM25 keyword retrieval over the raw exports (CRM rows,
   Slack messages, contract texts), top-k chunks handed to the model.
+* `HybridAgent`: a strong baseline without Canon: BM25 + fuzzy character n-gram retrieval,
+  multi-query over every candidate customer span, rank fusion, Slack mentions resolved and
+  messages dated.
 * `OracleAgent`: perfect retrieval over the same raw exports: *every* raw chunk of the right
   customer (from the ground truth), nothing else. It separates "retrieval failed" from "the raw
   data itself is stale or contradictory". Harness-only, since it needs the answer key.
@@ -99,6 +102,100 @@ class BaselineAgent:
         hits = self.index.search(question, self.k)
         context = "\n---\n".join(self.chunks[i][1] for i in hits)
         trace = [f"retrieved {self.chunks[i][0]}" for i in hits]
+        return AgentResult(self.model.answer(question, context), context, trace)
+
+
+# ---------------------------------------------------------------- strong baseline
+
+
+def readable_chunks(root: Path) -> list[tuple[str, str]]:
+    """Raw chunks as a careful engineer would prepare them, without Canon: Slack user mentions
+    replaced by names, and every Slack message stamped with its channel and date."""
+    from datetime import UTC, datetime
+
+    root = Path(root)
+    users = {
+        u["id"]: u.get("real_name") or u.get("name")
+        for u in json.loads((root / "slack" / "users.json").read_text(encoding="utf-8"))
+    }
+
+    def names(text: str) -> str:
+        return re.sub(r"<@(U\w+)>", lambda m: "@" + users.get(m.group(1), m.group(1)), text)
+
+    chunks = [(loc, text) for loc, text in raw_chunks(root) if not loc.startswith("slack:")]
+    for day in sorted((root / "slack").glob("*/*.json")):
+        for msg in json.loads(day.read_text(encoding="utf-8")):
+            when = datetime.fromtimestamp(float(msg["ts"]), UTC).date().isoformat()
+            chunks.append(
+                (
+                    f"slack:{day.parent.name}/{day.stem}",
+                    f"#{day.parent.name} {when}: {names(msg['text'])}",
+                )
+            )
+    return chunks
+
+
+def _char_ngrams(text: str, n: int = 3) -> Counter:
+    grams: Counter = Counter()
+    for word in _tokens(text):
+        padded = f" {word} "
+        grams.update(padded[i : i + n] for i in range(max(len(padded) - n + 1, 1)))
+    return grams
+
+
+class CharNgramIndex:
+    """TF-IDF cosine over character trigrams: tolerant of typos, case, suffixes and spacing."""
+
+    def __init__(self, docs: list[str]) -> None:
+        grams = [_char_ngrams(d) for d in docs]
+        df = Counter(g for d in grams for g in d)
+        n = len(docs)
+        self.idf = {g: math.log((1 + n) / (1 + c)) + 1 for g, c in df.items()}
+        self.vecs = [self._weigh(d) for d in grams]
+
+    def _weigh(self, grams: Counter) -> dict[str, float]:
+        vec = {g: (1 + math.log(c)) * self.idf.get(g, 1.0) for g, c in grams.items()}
+        norm = math.sqrt(sum(v * v for v in vec.values())) or 1.0
+        return {g: v / norm for g, v in vec.items()}
+
+    def search(self, query: str, k: int) -> list[int]:
+        q = self._weigh(_char_ngrams(query))
+        scores = [
+            (sum(w * vec.get(g, 0.0) for g, w in q.items()), i) for i, vec in enumerate(self.vecs)
+        ]
+        scores.sort(reverse=True)
+        return [i for s, i in scores[:k] if s > 0]
+
+
+class HybridAgent:
+    """The strongest baseline we could build without Canon: lexical BM25 + fuzzy character
+    n-gram retrieval, queried with the whole question *and* every candidate customer span
+    (the same span heuristic Canon's linker uses), fused by reciprocal rank, top k chunks;
+    Slack mentions resolved to names and messages dated."""
+
+    name = "hybrid"
+
+    def __init__(self, model: Model, data_dir: Path, k: int = 10, per_query: int = 20) -> None:
+        self.model = model
+        self.chunks = readable_chunks(data_dir)
+        texts = [text for _, text in self.chunks]
+        self.bm25 = BM25(texts)
+        self.fuzzy = CharNgramIndex(texts)
+        self.k, self.per_query = k, per_query
+
+    async def run(self, question: str) -> AgentResult:
+        fused: Counter = Counter()
+        queries = [question, *candidate_spans(question, 6)]
+        for query in queries:
+            for ranking in (
+                self.bm25.search(query, self.per_query),
+                self.fuzzy.search(query, self.per_query),
+            ):
+                for rank, i in enumerate(ranking):
+                    fused[i] += 1 / (60 + rank)
+        hits = [i for i, _ in fused.most_common(self.k)]
+        context = "\n---\n".join(self.chunks[i][1] for i in hits)
+        trace = [f"{len(queries)} queries; retrieved {self.chunks[i][0]}" for i in hits[:3]]
         return AgentResult(self.model.answer(question, context), context, trace)
 
 

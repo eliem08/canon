@@ -6,7 +6,7 @@ from types import SimpleNamespace
 import pytest
 
 from canon.evals import ClaudeModel, StubModel, render_report, run_eval
-from canon.evals.agents import BM25, candidate_spans, raw_chunks
+from canon.evals.agents import BM25, CharNgramIndex, candidate_spans, raw_chunks, readable_chunks
 from canon.evals.models import SYSTEM_PROMPT
 from canon.evals.questions import QUESTION_TYPES, build_questions, load_questions
 from canon.evals.scoring import classify, is_correct
@@ -209,7 +209,8 @@ def test_stats():
 
 
 def test_oracle_is_in_the_run(run):
-    assert run.agents == ["baseline", "oracle", "canon"]
+    assert run.agents == ["baseline", "hybrid", "oracle", "canon"]
+    assert all(o.context_chars > 0 for r in run.results for o in r.outcomes.values())
     assert all("oracle" in r.outcomes for r in run.results)
     assert all(r.outcomes["oracle"].trace[0].startswith("oracle: ") for r in run.results)
 
@@ -224,3 +225,22 @@ def test_paraphrase_questions_link_mid_sentence():
 def test_report_has_ci_and_mcnemar(run):
     report = render_report(run, repeats=[run])
     assert "95% CI" in report and "McNemar" in report and "Repeated runs (2)" in report
+
+
+def test_strong_baseline_prepares_chunks_like_a_careful_engineer():
+    chunks = readable_chunks(DATA)
+    slack = [t for loc, t in chunks if loc.startswith("slack:")]
+    assert slack and not any("<@U" in t for t in slack)
+    assert all(t.startswith("#") and t.split(" ")[1][:2] == "20" for t in slack)
+    assert len(chunks) == len(raw_chunks(DATA))
+
+
+def test_fuzzy_index_tolerates_typos_and_case():
+    index = CharNgramIndex(["Atlas Logistique SARL contrat", "Zitoun Cosmetics", "Fennec Software"])
+    assert index.search("atlas logsitique", 1) == [0]
+
+
+def test_report_quotes_canon_against_the_strong_baseline(run):
+    report = render_report(run)
+    assert "Canon vs. hybrid" in report and "Context read" in report
+    assert run.accuracy("canon") > run.accuracy("hybrid") >= run.accuracy("baseline") - 0.05

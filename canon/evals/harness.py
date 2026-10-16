@@ -18,7 +18,7 @@ import anyio
 from mcp import Client
 from pydantic import BaseModel
 
-from canon.evals.agents import BaselineAgent, CanonAgent, OracleAgent
+from canon.evals.agents import BaselineAgent, CanonAgent, HybridAgent, OracleAgent
 from canon.evals.models import Model
 from canon.evals.questions import QUESTION_TYPES, Question, build_questions, load_questions
 from canon.evals.scoring import is_correct
@@ -28,9 +28,10 @@ from canon.mcp_server import CallerDirectory, CanonService, ServiceConfig, build
 from canon.models import SourceRecord
 from canon.score import FactScoringConfig
 
-AGENTS = ("baseline", "oracle", "canon")
+AGENTS = ("baseline", "hybrid", "oracle", "canon")
 AGENT_LABELS = {
     "baseline": "Baseline (BM25 over raw files)",
+    "hybrid": "Strong RAG (hybrid fuzzy retrieval, multi-query, top 10)",
     "oracle": "Oracle retrieval (every raw record of the right customer)",
     "canon": "**Canon (MCP tools)**",
 }
@@ -41,6 +42,7 @@ class Outcome(BaseModel):
     correct: bool
     failure: str | None = None  # stale_value | wrong_customer | no_answer | other
     trace: list[str] = []
+    context_chars: int = 0  # size of what the model had to read
 
 
 class QuestionResult(BaseModel):
@@ -59,6 +61,9 @@ class EvalRun(BaseModel):
     def accuracy(self, agent: str, qtype: str | None = None) -> float:
         rows = [r for r in self.results if qtype is None or r.question.type == qtype]
         return sum(r.outcomes[agent].correct for r in rows) / len(rows) if rows else 0.0
+
+    def context_chars(self, agent: str) -> float:
+        return sum(r.outcomes[agent].context_chars for r in self.results) / len(self.results)
 
     def correct(self, agent: str) -> int:
         return sum(r.outcomes[agent].correct for r in self.results)
@@ -132,11 +137,12 @@ async def _run_async(
     )
     records = load_all(data_dir)
     baseline = BaselineAgent(model, data_dir)
+    hybrid = HybridAgent(model, data_dir)
     oracle = OracleAgent(model, data_dir, truth["records"]) if truth else None
     results = []
     async with Client(build_server(service)) as client:
         canon = CanonAgent(model, client, caller)
-        agents = [a for a in (baseline, oracle, canon) if a is not None]
+        agents = [a for a in (baseline, hybrid, oracle, canon) if a is not None]
         for q in questions:
             outcomes = {}
             for agent in agents:
@@ -150,6 +156,7 @@ async def _run_async(
                     correct=ok,
                     failure=None if ok else classify_failure(q, res.answer, truth, records),
                     trace=res.trace,
+                    context_chars=len(res.context),
                 )
             results.append(QuestionResult(question=q, outcomes=outcomes))
     return EvalRun(
@@ -201,7 +208,20 @@ FAILURE_LABELS = {
 def _row(run: EvalRun, agent: str) -> str:
     n, k = len(run.results), run.correct(agent)
     lo, hi = wilson(k, n)
-    return f"| {AGENT_LABELS[agent]} | {k}/{n} | {k / n:.1%} | {lo:.0%}–{hi:.0%} |"
+    size = run.context_chars(agent)
+    return f"| {AGENT_LABELS[agent]} | {k}/{n} | {k / n:.1%} | {lo:.0%}–{hi:.0%} | {size:,.0f} |"
+
+
+def _versus(run: EvalRun, other: str) -> str:
+    only_c = sum(r.outcomes["canon"].correct and not r.outcomes[other].correct
+                 for r in run.results)  # fmt: skip
+    only_o = sum(r.outcomes[other].correct and not r.outcomes["canon"].correct
+                 for r in run.results)  # fmt: skip
+    gap = (run.accuracy("canon") - run.accuracy(other)) * 100
+    return (
+        f"Canon vs. {other}: **{gap:+.1f} pts**; Canon alone right on {only_c}, {other} alone on "
+        f"{only_o} (exact McNemar p = {mcnemar_exact(only_c, only_o):.2g})."
+    )
 
 
 def render_report(
@@ -224,6 +244,9 @@ def render_report(
         f"- Canon caller: `{run.caller}`; facts as of {run.as_of}",
         "- Baseline: BM25 keyword retrieval over raw CRM rows, Slack messages and contract "
         "texts (top 5 chunks)",
+        "- Strong RAG: BM25 + fuzzy character-trigram retrieval, queried with the question and "
+        "every candidate customer span, reciprocal-rank fusion, top 10 chunks; Slack mentions "
+        "resolved to names and messages dated",
     ]
     if "oracle" in agents:
         lines.append(
@@ -236,19 +259,23 @@ def render_report(
         "",
         "## Overall",
         "",
-        "| Agent | Correct | Accuracy | 95% CI (Wilson) |",
-        "|---|---|---|---|",
+        "| Agent | Correct | Accuracy | 95% CI (Wilson) | Context read (chars, mean) |",
+        "|---|---|---|---|---|",
         *[_row(run, a) for a in agents],
         "",
         f"Lift, Canon vs. baseline: **{(c - b) * 100:+.1f} pts**. On the same questions, Canon "
         f"alone is right on {only_c} and the baseline alone on {only_b} "
         f"(exact McNemar p = {mcnemar_exact(only_c, only_b):.2g}).",
     ]
-    if "oracle" in agents:
-        o = run.accuracy("oracle")
+    if "hybrid" in agents:
         lines.append(
-            f"Canon vs. oracle retrieval: **{(c - o) * 100:+.1f} pts**. That is the part of the "
-            "lift that better retrieval alone would not give."
+            _versus(run, "hybrid") + " This is the comparison to quote: the strongest baseline "
+            "that does not need Canon or the answer key."
+        )
+    if "oracle" in agents:
+        lines.append(
+            _versus(run, "oracle") + " The oracle needs the answer key; it bounds what any "
+            "retrieval over raw files could do."
         )
     if repeats:
         all_runs = [run, *repeats]
