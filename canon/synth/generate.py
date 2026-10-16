@@ -590,6 +590,12 @@ class Generator:
         }
         _write_json(out_dir / "ground_truth" / "ground_truth.json", truth)
         _write_json(out_dir / "identities.json", IDENTITIES)
+        from canon.evals.questions import build_questions  # eval set derives from the truth
+
+        _write_json(
+            out_dir / "ground_truth" / "eval_questions.json",
+            [q.model_dump() for q in build_questions(truth)],
+        )
         return truth
 
 

@@ -79,6 +79,24 @@ def cmd_serve(args: argparse.Namespace) -> None:
     build_server(service, pinned_caller=args.caller).run()
 
 
+def cmd_eval(args: argparse.Namespace) -> None:
+    from canon.evals import ClaudeModel, StubModel, render_report, run_eval
+
+    model = StubModel() if args.model == "stub" else ClaudeModel(args.model_id)
+    run = run_eval(Path(args.data), model, caller=args.caller, as_of=date.fromisoformat(args.as_of))
+    sweep = None
+    if args.seeds:
+        from canon.evals.harness import seed_sweep
+
+        sweep = seed_sweep(range(1, args.seeds + 1), model, args.caller)
+    report = render_report(run, sweep)
+    out = Path(args.out)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(report, encoding="utf-8")
+    out.with_suffix(".json").write_text(run.model_dump_json(indent=2), encoding="utf-8")
+    print(report)
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(prog="canon")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -110,6 +128,18 @@ def main(argv: list[str] | None = None) -> None:
         help="pin every request to this identity (ignore the tool argument)",
     )
     s.set_defaults(func=cmd_serve)
+
+    e = sub.add_parser("eval", help="before/after eval: raw-file RAG agent vs. Canon MCP agent")
+    e.add_argument("--data", default=str(_data_dir()))
+    e.add_argument("--model", choices=["stub", "claude"], default="stub")
+    e.add_argument("--model-id", default="claude-opus-5-5", help="Claude model for --model claude")
+    e.add_argument("--caller", default="revops.admin", help="identity the Canon agent acts for")
+    e.add_argument("--as-of", default="2026-10-01")
+    e.add_argument("--seeds", type=int, default=0, help="also rerun on N held-out seeds")
+    e.add_argument(
+        "--out", default=str(Path(os.environ.get("CANON_OUT_DIR", "out")) / "eval_report.md")
+    )
+    e.set_defaults(func=cmd_eval)
 
     args = parser.parse_args(argv)
     if getattr(args, "seed", 0) is None:
