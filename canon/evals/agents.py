@@ -1,12 +1,15 @@
-"""The two agents compared by the eval.
+"""The agents compared by the eval.
 
 * `BaselineAgent`: naive RAG. BM25 keyword retrieval over the raw exports (CRM rows,
   Slack messages, contract texts), top-k chunks handed to the model.
-* `CanonAgent`: links the customer mentioned in the question with the MCP
+* `OracleAgent`: perfect retrieval over the same raw exports: *every* raw chunk of the right
+  customer (from the ground truth), nothing else. It separates "retrieval failed" from "the raw
+  data itself is stale or contradictory". Harness-only, since it needs the answer key.
+* `CanonAgent`: links the customer mentioned anywhere in the question with the MCP
   `get_customer` tool, routes by question type to `find_contract_terms`, `who_owns`
   or `get_customer`, and hands the model the structured tool result.
 
-Both use the same model and question router; only the context differs.
+All use the same model; only the context differs.
 """
 
 from __future__ import annotations
@@ -21,7 +24,7 @@ from pathlib import Path
 from mcp import Client
 
 from canon.evals.models import Model
-from canon.evals.scoring import classify
+from canon.evals.scoring import route
 from canon.resolve.normalize import fold
 
 
@@ -99,7 +102,66 @@ class BaselineAgent:
         return AgentResult(self.model.answer(question, context), context, trace)
 
 
+class OracleAgent:
+    """Perfect retrieval: all raw chunks of the question's true customer, in source order."""
+
+    name = "oracle"
+
+    def __init__(self, model: Model, data_dir: Path, record_entity: dict[str, str]) -> None:
+        self.model = model
+        root = Path(data_dir)
+        channels = json.loads((root / "slack" / "channels.json").read_text(encoding="utf-8"))
+        if (root / "slack" / "groups.json").exists():
+            channels += json.loads((root / "slack" / "groups.json").read_text(encoding="utf-8"))
+        channel_id = {c["name"]: c["id"] for c in channels}
+        self.by_entity: dict[str, list[tuple[str, str]]] = {}
+        for locator, text in raw_chunks(root):
+            kind, _, rest = locator.partition(":")
+            rid = f"slack:{channel_id[rest.split('/')[0]]}" if kind == "slack" else locator
+            if rid in record_entity:
+                self.by_entity.setdefault(record_entity[rid], []).append((locator, text))
+
+    async def run(self, question: str, entity_id: str | None = None) -> AgentResult:
+        chunks = self.by_entity.get(entity_id or "", [])
+        context = "\n---\n".join(text for _, text in chunks)
+        trace = [f"oracle: {len(chunks)} raw chunks of {entity_id}"]
+        return AgentResult(self.model.answer(question, context), context, trace)
+
+
 # ---------------------------------------------------------------- canon
+
+# Function words (EN / FR / Darija) that never start or end a company mention.
+_STOPWORDS = """a an the of for to on in at is are was be do does did
+    what what's whats who whos who's
+    which when where how much many per our us we i my me you your their them they it its this that
+    with and or from about can could should would will right now these days there please tell
+    give check know need dial reach call before after since still same up soon exactly
+    le la les l de des du d un une et ou est sont pour par sur dans chez avec qui que quel quelle
+    quels quelles quand combien c ce cet cette ses son sa leur leurs nous on moi stp svp donne
+    doit doivent dois envoyer courrier contrat contract annual annuel annuelle actuel current
+    owner account compte date renewal renouvellement number numero phone telephone address
+    adresse siege office offices head registered main value montant worth paying signed sign
+    chkoun chkon li dyal daba f l b m3a wach imta ch7al kaykhalsou kaytkellef ghadi"""
+STOPWORDS = frozenset(_STOPWORDS.split())
+
+
+def candidate_spans(question: str, max_span: int) -> list[str]:
+    words = [re.sub(r"['’]s$", "", w.strip("?؟!.,;:()\"'«»-–—")) for w in question.split()]
+    words = [w for w in words if w]
+    spans, seen = [], set()
+    for i in range(len(words)):
+        for n in range(1, max_span + 1):
+            chunk = words[i : i + n]
+            if len(chunk) < n:
+                break
+            if fold(chunk[0]) in STOPWORDS or fold(chunk[-1]) in STOPWORDS:
+                continue
+            span = " ".join(chunk)
+            if span not in seen and len(span) >= 3:
+                seen.add(span)
+                spans.append(span)
+    return spans
+
 
 TOOL_FOR_TYPE = {
     "contract_value": "find_contract_terms",
@@ -120,20 +182,19 @@ class CanonAgent:
         self.max_span = max_span
 
     async def link(self, question: str, trace: list[str]) -> str | None:
-        """Entity linking by probing: try the question's trailing spans with get_customer
-        and keep the best match (the eval's questions end with the customer mention)."""
-        words = question.strip().rstrip("?؟ ").replace(",", " ").split()
+        """Entity linking by probing: try every span of up to `max_span` words (spans that
+        start or end with a function word are skipped) with get_customer and keep the best
+        match; on a tie, the longer span wins."""
         best: tuple[float, int, str] | None = None
-        for n in range(1, min(self.max_span, len(words)) + 1):
-            span = " ".join(words[-n:])
+        for span in candidate_spans(question, self.max_span):
             result = await self.client.call_tool(
                 "get_customer", {"name": span, "caller": self.caller}
             )
             data = result.structured_content or {}
             if data.get("found"):
-                score = data["customer"]["match_score"]
-                cand = (score, n, data["customer"]["entity_id"])
-                if best is None or cand[0] > best[0]:
+                n = len(span.split())
+                cand = (data["customer"]["match_score"], n, data["customer"]["entity_id"])
+                if best is None or cand[:2] > best[:2]:
                     best = cand
         if best:
             trace.append(f"linked to {best[2]} (score {best[0]:.2f}, span of {best[1]} words)")
@@ -146,7 +207,8 @@ class CanonAgent:
         entity_id = await self.link(question, trace)
         if entity_id is None:
             return AgentResult(self.model.answer(question, "{}"), "{}", trace)
-        tool = TOOL_FOR_TYPE[classify(question)]
+        qtype = route(question)  # unsure -> the full profile, which has every field
+        tool = TOOL_FOR_TYPE[qtype] if qtype else "get_customer"
         arg = "name" if tool == "get_customer" else "customer"
         result = await self.client.call_tool(tool, {arg: entity_id, "caller": self.caller})
         trace.append(f"called {tool}({entity_id})")

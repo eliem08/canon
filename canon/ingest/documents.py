@@ -1,0 +1,217 @@
+"""Document text extraction: plain text, PDF (text layer, else OCR), DOCX, scanned images.
+
+Every extractor returns pages joined by form feeds (`\\f`), the convention `pdftotext` uses, so the
+contract parser can cite `file#p<page>:L<line>`. OCR runs the `tesseract` binary (fra+ara+eng by
+default); when it is missing, or when a page has no text and no image, the document is reported as
+a `ParseIssue` instead of being silently skipped or guessed.
+"""
+
+from __future__ import annotations
+
+import io
+import json
+import os
+import re
+import shutil
+import subprocess
+import tempfile
+import zipfile
+from dataclasses import dataclass, field
+from pathlib import Path
+
+TEXT_SUFFIXES = {".txt"}
+PDF_SUFFIXES = {".pdf"}
+DOCX_SUFFIXES = {".docx"}
+IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg", ".tif", ".tiff"}
+DOCUMENT_SUFFIXES = TEXT_SUFFIXES | PDF_SUFFIXES | DOCX_SUFFIXES | IMAGE_SUFFIXES
+ACL_SIDECAR = "_acl.json"
+_BIDI = re.compile("[\u200e\u200f\u202a-\u202e\u2066-\u2069]")  # direction marks OCR emits
+
+
+@dataclass(frozen=True)
+class OCRConfig:
+    languages: str = "fra+ara+eng"
+    min_text_chars: int = 20  # a PDF page with less text than this is treated as scanned
+    low_confidence: float = 60.0  # mean tesseract word confidence below this is flagged
+    median_filter: int = 3  # odd kernel size; 0 disables denoising
+    denoise_below: float = 80.0  # retry with the median filter when confidence is below this
+    binary: str = "tesseract"
+    timeout_s: int = 120
+
+
+@dataclass
+class DocumentText:
+    text: str  # pages joined by "\f"
+    method: str  # text | pdf | docx | ocr | pdf+ocr | none
+    issues: list[tuple[str, str]] = field(default_factory=list)  # (reason, detail)
+    ocr_confidence: float | None = None
+
+
+def ocr_available(config: OCRConfig | None = None) -> bool:
+    return shutil.which((config or OCRConfig()).binary) is not None
+
+
+def _png(data: bytes, median: int = 0) -> bytes:
+    """Grayscale PNG, optionally median-filtered (removes scanner/fax speckle)."""
+    from PIL import Image, ImageFilter
+
+    img = Image.open(io.BytesIO(data)).convert("L")
+    if median:
+        img = img.filter(ImageFilter.MedianFilter(median))
+    buf = io.BytesIO()
+    img.save(buf, format="PNG")
+    return buf.getvalue()
+
+
+def ocr_image(data: bytes, config: OCRConfig) -> tuple[str, float | None]:
+    """OCR one image. Returns (text, mean word confidence).
+
+    The median filter removes speckle but also erases thin strokes and the dots of Arabic
+    letters, so it is used only when the plain pass is unsure, and only if it does better."""
+    text, conf = _tesseract(_png(data), config)
+    if config.median_filter and (conf or 0) < config.denoise_below:
+        text2, conf2 = _tesseract(_png(data, config.median_filter), config)
+        if (conf2 or 0) > (conf or 0):
+            return text2, conf2
+    return text, conf
+
+
+def _tesseract(png: bytes, config: OCRConfig) -> tuple[str, float | None]:
+    with tempfile.TemporaryDirectory() as tmp:
+        img = Path(tmp) / "page.png"
+        img.write_bytes(png)
+        run = subprocess.run(
+            [config.binary, str(img), "stdout", "-l", config.languages, "--psm", "6", "tsv"],
+            capture_output=True,
+            timeout=config.timeout_s,
+            check=True,
+            # one thread per page: tesseract's OpenMP threads thrash when several run at once
+            env={**os.environ, "OMP_THREAD_LIMIT": "1"},
+        )
+    lines: dict[tuple[str, ...], list[str]] = {}
+    confs = []
+    for row in run.stdout.decode("utf-8", "replace").splitlines()[1:]:
+        cols = row.split("\t")
+        if len(cols) < 12 or cols[0] != "5" or not cols[11].strip():
+            continue
+        lines.setdefault(tuple(cols[1:5]), []).append(cols[11])
+        if float(cols[10]) >= 0:
+            confs.append(float(cols[10]))
+    text = "\n".join(" ".join(words) for words in lines.values())
+    return _BIDI.sub("", text), (sum(confs) / len(confs) if confs else None)
+
+
+def _ocr_pages(images: list[bytes], config: OCRConfig, doc: DocumentText) -> list[str]:
+    pages, confs = [], []
+    for data in images:
+        text, conf = ocr_image(data, config)
+        pages.append(text)
+        if conf is not None:
+            confs.append(conf)
+    if confs:
+        doc.ocr_confidence = round(sum(confs) / len(confs), 1)
+        if doc.ocr_confidence < config.low_confidence:
+            doc.issues.append(("low_ocr_confidence", f"mean word confidence {doc.ocr_confidence}"))
+    return pages
+
+
+def _pdf(path: Path, config: OCRConfig) -> DocumentText:
+    from pypdf import PdfReader
+
+    doc = DocumentText("", "pdf")
+    try:
+        reader = PdfReader(str(path))
+        pages = [(p.extract_text() or "").strip() for p in reader.pages]
+    except Exception as exc:  # malformed or encrypted PDF: report, never crash the run
+        doc.method = "none"
+        doc.issues.append(("unreadable_pdf", type(exc).__name__))
+        return doc
+    scanned = [i for i, t in enumerate(pages) if len(re.sub(r"\s", "", t)) < config.min_text_chars]
+    if scanned:
+        if not ocr_available(config):
+            doc.issues.append(("ocr_unavailable", f"{len(scanned)} page(s) without a text layer"))
+        else:
+            images = []
+            for i in scanned:
+                page_images = list(reader.pages[i].images)
+                if not page_images:
+                    doc.issues.append(("no_text_or_image", f"page {i + 1}"))
+                    images.append(None)
+                    continue
+                images.append(max(page_images, key=lambda im: len(im.data)).data)
+            texts = _ocr_pages([im for im in images if im], config, doc)
+            it = iter(texts)
+            for i, im in zip(scanned, images, strict=True):
+                if im:
+                    pages[i] = next(it)
+            doc.method = "ocr" if len(scanned) == len(pages) else "pdf+ocr"
+    doc.text = "\f".join(pages)
+    if not doc.text.replace("\f", "").strip():
+        doc.method = "none"
+    return doc
+
+
+_W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+
+
+def _docx(path: Path) -> DocumentText:
+    from xml.etree import ElementTree
+
+    try:
+        with zipfile.ZipFile(path) as z:
+            root = ElementTree.fromstring(z.read("word/document.xml"))
+    except (zipfile.BadZipFile, KeyError, ElementTree.ParseError) as exc:
+        return DocumentText("", "none", [("unreadable_docx", type(exc).__name__)])
+    out: list[str] = []
+    for para in root.iter(f"{_W}p"):
+        parts = []
+        for node in para.iter():
+            if node.tag == f"{_W}t" and node.text:
+                parts.append(node.text)
+            elif node.tag == f"{_W}tab":
+                parts.append("\t")
+            elif node.tag == f"{_W}br" and node.get(f"{_W}type") == "page":
+                parts.append("\f")
+        out.append("".join(parts))
+    text = "\n".join(out).replace("\n\f", "\f").replace("\f\n", "\f")
+    return DocumentText(text, "docx")
+
+
+def extract_text(path: Path, config: OCRConfig | None = None) -> DocumentText:
+    config = config or OCRConfig()
+    path = Path(path)
+    suffix = path.suffix.lower()
+    if suffix in TEXT_SUFFIXES:
+        return DocumentText(path.read_text(encoding="utf-8"), "text")
+    if suffix in PDF_SUFFIXES:
+        return _pdf(path, config)
+    if suffix in DOCX_SUFFIXES:
+        return _docx(path)
+    if suffix in IMAGE_SUFFIXES:
+        if not ocr_available(config):
+            return DocumentText("", "none", [("ocr_unavailable", "image file")])
+        doc = DocumentText("", "ocr")
+        doc.text = "\f".join(_ocr_pages([path.read_bytes()], config, doc))
+        return doc
+    return DocumentText("", "none", [("unsupported_format", suffix)])
+
+
+def folder_acl(path: Path, root: Path, default: tuple[str, ...]) -> list[str]:
+    """ACL from the nearest `_acl.json` ({"acl": [...]}) between the file and `root`."""
+    root = Path(root).resolve()
+    folder = Path(path).resolve().parent
+    while True:
+        sidecar = folder / ACL_SIDECAR
+        if sidecar.exists():
+            return list(json.loads(sidecar.read_text(encoding="utf-8"))["acl"])
+        if folder == root or root not in folder.parents:
+            return list(default)
+        folder = folder.parent
+
+
+def iter_documents(root: Path) -> list[Path]:
+    return sorted(
+        p
+        for p in Path(root).rglob("*")
+        if p.is_file() and p.suffix.lower() in DOCUMENT_SUFFIXES and not p.name.startswith(".")
+    )

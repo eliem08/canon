@@ -1,4 +1,4 @@
-"""Contract connector: parses text extracted from contract PDFs (French or English).
+"""Contract connector: parses contract text (French or English) from .txt, PDF, DOCX or scans.
 
 Versions of the same contract number are linked: any version that a later one
 explicitly supersedes ("annule et remplace", "supersedes and replaces") or that
@@ -12,8 +12,9 @@ from pathlib import Path
 
 from canon.ingest.common import business_domain, find_emails
 from canon.ingest.config import IngestConfig
+from canon.ingest.documents import OCRConfig, extract_text, folder_acl, iter_documents
 from canon.ingest.parsing import IssueLog, parse_amount, parse_date, parse_phone
-from canon.models import Fact, SourceRecord
+from canon.models import Fact, ParseIssue, SourceRecord
 
 DEFAULT_CONTRACT_ACL = ("legal", "exec")
 
@@ -22,7 +23,8 @@ PATTERNS = {
     "version": r"^Version\s*:?\s*(\d+)",
     "signed": r"(?:Date de signature|Signature date)\s*:?\s*([^\n]+)",
     "party": r"^(?:Le Client|Customer)\s*:\s*(.+)$",
-    "party_ar": r"^الطرف الثاني\s*:\s*(.+)$",
+    # OCR may reorder a right-to-left line, so take the whole line and drop the label words
+    "party_ar": r"^(.*الطرف.*)$",
     "tax_id": r"(?:ICE|Tax ID \(ICE\))\s*:?\s*(\d{15})",
     "address": r"^(?:Siège social|Registered office)\s*:\s*(.+)$",
     "contact": r"^Contact\s*:\s*(.+)$",
@@ -40,7 +42,22 @@ PATTERNS = {
 
 def _grab(text: str, key: str) -> str | None:
     m = re.search(PATTERNS[key], text, re.MULTILINE | re.IGNORECASE)
-    return m.group(1).strip() if m else None
+    return m.group(1).split("\f")[0].strip() if m else None  # never read across a page break
+
+
+_AR_LABEL = {"الطرف", "الثاني", ":"}
+
+
+def _arabic_party(text: str) -> str | None:
+    line = _grab(text, "party_ar")
+    if not line:
+        return None
+    words = [
+        w.strip(":")
+        for w in line.replace(":", " : ").split()
+        if w not in _AR_LABEL and re.search(r"[\u0600-\u06ff]", w)
+    ]
+    return " ".join(w for w in words if w) or None
 
 
 def _where(text: str, key: str, locator: str) -> tuple[str | None, str | None]:
@@ -52,8 +69,10 @@ def _where(text: str, key: str, locator: str) -> tuple[str | None, str | None]:
     page = before.count("\f") + 1
     line_start = max(before.rfind("\n"), before.rfind("\f")) + 1
     line = before.split("\f")[-1].count("\n") + 1
-    end = text.find("\n", m.start(1))
-    quote = text[line_start : end if end != -1 else len(text)].strip()
+    end = min(
+        i for i in (text.find("\n", m.start(1)), text.find("\f", m.start(1)), len(text)) if i != -1
+    )
+    quote = text[line_start:end].strip()
     return f"{locator}#p{page}:L{line}", quote[:300]
 
 
@@ -126,7 +145,7 @@ def parse_contract(
         source="contract",
         locator=locator,
         name=_grab(text, "party"),
-        alt_names=[n for n in [_grab(text, "party_ar")] if n],
+        alt_names=[n for n in [_arabic_party(text)] if n],
         domain=business_domain(emails[0]) if emails else None,
         phone=phone,
         email=emails[0] if emails else None,
@@ -149,12 +168,38 @@ def parse_contract(
 
 
 def load_contracts(
-    root: Path, acl=DEFAULT_CONTRACT_ACL, config: IngestConfig | None = None
+    root: Path,
+    acl=DEFAULT_CONTRACT_ACL,
+    config: IngestConfig | None = None,
+    ocr: OCRConfig | None = None,
+    unreadable: list[ParseIssue] | None = None,
 ) -> list[SourceRecord]:
-    parsed = [
-        parse_contract(p.read_text(encoding="utf-8"), f"contract:{p.stem}", str(p), acl, config)
-        for p in sorted(Path(root).glob("*.txt"))
-    ]
+    """Every document under `root` (.txt, .pdf, .docx, scans), recursively.
+
+    Access comes from the nearest `_acl.json` sidecar, else `acl`. Documents with no readable text
+    become `ParseIssue`s in `unreadable` instead of empty records."""
+    root = Path(root)
+    parsed = []
+    seen: set[str] = set()
+    for path in iter_documents(root):
+        rel = path.relative_to(root)
+        rid = f"contract:{rel.with_suffix('').as_posix()}"
+        if rid in seen:  # same name, two formats
+            rid = f"contract:{rel.as_posix()}"
+        seen.add(rid)
+        doc = extract_text(path, ocr)
+        if doc.method == "none":
+            for reason, detail in doc.issues or [("no_text", "")]:
+                issue = ParseIssue(record_id=rid, field="document", raw=detail, reason=reason)
+                if unreadable is not None:
+                    unreadable.append(issue)
+            continue
+        item = parse_contract(doc.text, rid, str(path), folder_acl(path, root, acl), config)
+        item["record"].issues += [
+            ParseIssue(record_id=rid, field="document", raw=d, reason=r, severity="warning")
+            for r, d in doc.issues
+        ]
+        parsed.append(item)
     by_number: dict[str, list[dict]] = {}
     for item in parsed:
         by_number.setdefault(item["number"] or item["record"].record_id, []).append(item)

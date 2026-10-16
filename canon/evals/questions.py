@@ -1,4 +1,5 @@
-"""The 40-question eval set, derived deterministically from the hidden ground truth.
+"""Eval questions: loaded from a file (`load_questions`), or the synthetic 40-question set derived
+deterministically from the hidden ground truth (`build_questions`).
 
 Questions mix English, French and Darija phrasing and refer to customers the way
 people do: aliases, Arabic script, typos, legal suffixes, Darija "chrikat". The
@@ -8,7 +9,9 @@ linking). Expected answers are the ground-truth *current* values.
 
 from __future__ import annotations
 
+import json
 import random
+from pathlib import Path
 
 from pydantic import BaseModel
 
@@ -61,10 +64,29 @@ class Question(BaseModel):
     id: str
     type: str
     question: str
-    entity_id: str
-    mention: str
-    mention_style: str
+    entity_id: str | None = None  # needed only for the oracle agent and failure analysis
+    mention: str = ""
+    mention_style: str = "hand-written"
     expected: str | float | int
+
+
+def load_questions(path: Path, truth: dict | None = None) -> list[Question]:
+    """Questions from a file: a JSON list, or {"questions": [...]}. A question without
+    `expected` takes it from the ground truth (`truth["entities"][entity_id]`). This is how a
+    client's own question set plugs in: id, type, question, expected."""
+    data = json.loads(Path(path).read_text(encoding="utf-8"))
+    rows = data["questions"] if isinstance(data, dict) else data
+    out = []
+    for row in rows:
+        if "expected" not in row:
+            if truth is None or not row.get("entity_id"):
+                raise ValueError(f"{row.get('id')}: no expected answer and no ground truth")
+            row = {
+                **row,
+                "expected": truth["entities"][row["entity_id"]][ANSWER_FIELD[row["type"]]],
+            }
+        out.append(Question.model_validate(row))
+    return out
 
 
 def _typo(rng: random.Random, text: str) -> str:

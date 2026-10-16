@@ -54,12 +54,12 @@ See [`DATA_REQUEST.md`](DATA_REQUEST.md). In short:
 - Live connectors, a production deployment, SSO, or a UI.
 - Data cleanup in the client's systems (we report it; they fix it).
 - Sources beyond the three agreed types.
-- **Scanned contracts (not built yet).** Canon currently reads contract *text*. PDF extraction and OCR are roadmap task 3. Until then, text-based PDFs need a conversion step outside Canon (e.g. `pdftotext`), and scans are out of scope. Say so explicitly.
+- **Handwritten or badly degraded scans.** Canon reads PDFs (text layer or OCR), DOCX and images, but OCR accuracy is measured only on synthetic renders so far. Poor scans are listed as unreadable or low-confidence, not guessed.
 
 ## Pricing [FOUNDER DECISION]
 The goal says $5–15k. One way to split it, for discussion only:
 - **Core: about $5–7k.** CRM + one chat source + ≤ 100 text-based contracts, 30 questions.
-- **Extended: about $10–15k.** Adds scanned and Arabic contracts (requires OCR, not built yet), a second chat source, 50+ questions, and the 2-week MCP trial.
+- **Extended: about $10–15k.** Adds scanned and Arabic contracts (OCR built; accuracy on real scans to be measured on day 1), a second chat source, 50+ questions, and the 2-week MCP trial.
 
 ## Guardrail against the consulting trap
 - **Per-client allowance:** connector field mappings and an `IngestConfig` (country, currency, date order).

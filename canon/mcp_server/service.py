@@ -15,6 +15,9 @@ import sqlite3
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from pydantic import BaseModel
+
+from canon.guard import screen
 from canon.models import Evidence, Fact, ResolvedFact, SourceRecord
 from canon.resolve.features import features
 from canon.resolve.golden import build_golden
@@ -22,6 +25,7 @@ from canon.resolve.normalize import has_arabic, normalize_name
 from canon.resolve.scoring import name_similarity
 from canon.score import FactScoringConfig, score_entity, score_field
 
+from .audit import AuditLog
 from .schemas import (
     Alternative,
     Answer,
@@ -51,6 +55,14 @@ class Caller:
     name: str = ""
 
 
+def _principals(entry: dict) -> frozenset[str]:
+    """A caller's ACL principals: their groups, plus `slack-user:<id>` for private channels."""
+    groups = set(entry.get("groups", []))
+    if entry.get("slack_user_id"):
+        groups.add(f"slack-user:{entry['slack_user_id']}")
+    return frozenset(groups)
+
+
 @dataclass
 class CallerDirectory:
     """Maps caller identities to ACL groups. Unknown callers get no groups."""
@@ -62,7 +74,7 @@ class CallerDirectory:
         data = json.loads(Path(path).read_text(encoding="utf-8"))
         return cls(
             {
-                cid: Caller(cid, frozenset(c.get("groups", [])), c.get("name", ""))
+                cid: Caller(cid, _principals(c), c.get("name", ""))
                 for cid, c in data["callers"].items()
             }
         )
@@ -85,17 +97,23 @@ class CanonService:
         clusters: dict[str, list[str]],
         directory: CallerDirectory,
         config: ServiceConfig | None = None,
+        audit: AuditLog | None = None,
     ) -> None:
         self.records = {r.record_id: r for r in records}
         self.clusters = clusters
         self.directory = directory
         self.config = config or ServiceConfig()
+        self.audit = audit
         self._features = {rid: features(r) for rid, r in self.records.items()}
 
     # ------------------------------------------------------------- construction
     @classmethod
     def from_store(
-        cls, path: Path, directory: CallerDirectory, config: ServiceConfig | None = None
+        cls,
+        path: Path,
+        directory: CallerDirectory,
+        config: ServiceConfig | None = None,
+        audit: AuditLog | None = None,
     ) -> CanonService:
         with sqlite3.connect(path) as db:
             records = [
@@ -105,7 +123,7 @@ class CanonService:
             clusters: dict[str, list[str]] = {}
             for eid, rid in db.execute("SELECT entity_id, record_id FROM lineage ORDER BY 1, 2"):
                 clusters.setdefault(eid, []).append(rid)
-        return cls(records, clusters, directory, config)
+        return cls(records, clusters, directory, config, audit)
 
     # ------------------------------------------------------------- access control
     def _visible(self, entity_id: str, caller: Caller) -> list[SourceRecord]:
@@ -153,6 +171,27 @@ class CanonService:
 
     # ------------------------------------------------------------- tools
     def get_customer(self, name: str, caller_id: str) -> CustomerProfile:
+        return self._serve("get_customer", self._get_customer, name, caller_id)
+
+    def find_contract_terms(self, customer: str, caller_id: str) -> ContractTerms:
+        return self._serve("find_contract_terms", self._find_contract_terms, customer, caller_id)
+
+    def who_owns(self, customer: str, caller_id: str) -> OwnerAnswer:
+        return self._serve("who_owns", self._who_owns, customer, caller_id)
+
+    def list_conflicts(self, customer: str, caller_id: str) -> ConflictList:
+        return self._serve("list_conflicts", self._list_conflicts, customer, caller_id)
+
+    def _serve(self, tool: str, impl, query: str, caller_id: str):
+        """Run a tool, withhold injected source text, then write the audit line."""
+        response = impl(query, caller_id)
+        response.withheld = _screen(response)
+        if self.audit is not None:
+            known = caller_id in self.directory.callers
+            self.audit.record(tool, caller_id, known, query, response, response.withheld)
+        return response
+
+    def _get_customer(self, name: str, caller_id: str) -> CustomerProfile:
         caller = self.directory.resolve(caller_id)
         match, candidates, msg = self._match(name, caller)
         if match is None:
@@ -173,7 +212,7 @@ class CanonService:
             fields=fields,
         )
 
-    def find_contract_terms(self, customer: str, caller_id: str) -> ContractTerms:
+    def _find_contract_terms(self, customer: str, caller_id: str) -> ContractTerms:
         caller = self.directory.resolve(caller_id)
         match, candidates, msg = self._match(customer, caller)
         if match is None:
@@ -199,7 +238,7 @@ class CanonService:
             partial_view=self._partial(match.entity_id, visible),
         )
 
-    def who_owns(self, customer: str, caller_id: str) -> OwnerAnswer:
+    def _who_owns(self, customer: str, caller_id: str) -> OwnerAnswer:
         caller = self.directory.resolve(caller_id)
         match, candidates, msg = self._match(customer, caller)
         if match is None:
@@ -215,7 +254,7 @@ class CanonService:
             message="" if owner else "No owner information visible to this caller.",
         )
 
-    def list_conflicts(self, customer: str, caller_id: str) -> ConflictList:
+    def _list_conflicts(self, customer: str, caller_id: str) -> ConflictList:
         caller = self.directory.resolve(caller_id)
         match, candidates, msg = self._match(customer, caller)
         if match is None:
@@ -318,3 +357,29 @@ def _attributes_as_facts(r: SourceRecord) -> SourceRecord:
         if getattr(r, f)
     ]
     return r.model_copy(update={"facts": facts})
+
+
+_SCREENED = {"quote", "value", "name", "explanation"}
+
+
+def _screen(obj: object) -> int:
+    """Withhold source text that looks like a prompt injection, in place; returns the count."""
+    hits = 0
+    if isinstance(obj, BaseModel):
+        for key, val in list(obj):
+            if key in _SCREENED and isinstance(val, str):
+                safe, rule = screen(val, max_chars=300 if key == "quote" else 10_000)
+                if safe != val:
+                    setattr(obj, key, safe)
+                hits += rule is not None
+            elif key == "aliases" and isinstance(val, list):
+                kept = [a for a in val if screen(a)[1] is None]
+                hits += len(val) - len(kept)
+                setattr(obj, key, kept)
+            else:
+                hits += _screen(val)
+    elif isinstance(obj, list):
+        hits += sum(_screen(v) for v in obj)
+    elif isinstance(obj, dict):
+        hits += sum(_screen(v) for v in obj.values())
+    return hits

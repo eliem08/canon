@@ -41,6 +41,9 @@ def load_slack(
         for u in json.loads((root / "users.json").read_text(encoding="utf-8"))
     }
     channels = json.loads((root / "channels.json").read_text(encoding="utf-8"))
+    if (root / "groups.json").exists():  # private channels: readable by their members only
+        private = json.loads((root / "groups.json").read_text(encoding="utf-8"))
+        channels += [{**g, "is_private": True} for g in private]
     records = []
     for channel in channels:
         messages = []
@@ -49,6 +52,14 @@ def load_slack(
         messages.sort(key=lambda m: float(m["ts"]))
         records.append(channel_to_record(channel, messages, users, config, str(root), ingest, llm))
     return records
+
+
+def channel_acl(channel: dict, config: SlackConfig) -> list[str]:
+    """Public channels: the configured groups. Private channels: each member, as
+    `slack-user:<id>` (callers carry that principal via `slack_user_id` in the directory)."""
+    if channel.get("is_private"):
+        return sorted(f"slack-user:{m}" for m in channel.get("members", []))
+    return list(config.archived_acl if channel.get("is_archived") else config.acl)
 
 
 def humanize_channel(name: str, prefixes: tuple[str, ...]) -> str:
@@ -113,6 +124,6 @@ def channel_to_record(
         status="archived" if archived else "active",
         updated_at=last,
         facts=facts,
-        acl=list(config.archived_acl if archived else config.acl),
+        acl=channel_acl(channel, config),
         issues=log.items,
     )

@@ -12,12 +12,16 @@ from canon.resolve.normalize import fold, normalize_address
 
 # Multilingual cues per question type (EN / FR / Darija-in-Latin), checked in order.
 TYPE_CUES = (
-    ("owner", ("owner", "owns", "account manager", "responsable", "chkoun")),
+    ("owner", ("owner", "owns", "account manager", "responsable", "chkoun", "looks after",
+               "handles", "handled by", "in charge", "s'occupe", "kaytkellef", "gere ")),
     ("renewal_date", ("renew", "renouvel", "tjedded", "echeance", "échéance")),
-    ("phone", ("phone", "telephone", "téléphone", "numero", "numéro", "nemra")),
-    ("address", ("address", "adresse", "siege", "siège", "fin kayn")),
-    ("contract_value", ("contract value", "montant", "ch7al", "how much", "valeur", "fee")),
-)
+    ("phone", ("phone", "telephone", "téléphone", "numero", "numéro", "nemra", "number",
+               "dial")),
+    ("address", ("address", "adresse", "siege", "siège", "fin kayn", "located",
+                 "head office", "offices")),
+    ("contract_value", ("contract value", "montant", "ch7al", "how much", "valeur", "fee",
+                        "per year", "par an", "annual", "worth", "combien")),
+)  # fmt: skip
 
 MONTHS = {
     **{m: i for i, m in enumerate(
@@ -30,12 +34,17 @@ MONTHS = {
 UNKNOWN = {"", "unknown", "none", "n/a", "not found", "inconnu"}
 
 
-def classify(question: str) -> str:
+def route(question: str) -> str | None:
+    """The question type its wording points to, or None when no cue matches."""
     q = fold(question)
     for qtype, cues in TYPE_CUES:
         if any(fold(c) in q for c in cues):
             return qtype
-    return "contract_value"
+    return None
+
+
+def classify(question: str) -> str:
+    return route(question) or "contract_value"
 
 
 def _parse_any_date(text: str) -> date | None:

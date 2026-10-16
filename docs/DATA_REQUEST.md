@@ -9,7 +9,7 @@ section before sending; this is a checklist, not legal language.*
 |---|---|---|---|---|
 | 1 | **CRM accounts** (and contacts if separate) | CSV/XLSX/JSON as exported | All active accounts, or ≥ 200 | account name, website, phone, address/city, tax id (ICE) if stored, **owner**, **annual contract value + currency**, **renewal date**, **last modified date**, record id |
 | 2 | **Team chat:** Slack workspace export (or WhatsApp/Teams/email: tell us which is real) | native export (Slack: zip with `channels.json`, `users.json`, per-day files) | channels that discuss customers, last 24 months | channel membership/privacy flags (needed for permissions), user list |
-| 3 | **Contracts** | PDF as stored (scans welcome, but processed only once OCR exists) | 50–200 files, including **≥ 5 amendments/superseding versions** | the files as stored; any folder structure (it often encodes the customer) |
+| 3 | **Contracts** | PDF/DOCX as stored, scans included | 50–200 files, including **≥ 5 amendments/superseding versions** | the files as stored; any folder structure (it often encodes the customer and who may read it) |
 | 4 | **Who can see what** | spreadsheet | every role that will use the agent | role → which sources/folders/channels it may read; 3–5 example people per role |
 | 5 | **Questions** | spreadsheet | **30–50** | real questions the team asks (or wants an agent to answer), each with the answer they agree is correct today and where they'd check it |
 
@@ -39,7 +39,7 @@ generate them.
 > [in your environment / under a DPA and is deleted afterwards]. Would you be open to a 30-minute call to see if it fits?
 
 ## 5. Readiness check for us (before the data arrives)
-- [ ] Their export formats match what our connectors read, or the mapping is a config change, not code (`CRMFieldMap`, `IngestConfig`). Today the CRM connector reads a JSON list of rows; a CSV/XLSX export needs a conversion step (or a small reusable loader) first.
-- [ ] Permissions: today ACLs are set per source type, not read from Slack/Drive. Map the client's role spreadsheet (#4) onto source ACLs by hand and say so in the report.
-- [ ] Contracts: Canon reads text today. Until PDF/OCR ingestion lands (`STATUS.md` task 3), convert text-based PDFs with `pdftotext` and set scans aside, and tell the client which files were excluded.
+- [ ] Their export formats match what our connectors read, or the mapping is a config change, not code (`CRMFieldMap`, `IngestConfig`). The CRM connector reads JSON or CSV (`,`/`;`); XLSX must be saved as CSV.
+- [ ] Permissions: Slack private-channel membership is read from the export (`groups.json`); contract folders get ACLs from `_acl.json` sidecars written from the role spreadsheet (#4); everything else is per source type. Say which in the report.
+- [ ] Contracts: PDFs (text or scanned), DOCX and images are read; scans go through OCR (`docs/DOCUMENTS.md`). OCR accuracy is only measured on synthetic renders, so measure CER and field accuracy on 10 of their scans on day 1. Unreadable files are listed in the quarantine report.
 - [ ] `canon resolve` on their sample produces a quarantine report we can show them on day 3.

@@ -30,7 +30,7 @@ def cmd_resolve(args: argparse.Namespace) -> None:
     data, out = Path(args.data), Path(args.out)
     as_of = date.fromisoformat(args.as_of) if args.as_of else None
     overrides = Path(args.overrides) if args.overrides else None
-    records, res = build_store(data, out, as_of, overrides)
+    records, res, unreadable = build_store(data, out, as_of, overrides)
     print(f"{len(records)} records -> {len(res.golden)} golden records in {out}")
     print(
         f"review queue: {len(res.review)} pair decisions to confirm ({out / 'review_queue.json'})"
@@ -39,7 +39,7 @@ def cmd_resolve(args: argparse.Namespace) -> None:
     held = sum(i.severity == "quarantined" for i in issues)
     print(
         f"parse issues: {held} values quarantined, {len(issues) - held} read under an "
-        f"assumption (details: {out / 'quarantine.json'})"
+        f"assumption, {len(unreadable)} documents unreadable (details: {out / 'quarantine.json'})"
     )
     truth_path = data / "ground_truth" / "ground_truth.json"
     if args.report and truth_path.exists():
@@ -54,7 +54,7 @@ def cmd_resolve(args: argparse.Namespace) -> None:
 
 
 def build_store(data: Path, out: Path, as_of: date | None, overrides: Path | None = None):
-    """Ingest + resolve + score, persist to out/; returns (records, resolution).
+    """Ingest + resolve + score, persist to out/; returns (records, resolution, unreadable docs).
 
     Entity ids are carried over from an existing out/canon.sqlite; human decisions in
     `overrides` (must_link / cannot_link) are applied; borderline decisions are written to
@@ -66,7 +66,8 @@ def build_store(data: Path, out: Path, as_of: date | None, overrides: Path | Non
     from canon.score import FactScoringConfig
     from canon.store import read_lineage, write_store
 
-    records = load_all(data)
+    unreadable: list = []
+    records = load_all(data, unreadable=unreadable)
     previous = read_lineage(out / "canon.sqlite")
     res = resolve(
         records,
@@ -81,15 +82,17 @@ def build_store(data: Path, out: Path, as_of: date | None, overrides: Path | Non
     )
     write_store(out / "canon.sqlite", records, res.golden)
     issues = [i.model_dump() for r in records for i in r.issues]
+    issues += [i.model_dump() for i in unreadable]
     (out / "quarantine.json").write_text(
         json.dumps(issues, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     write_review_queue(out / "review_queue.json", res.review)
-    return records, res
+    return records, res, unreadable
 
 
 def cmd_serve(args: argparse.Namespace) -> None:
     from canon.mcp_server import CallerDirectory, CanonService, ServiceConfig, build_server
+    from canon.mcp_server.audit import AuditLog
     from canon.score import FactScoringConfig
 
     as_of = date.fromisoformat(args.as_of) if args.as_of else None
@@ -100,8 +103,27 @@ def cmd_serve(args: argparse.Namespace) -> None:
         store,
         CallerDirectory.from_file(Path(args.identities)),
         ServiceConfig(facts=FactScoringConfig(as_of=as_of)),
+        audit=AuditLog(Path(args.audit_log)) if args.audit_log else None,
     )
-    build_server(service, pinned_caller=args.caller).run()
+    if not args.http:
+        build_server(service, pinned_caller=args.caller).run()
+        return
+    if not args.tokens:
+        raise SystemExit("--http requires --tokens (create one with `canon token add`)")
+    url = args.public_url or f"http://{args.host}:{args.port}"
+    server = build_server(service, tokens=Path(args.tokens), public_url=url)
+    server.run("streamable-http", host=args.host, port=args.port)
+
+
+def cmd_token(args: argparse.Namespace) -> None:
+    from canon.mcp_server.auth import issue_token, revoke_caller
+
+    if args.action == "add":
+        token = issue_token(Path(args.tokens), args.caller)
+        print(f"token for {args.caller} (shown once; only its hash is stored in {args.tokens}):")
+        print(token)
+    else:
+        print(f"revoked {revoke_caller(Path(args.tokens), args.caller)} token(s) of {args.caller}")
 
 
 def cmd_eval(args: argparse.Namespace) -> None:
@@ -122,13 +144,19 @@ def cmd_eval(args: argparse.Namespace) -> None:
             raise SystemExit(
                 f"Set {model.api_key_env} in the environment (never in a file in the repo)"
             )
-    run = run_eval(Path(args.data), model, caller=args.caller, as_of=date.fromisoformat(args.as_of))
+    as_of = date.fromisoformat(args.as_of)
+    questions = Path(args.questions) if args.questions else None
+    runs = [
+        run_eval(Path(args.data), model, caller=args.caller, as_of=as_of, questions=questions)
+        for _ in range(max(args.runs, 1))
+    ]
+    run = runs[0]
     sweep = None
     if args.seeds:
         from canon.evals.harness import seed_sweep
 
         sweep = seed_sweep(range(1, args.seeds + 1), model, args.caller)
-    report = render_report(run, sweep)
+    report = render_report(run, sweep, runs[1:])
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(report, encoding="utf-8")
@@ -156,7 +184,7 @@ def main(argv: list[str] | None = None) -> None:
     r.add_argument("--as-of", default=None, help="reference date for freshness (default: today)")
     r.set_defaults(func=cmd_resolve)
 
-    s = sub.add_parser("serve", help="run the permission-aware MCP server over stdio")
+    s = sub.add_parser("serve", help="run the permission-aware MCP server (stdio or HTTP)")
     s.add_argument("--data", default=str(_data_dir()))
     s.add_argument(
         "--store", default=str(Path(os.environ.get("CANON_OUT_DIR", "out")) / "canon.sqlite")
@@ -169,7 +197,19 @@ def main(argv: list[str] | None = None) -> None:
         default=None,
         help="pin every request to this identity (ignore the tool argument)",
     )
+    s.add_argument("--audit-log", default=None, help="append one JSON line per tool call here")
+    s.add_argument("--http", action="store_true", help="streamable HTTP with bearer tokens")
+    s.add_argument("--tokens", default=None, help="token file (see `canon token add`)")
+    s.add_argument("--host", default="127.0.0.1")
+    s.add_argument("--port", type=int, default=8765)
+    s.add_argument("--public-url", default=None, help="URL clients use (default http://host:port)")
     s.set_defaults(func=cmd_serve)
+
+    t = sub.add_parser("token", help="issue or revoke HTTP bearer tokens for callers")
+    t.add_argument("action", choices=["add", "revoke"])
+    t.add_argument("--caller", required=True, help="caller id from the identities file")
+    t.add_argument("--tokens", default="tokens.json")
+    t.set_defaults(func=cmd_token)
 
     e = sub.add_parser("eval", help="before/after eval: raw-file RAG agent vs. Canon MCP agent")
     e.add_argument("--data", default=str(_data_dir()))
@@ -187,6 +227,13 @@ def main(argv: list[str] | None = None) -> None:
     e.add_argument("--caller", default="revops.admin", help="identity the Canon agent acts for")
     e.add_argument("--as-of", default="2026-10-01")
     e.add_argument("--seeds", type=int, default=0, help="also rerun on N held-out seeds")
+    e.add_argument(
+        "--questions",
+        default=None,
+        help="question file (JSON, e.g. a client's); "
+        "default <data>/ground_truth/eval_questions.json",
+    )
+    e.add_argument("--runs", type=int, default=1, help="repeat the eval N times (real models)")
     e.add_argument(
         "--out", default=str(Path(os.environ.get("CANON_OUT_DIR", "out")) / "eval_report.md")
     )

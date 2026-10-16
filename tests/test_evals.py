@@ -6,12 +6,14 @@ from types import SimpleNamespace
 import pytest
 
 from canon.evals import ClaudeModel, StubModel, render_report, run_eval
-from canon.evals.agents import BM25, raw_chunks
+from canon.evals.agents import BM25, candidate_spans, raw_chunks
 from canon.evals.models import SYSTEM_PROMPT
-from canon.evals.questions import QUESTION_TYPES, build_questions
+from canon.evals.questions import QUESTION_TYPES, build_questions, load_questions
 from canon.evals.scoring import classify, is_correct
+from canon.evals.stats import mcnemar_exact, wilson
 
 DATA = Path(__file__).resolve().parents[1] / "data" / "synthetic"
+PARAPHRASES = DATA.parent / "eval" / "paraphrase_questions.json"
 TRUTH = json.loads((DATA / "ground_truth" / "ground_truth.json").read_text(encoding="utf-8"))
 
 
@@ -71,7 +73,7 @@ def test_canon_beats_baseline_with_stub_model(run):
 
 
 def test_report_has_required_sections(run):
-    report = render_report(run, sweep=[(1, 0.5, 1.0), (2, 0.4, 0.95)])
+    report = render_report(run, sweep=[(1, 0.5, 0.6, 1.0), (2, 0.4, 0.5, 0.95)])
     for heading in ("## Overall", "## Accuracy by question type", "## Failure analysis"):
         assert heading in report
     assert "Held-out check" in report and "Every miss" in report
@@ -173,3 +175,52 @@ def test_openai_compatible_adapter_retries_transient_errors_only(monkeypatch):
     with pytest.raises(urllib.error.HTTPError):
         model.answer("q", "c")
     assert len(calls) == 1  # client errors are not retried
+
+
+# ---------------------------------------------------------------- eval v2
+
+
+def test_question_files_load_and_fill_expected_from_truth(tmp_path):
+    committed = load_questions(DATA / "ground_truth" / "eval_questions.json")
+    assert committed == build_questions(TRUTH)
+    para = load_questions(PARAPHRASES, TRUTH)
+    assert len(para) >= 30 and all(q.expected not in (None, "") for q in para)
+    client = tmp_path / "client.json"
+    client.write_text(
+        json.dumps([{"id": "C1", "type": "owner", "question": "x?", "expected": "A"}])
+    )
+    assert load_questions(client)[0].entity_id is None
+    with pytest.raises(ValueError):
+        load_questions(PARAPHRASES)  # needs the ground truth for expected answers
+
+
+def test_candidate_spans_find_mid_sentence_names():
+    spans = candidate_spans("Before I call Atlas Logistique tomorrow, who owns that account?", 6)
+    assert "Atlas Logistique" in spans
+    assert not any(s.split()[0].lower() in {"before", "who"} for s in spans)
+    assert "Nour Packaging" in candidate_spans("Where are Nour Packaging's offices?", 6)
+
+
+def test_stats():
+    lo, hi = wilson(39, 40)
+    assert 0.86 < lo < 0.88 and hi > 0.99
+    assert wilson(0, 0) == (0.0, 1.0)
+    assert mcnemar_exact(16, 1) < 0.001 and mcnemar_exact(3, 3) == 1.0
+
+
+def test_oracle_is_in_the_run(run):
+    assert run.agents == ["baseline", "oracle", "canon"]
+    assert all("oracle" in r.outcomes for r in run.results)
+    assert all(r.outcomes["oracle"].trace[0].startswith("oracle: ") for r in run.results)
+
+
+def test_paraphrase_questions_link_mid_sentence():
+    para = run_eval(DATA, StubModel(), as_of=date(2026, 10, 1), questions=PARAPHRASES)
+    linked = [r for r in para.results if any("linked to" in t for t in r.outcomes["canon"].trace)]
+    assert len(linked) == len(para.results)
+    assert para.accuracy("canon") >= 0.9 and para.accuracy("canon") > para.accuracy("baseline")
+
+
+def test_report_has_ci_and_mcnemar(run):
+    report = render_report(run, repeats=[run])
+    assert "95% CI" in report and "McNemar" in report and "Repeated runs (2)" in report

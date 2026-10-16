@@ -1,7 +1,9 @@
-"""CRM account export connector (Salesforce-style JSON list of accounts)."""
+"""CRM account export connector (Salesforce-style accounts, as a JSON list or a CSV file)."""
 
 from __future__ import annotations
 
+import csv
+import io
 import json
 from dataclasses import dataclass
 from pathlib import Path
@@ -34,6 +36,19 @@ class CRMFieldMap:
 DEFAULT_CRM_ACL = ("sales", "exec")
 
 
+def read_rows(path: Path) -> list[dict]:
+    """Rows of a JSON list export or a CSV export (`,` or `;` delimited, optional BOM)."""
+    if path.suffix.lower() != ".csv":
+        return json.loads(path.read_text(encoding="utf-8"))
+    text = path.read_text(encoding="utf-8-sig")
+    header = text.split("\n", 1)[0]
+    delimiter = ";" if header.count(";") > header.count(",") else ","
+    return [
+        {k.strip(): (v.strip() if isinstance(v, str) else v) for k, v in row.items() if k}
+        for row in csv.DictReader(io.StringIO(text), delimiter=delimiter)
+    ]
+
+
 def load_crm(
     path: Path,
     fields: CRMFieldMap | None = None,
@@ -42,7 +57,7 @@ def load_crm(
 ) -> list[SourceRecord]:
     fields = fields or CRMFieldMap()
     config = config or IngestConfig()
-    rows = json.loads(Path(path).read_text(encoding="utf-8"))
+    rows = read_rows(Path(path))
     # One export uses one date convention: infer it from the dates that can only be read one way.
     inferred, conflict = infer_dayfirst(
         [row.get(f) for row in rows for f in (fields.renewal_date, fields.modified)]

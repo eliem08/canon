@@ -48,10 +48,12 @@ Each response also carries:
 
 ## Permissions
 
-* Source records carry ACL groups: CRM → `sales`, `exec`; Slack → `sales`; contracts → `legal`,
-  `exec`. Connectors set these and they are configurable.
-* A caller directory (`data/synthetic/identities.json`) maps caller ids to groups. Unknown
-  callers have no groups.
+* Source records carry ACL principals: CRM → `sales`, `exec`; public Slack channels → `sales`;
+  contracts → `legal`, `exec`, or whatever the nearest `_acl.json` in the contracts folder says
+  (`{"acl": ["exec"]}`). **Private Slack channels** (`groups.json` in the export) are readable only
+  by their members, as `slack-user:<id>` principals.
+* A caller directory (`data/synthetic/identities.json`) maps caller ids to groups, plus an
+  optional `slack_user_id` that grants that user's private channels. Unknown callers have no groups.
 * **Filtering happens before scoring.** Each request recomputes an entity's facts from only the
   records the caller can see. A value asserted only by a hidden source can never win, appear as
   an alternative, or shift a confidence.
@@ -79,8 +81,29 @@ The `caller` argument is chosen by the model, so on its own it is **self-asserte
 
 * **Pinned (recommended for personal/local use):** `canon serve --caller <id>` runs every
   request as that identity and ignores the argument. A test checks the model cannot override it.
-* **Shared server:** bind identity from the transport (MCP OAuth / `token_verifier` on an HTTP
-  transport) and ignore or verify the argument. This is not implemented yet.
+* **Shared server (HTTP + bearer tokens):** `canon serve --http --tokens tokens.json`. Every
+  request needs `Authorization: Bearer <token>`, and the token's caller replaces the `caller`
+  argument. Tokens come from `canon token add --caller <id>` (printed once). The file stores only
+  SHA-256 hashes and is re-read per request, so `canon token revoke --caller <id>` works without a
+  restart. Tests run a real HTTP server and check that a sales argument can't widen a legal
+  token's view, and that missing, wrong or revoked tokens get 401.
+
+### Prompt injection
+
+Canon returns text written by third parties (message quotes, names, addresses, contract lines).
+Text matching injection patterns (FR/EN/Darija: "ignore previous instructions", chat-role markup,
+"you are now", tool-hijack and exfiltration phrasings, zero-width obfuscation) is replaced with
+`[withheld: ...]`, and the response's `withheld` count tells the agent. Parsed values (amounts,
+dates) are kept: only the free text is withheld. The same check runs at ingest and lists hits in
+`quarantine.json` as `possible_prompt_injection:<rule>`. The server instructions also tell the agent
+that source text is data. The pattern list is one layer, not a guarantee: paraphrased injections
+will get through.
+
+### Audit log
+
+`canon serve --audit-log audit.jsonl` appends one line per tool call: timestamp, tool, caller,
+whether the caller is in the directory, query, found, entity id, `partial_view`, every record id
+cited, and the withheld count.
 
 ## Run it
 
@@ -89,6 +112,14 @@ uv sync
 uv run canon serve --as-of 2026-10-01                 # stdio; builds out/canon.sqlite if missing
 uv run canon serve --caller salma.el.idrissi          # pin identity
 uv run python examples/mcp_client.py "Zitoun"         # example client: same questions, 4 callers
+```
+
+HTTP, for a shared server:
+
+```bash
+uv run canon token add --caller hind.legal --tokens tokens.json     # prints the token once
+uv run canon serve --http --tokens tokens.json --port 8765 --audit-log out/audit.jsonl
+# clients connect to http://127.0.0.1:8765/mcp with "Authorization: Bearer <token>"
 ```
 
 Options: `--store` (default `out/canon.sqlite`), `--data` (rebuild source),
@@ -125,8 +156,12 @@ Restart Claude Desktop, and the four tools appear under the connector.
 
 ## Known gaps
 
-* **Self-asserted identity:** without `--caller`, `caller` is self-asserted. Shared deployments
-  need transport-level auth.
+* **Self-asserted identity on stdio:** without `--caller` (stdio) or `--http --tokens`, `caller`
+  is self-asserted. Static tokens are not SSO: no expiry or rotation policy, and no OAuth/OIDC
+  (the SDK supports a full OAuth provider; not wired).
+* **ACLs from exports, not live systems:** private-channel membership is read from the export.
+  Someone removed from a channel keeps access until the next export is ingested.
+* **Injection detection is pattern-based.** It reduces risk; it does not remove it.
 * **Group-level ACLs only:** per-field or row-level policies (e.g. "sales may see owner but not
   contract value from CRM") would need field-scoped ACLs on `Fact`.
 * **Clusters ignore ACLs:** entity resolution runs over all records. A caller can't see hidden

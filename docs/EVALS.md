@@ -1,7 +1,8 @@
 # Eval harness (Milestone 5)
 
-The sales proof: the same model answers the same 40 questions twice, once with naive retrieval
-over the raw exports and once with Canon's MCP tools. The difference is what Canon adds.
+The sales proof: the same model answers the same questions three times: with naive retrieval over
+the raw exports, with *perfect* retrieval over the raw exports (oracle), and with Canon's MCP tools.
+Baseline → Canon is what Canon adds; oracle → Canon is the part that better search alone can't give.
 
 ```bash
 uv run canon eval                              # stub model, offline, ~2 s (what CI runs)
@@ -9,6 +10,8 @@ uv run canon eval --seeds 10                   # plus 10 regenerated datasets (h
 uv sync --extra claude && uv run canon eval --model claude    # real model (needs credentials)
 uv run canon eval --model claude --model-id claude-opus-5-5 --caller salma.el.idrissi
 BASETEN_API_KEY=... uv run canon eval --model baseten --model-id <model slug from Baseten>
+uv run canon eval --questions data/eval/paraphrase_questions.json   # hand-written questions
+uv run canon eval --questions client_questions.json --runs 3        # a client's set, 3 repeats
 ```
 
 In a cloud session where the key is stored as an environment *secret* (injected by the network
@@ -23,8 +26,19 @@ copy is [`reports/eval_report.md`](reports/eval_report.md).
 
 ## Questions
 
-`canon/evals/questions.py` derives 40 questions deterministically from the hidden ground
-truth. They are written to `data/synthetic/ground_truth/eval_questions.json`.
+The harness loads questions from a file (`--questions`, default
+`<data>/ground_truth/eval_questions.json`). A client's set is a JSON list of
+`{"id", "type", "question", "expected"}`; `entity_id` is optional (without it, and without a ground
+truth, the oracle agent and the "wrong customer" failure class are skipped).
+
+Two sets are committed:
+
+* **Synthetic (40):** `canon/evals/questions.py` derives them deterministically from the hidden
+  ground truth (`canon generate` writes them). The customer mention ends each question.
+* **Hand-written paraphrases (30):** `data/eval/paraphrase_questions.json`. These are informal
+  EN/FR/Darija questions with the customer named **mid-sentence** ("Before I call Atlas Logistique
+  tomorrow, who on our side owns that account?"). Expected answers are filled from the ground
+  truth by `entity_id`.
 
 | Type | Count | Expected answer |
 |---|---|---|
@@ -40,15 +54,23 @@ with a typo, as "chrikat …", by alias (`AFC`, `Rif Cement`), or in Arabic scri
 
 ## Agents
 
-Both agents use the same model, prompt and question router (`classify`). Only the context
-differs.
+All agents use the same model and prompt. Only the context differs.
 
 * **Baseline:** BM25 over raw chunks (CRM rows, individual Slack messages, contract texts),
   top 5 chunks.
-* **Canon:** links the customer by calling `get_customer` on the question's trailing spans and
-  keeping the best match, then calls `find_contract_terms`, `who_owns` or `get_customer` over
-  MCP and passes the structured result as context. It acts as `revops.admin` by default
-  (`--caller` to change).
+* **Oracle:** every raw chunk of the question's true customer, taken from the answer key, and
+  nothing else. This is perfect retrieval. Whatever it still gets wrong comes from the raw data
+  itself: stale CRM values, superseded contracts, owner changes buried in chat.
+* **Canon:** links the customer by probing `get_customer` with every span of up to 6 words that
+  doesn't start or end with a function word, keeping the best match (on a tie, the longer span).
+  It then calls `find_contract_terms`, `who_owns` or `get_customer` over MCP, according to the
+  question type the wording points to, or `get_customer` (every field) when the wording is unclear.
+  It passes the structured result as context. It acts as `revops.admin` by default (`--caller` to
+  change).
+
+**Statistics:** each accuracy has a 95% Wilson interval. Canon vs. baseline is compared with an
+exact McNemar test on the questions where exactly one of them is right, which is the right test for
+paired answers. `--runs N` repeats the eval and tabulates every run, since real models vary.
 
 ## Models
 
@@ -146,5 +168,7 @@ Same 40 questions, same prompt, temperature 0, one run per model (per-model repo
   headline.
 * Questions, data and pipeline come from the same author, so the lift is an upper bound until it
   is reproduced on a customer's data with questions written by their team.
-* Entity linking relies on the customer mention ending the question. A real model would extract
-  the name itself.
+* The router's cue list was extended after the paraphrase questions were written (owner: "looks
+  after", "s'occupe"; phone: "number", "dial"; address: "located"...), so routing on that set
+  (30/30) is not independent evidence. When no cue matches, the Canon agent falls back to the full
+  profile.
