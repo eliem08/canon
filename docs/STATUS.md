@@ -6,6 +6,34 @@ first commit, 2026-10-15, so this is **day 2 of 30** (UNVERIFIED: the real start
 **Independence caveat.** This audit was done by the same AI agent that wrote most of the code. I tried to attack my own work
 (section 1 stress tests), but a human should review it before it is used to make decisions.
 
+## Update: end of day 2 (repo @ `8ac73ca`, PR #1)
+
+*This section supersedes the percentages and the task list below; the original audit is kept unchanged under it for the record.
+Same independence caveat: written by the agent that built it.*
+
+**Verdict: still AT RISK.** Engineering risk dropped sharply: STATUS tasks 1–7 are built and tested, along with the audit
+report generator and client-side packaging. Two things did not move: commercial risk (no design partner or data sample in the
+repo), and the eval's headline claim.
+
+| Goal | Audit (morning) | Now | Evidence / what's left |
+|---|---|---|---|
+| 1. CRM + Slack + Drive/PDF pipeline, ER, MCP | ~35% | **~75%** | PDF/OCR/DOCX/XLSX/CSV, folder ACLs, private channels, HTTP + tokens, Docker image verified offline (`docs/DOCUMENTS.md`, `docs/DEPLOY.md`). Missing: any real export, the Drive API (folder exports only), SSO. |
+| 2. Public eval, gap ≥ 40 pts | ~50% | **~45%: the claim is falsified as stated** | vs keyword RAG: +35–42 pts (p < 1e-4). vs **strong RAG**: 0 to +5 pts, **not significant** on 4 models × 2 question sets. As a sales rep, raw-file RAG reads restricted text in 35/40 answers, Canon in 0/40 (`docs/EVALS.md`). Not public. |
+| 3. Two paid pilots | ~3% | **~10%** | The deliverable now exists (`canon audit`, sample `docs/reports/audit_report_sample.md`), plus a runbook to run it inside a client's network. Still zero outreach evidence in the repo. |
+| 4. ≥ 70% reusable code | ~40% | **~55% (unproven)** | Connectors read standard formats; country, currency and date conventions are config; no client logic in core. Only measurable on a real deployment. |
+
+**The decision this forces (founder):** Goal 2 as written ("a gap of 40+ points") is only true against a weak baseline. The
+evidence supports a different pitch: *as accurate as a well-built RAG, without reading what the user may not see, with every fact
+cited, and with an audit of what's wrong in your data.* Either adopt that pitch, or test the accuracy claim on a client's data,
+where histories are longer and names messier. Don't publish "+40".
+
+**Next 2 weeks (replaces section 5):**
+1. **Founder:** one design partner, an export, their questions. This blocks everything below.
+2. Run `canon audit` on their data, inside their network; send the quarantine and the review queue on day 3.
+3. Eval on *their* questions against strong RAG, with `--runs 3` and a client-hosted model if consent requires it.
+4. Shrink Canon's tool output (about 2× strong RAG's context) and re-measure.
+5. Based on what their data shows: Drive API connector, SSO, or ER tuning on their labelled pairs.
+
 ## Verdict: **AT RISK**
 
 The engineering core came together unusually fast. A seeded dataset, entity resolution (F1 0.991), fact scoring, a 4-tool MCP server
