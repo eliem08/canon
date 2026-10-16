@@ -40,6 +40,13 @@ class ScoringConfig:
     address_threshold: float = 0.85
     city_agree: float = 0.5
     city_disagree: float = -2.0
+    # Guards (see docs/ENTITY_RESOLUTION.md §3):
+    phone_agree_weak: float = 2.0  # a shared phone when names disagree (group switchboards)
+    weak_phone_below_name_sim: float = 0.8
+    type_mismatch: float = -6.0  # "Boulangerie X" vs "Boucherie X"
+    generic_name_no_identifier: float = -4.0  # "Pharmacie Al Amal" x2, nothing else shared
+    city_conflict_no_identifier: float = -2.0
+    concept_weight: float = 0.95  # bilingual concept-set similarity, see lexicon.py
 
 
 @dataclass
@@ -83,6 +90,9 @@ def _pair_name_similarity(a: str, b: str) -> float:
     return max(sort, joined, prefix, subset)
 
 
+CONCEPT_WEIGHT = ScoringConfig.concept_weight
+
+
 def name_similarity(fa: RecordFeatures, fb: RecordFeatures) -> float:
     best = 0.0
     for a in fa.names:
@@ -93,6 +103,12 @@ def name_similarity(fa: RecordFeatures, fb: RecordFeatures) -> float:
             # Short skeletons ("brk" from both "brc" and "baraka") carry little information.
             informative = min(len(a.replace(" ", "")), len(b.replace(" ", ""))) >= 4
             best = max(best, (0.97 if informative else 0.8) * _pair_name_similarity(a, b))
+    # translations: same concepts in any order ("Maroc Telecom" ~ "اتصالات المغرب")
+    for a in fa.concepts:
+        for b in fb.concepts:
+            if len(a) >= 2 and len(b) >= 2:
+                shared = len(set(a) & set(b)) / max(len(set(a)), len(set(b)))
+                best = max(best, CONCEPT_WEIGHT * shared)
     # acronym against a short single-token name ("khg" vs "Kasbah Hospitality Group")
     short_a = {n for n in fa.names if " " not in n and 2 <= len(n) <= 4}
     short_b = {n for n in fb.names if " " not in n and 2 <= len(n) <= 4}
@@ -109,7 +125,12 @@ def score_pair(fa: RecordFeatures, fb: RecordFeatures, cfg: ScoringConfig) -> Pa
     if fa.domain and fb.domain:
         s.evidence["domain"] = cfg.domain_agree if fa.domain == fb.domain else cfg.domain_disagree
     if fa.phone and fb.phone:
-        s.evidence["phone"] = cfg.phone_agree if fa.phone == fb.phone else cfg.phone_disagree
+        if fa.phone != fb.phone:
+            s.evidence["phone"] = cfg.phone_disagree
+        elif s.name_similarity < cfg.weak_phone_below_name_sim:
+            s.evidence["phone"] = cfg.phone_agree_weak
+        else:
+            s.evidence["phone"] = cfg.phone_agree
     if fa.tax_id and fb.tax_id:
         s.evidence["tax_id"] = cfg.tax_agree if fa.tax_id == fb.tax_id else cfg.tax_disagree
     if fa.address and fb.address:
@@ -119,8 +140,26 @@ def score_pair(fa: RecordFeatures, fb: RecordFeatures, cfg: ScoringConfig) -> Pa
         )
     if fa.city and fb.city:
         s.evidence["city"] = cfg.city_agree if fa.city == fb.city else cfg.city_disagree
+    # corroboration = anything beyond the name that ties the two records together
+    identifier_agrees = (
+        any(s.evidence.get(k, 0) > 0 for k in ("domain", "tax_id", "address"))
+        or s.evidence.get("phone") == cfg.phone_agree
+    )
+    if fa.types and fb.types and not (fa.types & fb.types):
+        s.evidence["type_mismatch"] = cfg.type_mismatch
+    elif not identifier_agrees:
+        if (fa.types & fb.types) & _local_shop_types():
+            s.evidence["generic_name_no_identifier"] = cfg.generic_name_no_identifier
+        if fa.city and fb.city and fa.city != fb.city:
+            s.evidence["city_conflict_no_identifier"] = cfg.city_conflict_no_identifier
     s.probability = 1 / (1 + math.exp(-s.total))
     return s
+
+
+def _local_shop_types() -> frozenset[str]:
+    from canon.resolve.lexicon import LOCAL_SHOP_TYPES
+
+    return LOCAL_SHOP_TYPES
 
 
 def is_cannot_link(fa: RecordFeatures, fb: RecordFeatures) -> bool:

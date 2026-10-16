@@ -46,6 +46,31 @@ Name similarity is the max over token-sort ratio, space-insensitive ratio, prefi
 similarity (×0.97, or ×0.8 when a skeleton has < 4 consonants), and acronym match (0.85).
 **Cannot-link**: different tax ids, or different domains *and* different phones.
 
+**Concept channel** (`lexicon.py`): name tokens map to bilingual concepts (`pharmacie` = `pharmacy` =
+`صيدلية`, `banque` = `bank` = `بنك`, ...), so a French name and its Arabic *translation* can match.
+Concept overlap scores × 0.95 when both names have ≥ 2 tokens.
+
+**Guards** (log-odds, `ScoringConfig`), which apply when no identifier agrees (domain, tax id,
+address, or a phone backed by name similarity ≥ 0.8):
+
+| Guard | Weight | Catches |
+|---|---|---|
+| `type_mismatch`: both names have a business type and the types are disjoint | −6 | `Boulangerie Atlas` vs `Pharmacie Atlas` |
+| `generic_name_no_identifier`: shared type is a local shop (pharmacy, café, hotel, garage...) | −4 | two `Pharmacie Al Amal`s |
+| `city_conflict_no_identifier` | −2 | same name, different city |
+
+A shared phone counts only +2 (not +5) when names are dissimilar: switchboards and agencies share
+numbers.
+
+## Human in the loop — `pipeline.py`
+* **Review queue** (`out/review_queue.json`): pairs with probability in [0.2, 0.8), or near-identical
+  names (≥ 0.9) a guard kept apart, most uncertain first, with the evidence and the decision taken.
+* **Overrides** (`canon resolve --overrides overrides.json`, `{"must_link": [[a, b]], "cannot_link": [[a, b]]}`):
+  a person's decisions win on every run, and decided pairs leave the queue.
+* **Stable ids**: a cluster inherits the previous run's entity id (read from the existing
+  `canon.sqlite`) it shares the most records with; new clusters get `E` + sha1 of their smallest record
+  id. Adding records never renames existing entities.
+
 ## 4. Clustering — `cluster.py`
 Average-linkage agglomerative clustering over scored pairs (unscored pairs are neutral),
 stopping at p < 0.5, never merging clusters that contain a cannot-link pair. Unlike connected
@@ -75,15 +100,22 @@ alternatives kept).
 | Canon, B-cubed | 1.000 | 0.987 | 0.993 |
 | Baseline, exact normalized name | 1.000 | 0.534 | 0.696 |
 
-Held-out seeds 1–50: mean pairwise F1 0.994, min 0.975. Golden field accuracy: owner,
+Held-out seeds 1–50: mean pairwise F1 0.991, min 0.972 (0.994/0.975 before the guards; the guards
+trade a little recall on synthetic data for precision on adversarial pairs). Golden field accuracy: owner,
 contract value and renewal date 1.00; domain/phone/tax id/address 0.96 (the one unresolved record).
+
+Adversarial pair suite (`tests/fixtures/er_pairs.json`, 50 hand-written pairs: generic names in other
+cities, different business types, FR/AR translations, shared switchboards): precision 0.621 → **1.000**,
+recall 0.783 → **0.962**.
 
 ## Known gaps
 * Weights are hand-set, not learned. The synthetic generator and the resolver were written by the same
   team, so these numbers are an upper bound. Real data needs a labelled sample and EM/logistic fitting.
 * An acronym-only Slack channel with no domain/e-mail (`tmf`) stays a singleton. That's the right
   call on the evidence, but it is a recall loss.
-* Arabic names that are *translations* rather than transliterations (`مخبزة البركة` vs `Boulangerie
-  Al Baraka`) match only on shared words; they rely on phone/tax id/domain.
+* Translations are matched only for concepts in the lexicon (~40 business words). A one-word Arabic
+  name (`زيتون`) vs `Zitoun Cosmetics` with only a shared phone stays apart (pair P22).
+* The 50 adversarial pairs were written by the same team as the guards; a client's labelled sample
+  is the real test.
 * Average linkage is O(n² log n) in the worst case per block. Fine for thousands of records, but
   millions need a block-local implementation.

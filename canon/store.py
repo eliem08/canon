@@ -110,6 +110,21 @@ def write_store(path: Path, records: list[SourceRecord], golden: list[GoldenReco
             )
 
 
+def read_lineage(path: Path) -> dict[str, list[str]]:
+    """entity_id -> member record ids from an existing store ({} if there is none)."""
+    if not Path(path).exists():
+        return {}
+    with sqlite3.connect(path) as db:
+        members: dict[str, list[str]] = {}
+        try:
+            rows = db.execute("SELECT entity_id, record_id FROM lineage ORDER BY 1, 2").fetchall()
+        except sqlite3.OperationalError:
+            return {}
+        for eid, rid in rows:
+            members.setdefault(eid, []).append(rid)
+    return members
+
+
 def read_golden(path: Path) -> list[GoldenRecord]:
     with sqlite3.connect(path) as db:
         acl = dict(db.execute("SELECT entity_id, acl FROM entities"))

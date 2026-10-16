@@ -29,7 +29,7 @@ Dataset: 119 records, 25 true entities, 26 predicted clusters.
 
 ## Robustness: held-out seeds
 
-Regenerated the dataset with seeds 1–50 (same generator, different randomness) — pairwise F1 mean **0.994**, min **0.975**, 50/50 seeds ≥ 0.90. Fact accuracy mean **0.976**, min **0.887**.
+Regenerated the dataset with seeds 1–50 (same generator, different randomness) — pairwise F1 mean **0.991**, min **0.972**, 50/50 seeds ≥ 0.90. Fact accuracy mean **0.967**, min **0.887**.
 
 ## Errors
 
@@ -59,8 +59,8 @@ Mean confidence: 0.7397 when correct, 0.09 when wrong.
 
 ### Fact failures
 
-- E11 `owner`: expected `Nadia Berrada`, got `Omar Fassi` (2 conflicting values; kept 'Omar Fassi' (score 0.16, best source crm/active from 2026-05-19) over 'Nadia Berrada' (score 0.14))
-- E14 `owner`: expected `Leila Bennani`, got `Youssef Benali` (2 conflicting values; kept 'Youssef Benali' (score 0.17, best source crm/active from 2026-05-26) over 'Leila Bennani' (score 0.13))
 - E13 `contract_start`: expected `2026-06-01`, got `None` (no observation)
 - E13 `address`: expected `Tanger Med Port Zone, Building B4`, got `None` (no observation)
 - E13 `signatory`: expected `Hicham Amrani`, got `None` (no observation)
+- E14 `owner`: expected `Leila Bennani`, got `Youssef Benali` (2 conflicting values; kept 'Youssef Benali' (score 0.17, best source crm/active from 2026-05-26) over 'Leila Bennani' (score 0.13))
+- E11 `owner`: expected `Nadia Berrada`, got `Omar Fassi` (2 conflicting values; kept 'Omar Fassi' (score 0.16, best source crm/active from 2026-05-19) over 'Nadia Berrada' (score 0.14))

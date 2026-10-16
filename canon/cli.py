@@ -29,8 +29,12 @@ def cmd_resolve(args: argparse.Namespace) -> None:
 
     data, out = Path(args.data), Path(args.out)
     as_of = date.fromisoformat(args.as_of) if args.as_of else None
-    records, res = build_store(data, out, as_of)
+    overrides = Path(args.overrides) if args.overrides else None
+    records, res = build_store(data, out, as_of, overrides)
     print(f"{len(records)} records -> {len(res.golden)} golden records in {out}")
+    print(
+        f"review queue: {len(res.review)} pair decisions to confirm ({out / 'review_queue.json'})"
+    )
     issues = [i for r in records for i in r.issues]
     held = sum(i.severity == "quarantined" for i in issues)
     print(
@@ -49,17 +53,27 @@ def cmd_resolve(args: argparse.Namespace) -> None:
         print(report)
 
 
-def build_store(data: Path, out: Path, as_of: date | None):
-    """Ingest + resolve + score, persist to out/canon.sqlite; returns (records, resolution)."""
+def build_store(data: Path, out: Path, as_of: date | None, overrides: Path | None = None):
+    """Ingest + resolve + score, persist to out/; returns (records, resolution).
+
+    Entity ids are carried over from an existing out/canon.sqlite; human decisions in
+    `overrides` (must_link / cannot_link) are applied; borderline decisions are written to
+    out/review_queue.json and unreadable values to out/quarantine.json."""
     import json
 
     from canon.ingest import load_all
-    from canon.resolve.pipeline import ResolverConfig, resolve
+    from canon.resolve.pipeline import Overrides, ResolverConfig, resolve, write_review_queue
     from canon.score import FactScoringConfig
-    from canon.store import write_store
+    from canon.store import read_lineage, write_store
 
     records = load_all(data)
-    res = resolve(records, ResolverConfig(facts=FactScoringConfig(as_of=as_of)))
+    previous = read_lineage(out / "canon.sqlite")
+    res = resolve(
+        records,
+        ResolverConfig(facts=FactScoringConfig(as_of=as_of)),
+        overrides=Overrides.load(overrides),
+        previous=previous,
+    )
     out.mkdir(parents=True, exist_ok=True)
     (out / "golden_records.json").write_text(
         json.dumps([g.model_dump(mode="json") for g in res.golden], ensure_ascii=False, indent=2),
@@ -70,6 +84,7 @@ def build_store(data: Path, out: Path, as_of: date | None):
     (out / "quarantine.json").write_text(
         json.dumps(issues, ensure_ascii=False, indent=2), encoding="utf-8"
     )
+    write_review_queue(out / "review_queue.json", res.review)
     return records, res
 
 
@@ -135,6 +150,9 @@ def main(argv: list[str] | None = None) -> None:
     r.add_argument("--out", default=os.environ.get("CANON_OUT_DIR", "out"))
     r.add_argument("--report", action="store_true", help="evaluate against ground truth")
     r.add_argument("--seeds", type=int, default=0, help="also sweep N held-out seeds")
+    r.add_argument(
+        "--overrides", default=None, help="JSON with must_link / cannot_link record-id pairs"
+    )
     r.add_argument("--as-of", default=None, help="reference date for freshness (default: today)")
     r.set_defaults(func=cmd_resolve)
 

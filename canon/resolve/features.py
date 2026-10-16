@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from canon.models import SourceRecord
+from canon.resolve.lexicon import business_types, name_concepts
 from canon.resolve.normalize import (
     acronyms as acronyms_of,
 )
@@ -27,6 +28,8 @@ class RecordFeatures:
     tax_id: str | None
     address: str
     city: str
+    concepts: tuple[tuple[str, ...], ...] = ()  # per name: concept ids / skeletons (lexicon.py)
+    types: frozenset[str] = frozenset()  # business types across all names
 
 
 def features(record: SourceRecord) -> RecordFeatures:
@@ -34,6 +37,7 @@ def features(record: SourceRecord) -> RecordFeatures:
     normalized = tuple(dict.fromkeys(x for x in (normalize_name(n) for n in names) if x))
     skeletons = tuple(dict.fromkeys(x for x in (skeleton(n) for n in names) if x))
     acronyms = tuple(sorted({a for n in names for a in acronyms_of(n) if len(a) >= 2}))
+    concepts = tuple(dict.fromkeys(c for c in (name_concepts(n) for n in names) if c))
     phone = record.phone[-9:] if record.phone else None
     tax_id = "".join(c for c in record.tax_id if c.isdigit()) if record.tax_id else None
     return RecordFeatures(
@@ -46,4 +50,8 @@ def features(record: SourceRecord) -> RecordFeatures:
         tax_id=tax_id or None,
         address=normalize_address(record.address),
         city=normalize_city(record.city),
+        concepts=concepts,
+        types=frozenset().union(*(business_types(c) for c in concepts))
+        if concepts
+        else frozenset(),
     )
