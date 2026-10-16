@@ -72,7 +72,9 @@ def test_llm_values_must_appear_in_the_message():
 
 
 def test_llm_owner_must_be_a_mentioned_known_user():
-    kept, rejected = validate_llm({"owner": "Rachid Amrani"}, "Rachid gère Zitoun", USERS, "MAD", True)
+    kept, rejected = validate_llm(
+        {"owner": "Rachid Amrani"}, "Rachid gère Zitoun", USERS, "MAD", True
+    )
     assert kept == [] and rejected == ["owner"]
     kept, rejected = validate_llm({"owner": "Omar Fassi"}, "géré par <@U03>", USERS, "MAD", True)
     assert kept == [] and rejected == ["owner"]
