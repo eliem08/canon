@@ -15,9 +15,9 @@
 | Baseline (BM25 over raw files) | 23/40 | 57.5% | 42%–71% | 1,980 | 27/40 |
 | Strong RAG (hybrid fuzzy retrieval, multi-query, top 10) | 37/40 | 92.5% | 80%–97% | 3,704 | 35/40 |
 | Oracle retrieval (every raw record of the right customer) | 38/40 | 95.0% | 83%–99% | 2,701 | 40/40 |
-| **Canon (MCP tools)** | 33/40 | 82.5% | 68%–91% | 3,537 | 0/40 |
+| **Canon (MCP tools)** | 33/40 | 82.5% | 68%–91% | 883 | 0/40 |
 
-Lift, Canon vs. baseline: **+25.0 pts**. On the same questions, Canon alone is right on 12 and the baseline alone on 2 (exact McNemar p = 0.013).
+Lift, Canon vs. baseline: **+25.0 pts**. On the same questions, Canon alone is right on 13 and the baseline alone on 3 (exact McNemar p = 0.021).
 Canon vs. hybrid: **-10.0 pts**; Canon alone right on 1, hybrid alone on 5 (exact McNemar p = 0.22). This is the comparison to quote: the strongest baseline that does not need Canon or the answer key.
 Canon vs. oracle: **-12.5 pts**; Canon alone right on 1, oracle alone on 6 (exact McNemar p = 0.12). The oracle needs the answer key; it bounds what any retrieval over raw files could do.
 
@@ -35,9 +35,9 @@ Canon vs. oracle: **-12.5 pts**; Canon alone right on 1, oracle alone on 6 (exac
 
 | Failure | baseline | hybrid | oracle | canon |
 |---|---|---|---|---|
-| stale / superseded value of the right customer | 3 | 1 | 2 | 4 |
+| stale / superseded value of the right customer | 3 | 1 | 2 | 3 |
 | value belonging to a different customer | 0 | 0 | 0 | 0 |
-| no answer found | 14 | 2 | 0 | 3 |
+| no answer found | 14 | 2 | 0 | 4 |
 | other | 0 | 0 | 0 | 0 |
 
 Accuracy by how the customer was named:
@@ -45,10 +45,10 @@ Accuracy by how the customer was named:
 | Mention style | Questions | baseline | hybrid | oracle | canon |
 |---|---|---|---|---|---|
 | alias | 7 | 14% | 71% | 86% | 86% |
-| arabic | 4 | 50% | 100% | 100% | 50% |
+| arabic | 4 | 50% | 100% | 100% | 75% |
 | canonical | 9 | 89% | 89% | 89% | 67% |
 | darija | 3 | 67% | 100% | 100% | 100% |
-| legal | 7 | 86% | 100% | 100% | 100% |
+| legal | 7 | 86% | 100% | 100% | 86% |
 | lower | 8 | 38% | 100% | 100% | 88% |
 | typo | 2 | 50% | 100% | 100% | 100% |
 
@@ -56,10 +56,11 @@ Accuracy by how the customer was named:
 
 | Q | Question | Expected | baseline | hybrid | oracle | canon |
 |---|---|---|---|---|---|---|
-| Q03 | Ch7al kaykhalsou f l3am daba, نسيج شفشاون? | `872000` | ✗ `800 000 MAD` (stale_value) | ✓ | ✓ | ✗ `800000.0 DH` (stale_value) |
+| Q03 | Ch7al kaykhalsou f l3am daba, نسيج شفشاون? | `872000` | ✗ `800 000 MAD` (stale_value) | ✓ | ✓ | ✗ `unknown` (no_answer) |
 | Q04 | Quel est le montant annuel actuel du contrat de Rif Cement ? | `1666000` | ✗ `unknown` (no_answer) | ✓ | ✓ | ✓ |
+| Q05 | Quel est le montant annuel actuel du contrat de Tanger Med Freight SARL ? | `1341000` | ✓ | ✓ | ✓ | ✗ `unknown` (no_answer) |
 | Q08 | Ch7al kaykhalsou f l3am daba, atlantic fishing company? | `1858000` | ✗ `unknown` (no_answer) | ✓ | ✓ | ✓ |
-| Q10 | Ch7al kaykhalsou f l3am daba, سوس فريش? | `536000` | ✗ `410 000 MAD HT` (stale_value) | ✓ | ✓ | ✗ `unknown` (no_answer) |
+| Q10 | Ch7al kaykhalsou f l3am daba, سوس فريش? | `536000` | ✗ `410 000 MAD HT` (stale_value) | ✓ | ✓ | ✓ |
 | Q11 | When is the contract renewal date for Atlas Logisitque? | `2027-12-01` | ✗ `unknown` (no_answer) | ✓ | ✓ | ✓ |
 | Q12 | Quelle est la date de renouvellement du contrat de Boulangerie Al Baraka ? | `2028-03-01` | ✓ | ✓ | ✓ | ✗ `2025-12-01` (stale_value) |
 | Q13 | Quelle est la date de renouvellement du contrat de Nour Packaging ? | `2027-07-01` | ✓ | ✓ | ✓ | ✗ `2026-01-01` (stale_value) |
