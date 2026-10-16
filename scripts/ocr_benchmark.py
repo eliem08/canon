@@ -61,6 +61,8 @@ def run(noise: float) -> dict:
             arabic_ref += " ".join(ln for ln in lines if _is_arabic(ln)) + " "
             arabic_hyp += " ".join(ln for ln in got if _is_arabic(ln)) + " "
             want, have = _fields(src), _fields(doc.text)
+            if doc.denoised:  # load_contracts drops Arabic names read from denoised pages
+                have["arabic_name"] = None
             for k, v in want.items():
                 if v is not None:
                     per_field.setdefault(k, []).append(have.get(k) == v)

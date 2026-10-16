@@ -195,6 +195,12 @@ def load_contracts(
                     unreadable.append(issue)
             continue
         item = parse_contract(doc.text, rid, str(path), folder_acl(path, root, acl), config)
+        if doc.denoised and item["record"].alt_names:
+            # denoising erases the dots that distinguish Arabic letters: refuse, don't guess
+            doc.issues.append(
+                ("arabic_unreliable_after_denoise", ", ".join(item["record"].alt_names))
+            )
+            item["record"].alt_names = []
         item["record"].issues += [
             ParseIssue(record_id=rid, field="document", raw=d, reason=r, severity="warning")
             for r, d in doc.issues

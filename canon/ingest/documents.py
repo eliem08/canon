@@ -45,6 +45,7 @@ class DocumentText:
     method: str  # text | pdf | docx | ocr | pdf+ocr | none
     issues: list[tuple[str, str]] = field(default_factory=list)  # (reason, detail)
     ocr_confidence: float | None = None
+    denoised: bool = False  # the median filter was used: Arabic dots may be lost
 
 
 def ocr_available(config: OCRConfig | None = None) -> bool:
@@ -63,8 +64,8 @@ def _png(data: bytes, median: int = 0) -> bytes:
     return buf.getvalue()
 
 
-def ocr_image(data: bytes, config: OCRConfig) -> tuple[str, float | None]:
-    """OCR one image. Returns (text, mean word confidence).
+def ocr_image(data: bytes, config: OCRConfig) -> tuple[str, float | None, bool]:
+    """OCR one image. Returns (text, mean word confidence, whether it was denoised).
 
     The median filter removes speckle but also erases thin strokes and the dots of Arabic
     letters, so it is used only when the plain pass is unsure, and only if it does better."""
@@ -72,8 +73,8 @@ def ocr_image(data: bytes, config: OCRConfig) -> tuple[str, float | None]:
     if config.median_filter and (conf or 0) < config.denoise_below:
         text2, conf2 = _tesseract(_png(data, config.median_filter), config)
         if (conf2 or 0) > (conf or 0):
-            return text2, conf2
-    return text, conf
+            return text2, conf2, True
+    return text, conf, False
 
 
 def _tesseract(png: bytes, config: OCRConfig) -> tuple[str, float | None]:
@@ -104,8 +105,9 @@ def _tesseract(png: bytes, config: OCRConfig) -> tuple[str, float | None]:
 def _ocr_pages(images: list[bytes], config: OCRConfig, doc: DocumentText) -> list[str]:
     pages, confs = [], []
     for data in images:
-        text, conf = ocr_image(data, config)
+        text, conf, denoised = ocr_image(data, config)
         pages.append(text)
+        doc.denoised |= denoised
         if conf is not None:
             confs.append(conf)
     if confs:
