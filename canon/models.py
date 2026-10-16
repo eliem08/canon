@@ -23,6 +23,18 @@ class Fact(BaseModel):
     record_id: str
 
 
+class ParseIssue(BaseModel):
+    """A value a connector refused to interpret (quarantined) or read under an assumption.
+
+    Quarantined values produce no `Fact`; the raw text is kept so a human can resolve it."""
+
+    record_id: str
+    field: str
+    raw: str
+    reason: str  # machine-readable code, e.g. "ambiguous_separator", "impossible_date"
+    severity: Literal["quarantined", "warning"] = "quarantined"
+
+
 class SourceRecord(BaseModel):
     """One mention of an entity in one source, normalized to a common shape.
 
@@ -46,6 +58,7 @@ class SourceRecord(BaseModel):
     updated_at: date | None = None
     facts: list[Fact] = Field(default_factory=list)
     acl: list[str] = Field(default_factory=list)
+    issues: list[ParseIssue] = Field(default_factory=list)
 
     def all_names(self) -> list[str]:
         names = [self.name] if self.name else []
