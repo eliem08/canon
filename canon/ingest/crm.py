@@ -115,7 +115,7 @@ def crm_row_to_record(
                     value=value,
                     observed_at=modified,
                     record_id=rid,
-                    source_ref=f"{locator}#id={row[fields.id]}",
+                    source_ref=f"{locator}#{row[fields.id]}",  # the record itself is the row
                 )
             )
 

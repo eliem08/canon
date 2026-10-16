@@ -59,22 +59,26 @@ def build_server(
         return pinned_caller if pinned_caller is not None else caller
 
     @server.tool()
-    def get_customer(name: str, caller: str) -> CustomerProfile:
+    def get_customer(name: str, caller: str, fields: list[str] | None = None) -> CustomerProfile:
         """Look up a customer by name (any spelling, script or legal form) or entity id.
 
-        Returns its canonical name, aliases and profile fields (domain, phone, tax id, city,
-        address, owner, contract value, renewal date), each with sources, last_updated,
-        confidence and alternatives. If the name is ambiguous, `found` is false and
-        `candidates` lists the options; retry with an entity_id.
+        Returns its canonical name, aliases and profile fields (domain, phone, tax_id, city,
+        address, owner, contract_value, renewal_date), each with sources, last_updated,
+        confidence and alternatives. Pass `fields` (e.g. ["phone"]) to get only those; omit
+        it for everything. If the name is ambiguous, `found` is false and `candidates` lists
+        the options; retry with an entity_id.
         """
-        return service.get_customer(name, who(caller))
+        return service.get_customer(name, who(caller), fields)
 
     @server.tool()
-    def find_contract_terms(customer: str, caller: str) -> ContractTerms:
-        """Current contract terms for a customer: contract number, annual value, start date,
-        renewal date and signatory, from the active (non-superseded) contract when the caller
-        may see it. Superseded versions and stale CRM/Slack values appear as alternatives."""
-        return service.find_contract_terms(customer, who(caller))
+    def find_contract_terms(
+        customer: str, caller: str, fields: list[str] | None = None
+    ) -> ContractTerms:
+        """Current contract terms for a customer: contract_number, contract_value (annual),
+        contract_start, renewal_date and signatory, from the active (non-superseded) contract
+        when the caller may see it. Superseded versions and stale CRM/Slack values appear as
+        alternatives. Pass `fields` (e.g. ["renewal_date"]) to get only those terms."""
+        return service.find_contract_terms(customer, who(caller), fields)
 
     @server.tool()
     def who_owns(customer: str, caller: str) -> OwnerAnswer:

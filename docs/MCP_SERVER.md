@@ -11,33 +11,46 @@ typed, structured output (see `canon/mcp_server/schemas.py`).
 
 | Tool | Arguments | Returns |
 |---|---|---|
-| `get_customer` | `name`, `caller` | canonical name, aliases, and profile fields: domain, phone, tax id, city, address, owner, contract value, renewal date |
-| `find_contract_terms` | `customer`, `caller` | contract number, annual value, start, renewal date, signatory, plus the visible contract versions with status |
+| `get_customer` | `name`, `caller`, optional `fields` | canonical name, aliases, and profile fields: domain, phone, tax id, city, address, owner, contract value, renewal date |
+| `find_contract_terms` | `customer`, `caller`, optional `fields` | contract number, annual value, start, renewal date, signatory, plus the visible contract versions with status |
 | `who_owns` | `customer`, `caller` | internal account owner |
 | `list_conflicts` | `customer`, `caller` | every field where sources disagree, lowest confidence first |
 
-Every individual answer is an `Answer`. This one is `find_contract_terms("Boulangerie Al Baraka", caller="hind.legal")`, as of 2026-10-01:
+Every individual answer is an `Answer`. This is `find_contract_terms("Boulangerie Al Baraka", caller="hind.legal",
+fields=["contract_value"])`, as of 2026-10-01 (`documents` omitted):
 
 ```json
 {
-  "field": "contract_value",
-  "value": 1426000.0,
-  "confidence": 0.8541,
-  "last_updated": "2026-03-17",
-  "sources": [{"record_id": "contract:CN-2023-135_v2", "source": "contract", "status": "active",
-               "locator": "data/synthetic/contracts/CN-2023-135_v2.txt",
-               "observed_at": "2026-03-17", "value": 1426000.0, "weight": 0.95}],
-  "alternatives": [{"value": 1085000.0, "score": 0.1067, "last_updated": "2023-11-25",
-                    "sources": [{"record_id": "contract:CN-2023-135_v1", "source": "contract",
-                                 "status": "superseded", "weight": 0.1067, "...": "..."}]}],
-  "conflict": true,
-  "explanation": "2 conflicting values; kept 1426000.0 (score 0.95, best source contract/active from 2026-03-17) over 1085000.0 (score 0.11)"
+  "found": true,
+  "partial_view": true,
+  "customer": {"entity_id": "Eacdf3bf222", "name": "Boulangerie Al Baraka SARL", "match_score": 1.0},
+  "records": {"contract:CN-2023-135_v1": "data/synthetic/contracts/CN-2023-135_v1.txt",
+              "contract:CN-2023-135_v2": "data/synthetic/contracts/CN-2023-135_v2.txt"},
+  "terms": {"contract_value": {
+    "field": "contract_value", "value": 1426000.0, "confidence": 0.8541, "last_updated": "2026-03-17",
+    "sources": [{"record_id": "contract:CN-2023-135_v2", "source": "contract", "status": "active",
+                 "observed_at": "2026-03-17", "weight": 0.95, "source_ref": "#p1:L17",
+                 "quote": "Article 4 - Prix. Le montant annuel est fixé à 1 426 000 MAD HT."}],
+    "alternatives": [{"value": 1085000.0, "score": 0.1067, "last_updated": "2023-11-25",
+                      "sources": [{"record_id": "contract:CN-2023-135_v1", "source": "contract",
+                                   "status": "superseded", "observed_at": "2023-11-25",
+                                   "weight": 0.1067, "source_ref": "#p1:L17"}]}],
+    "conflict": true,
+    "explanation": "2 conflicting values; kept 1426000.0 (score 0.95, best source contract/active from 2026-03-17) over 1085000.0 (score 0.11)"}}
 }
 ```
 
+**Compact by design.** Each file or channel path appears once, in `records`. Sources cite a position in it
+(`#p1:L17`, `#ts=...`). At most 3 sources are listed per answer (`more_sources` counts the rest), and only
+the strongest one carries its quote. Each alternative lists its strongest source plus one with a different
+status, so a superseded contract still shows. Fields that are empty or at their default are omitted, except
+that every answer always has `value`, `confidence`, `last_updated`, `sources` and `alternatives`. With
+`fields=[...]`, the eval's Canon context dropped from 7.2k to 1.4k characters per answer, smaller than the
+strong RAG baseline's 3.7k, with the same accuracy.
+
 Each response also carries:
 
-* `found`, `message`
+* `found`, `message` (if any), `records` (record id → where it lives), `withheld` (if any)
 * `customer`: `entity_id`, `name`, `match_score`
 * `candidates`: set when a name is ambiguous, e.g. "Atlas" matches both Atlas Logistique and
   Atlas Tours. Retry with the `entity_id`.

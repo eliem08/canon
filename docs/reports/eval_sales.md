@@ -15,7 +15,7 @@
 | Baseline (BM25 over raw files) | 24/40 | 60.0% | 45%–74% | 1,980 | 27/40 |
 | Strong RAG (hybrid fuzzy retrieval, multi-query, top 10) | 26/40 | 65.0% | 50%–78% | 3,704 | 35/40 |
 | Oracle retrieval (every raw record of the right customer) | 20/40 | 50.0% | 35%–65% | 2,701 | 40/40 |
-| **Canon (MCP tools)** | 34/40 | 85.0% | 71%–93% | 3,537 | 0/40 |
+| **Canon (MCP tools)** | 34/40 | 85.0% | 71%–93% | 883 | 0/40 |
 
 Lift, Canon vs. baseline: **+25.0 pts**. On the same questions, Canon alone is right on 13 and the baseline alone on 3 (exact McNemar p = 0.021).
 Canon vs. hybrid: **+20.0 pts**; Canon alone right on 9, hybrid alone on 1 (exact McNemar p = 0.021). This is the comparison to quote: the strongest baseline that does not need Canon or the answer key.

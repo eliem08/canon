@@ -332,8 +332,11 @@ class CanonAgent:
         qtype = route(question)  # unsure -> the full profile, which has every field
         tool = TOOL_FOR_TYPE[qtype] if qtype else "get_customer"
         arg = "name" if tool == "get_customer" else "customer"
-        result = await self.client.call_tool(tool, {arg: entity_id, "caller": self.caller})
-        trace.append(f"called {tool}({entity_id})")
-        context = json.dumps(result.structured_content, ensure_ascii=False)
+        args = {arg: entity_id, "caller": self.caller}
+        if qtype and tool != "who_owns":
+            args["fields"] = [qtype]  # ask only for what the question needs
+        result = await self.client.call_tool(tool, args)
+        trace.append(f"called {tool}({entity_id}, fields={args.get('fields')})")
+        context = json.dumps(result.structured_content, ensure_ascii=False, separators=(",", ":"))
         sources = sorted(_cited(result.structured_content or {}))
         return AgentResult(self.model.answer(question, context), context, trace, sources)

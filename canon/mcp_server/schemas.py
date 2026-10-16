@@ -7,49 +7,74 @@ agent can cite where a fact came from and see what it was chosen over.
 from __future__ import annotations
 
 from datetime import date
+from typing import Any, ClassVar
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_serializer
+from pydantic_core import PydanticUndefined
 
 
-class SourceRef(BaseModel):
-    record_id: str
+class _Compact(BaseModel):
+    """Serializes without fields that are empty or still at their default (agents read every
+    byte), except the fields in `_keep`, which every response of that type must always show."""
+
+    _keep: ClassVar[frozenset[str]] = frozenset()
+
+    @model_serializer(mode="wrap")
+    def _drop_defaults(self, handler) -> dict[str, Any]:
+        out = {}
+        for k, v in handler(self).items():
+            info = type(self).model_fields.get(k)
+            default = info.get_default(call_default_factory=True) if info else PydanticUndefined
+            if k in self._keep or not (v is None or v == [] or v == {} or v == default):
+                out[k] = v
+        return out
+
+
+class SourceRef(_Compact):
+    record_id: str = Field(description="Key into the response's `records` (where it lives)")
     source: str
     status: str
-    locator: str
-    observed_at: date | None
-    value: str | float | int
+    observed_at: date | None = None
     weight: float = Field(description="authority x freshness of this observation, in [0, 1]")
     source_ref: str | None = Field(
-        default=None, description="Position inside the source: message ts, page/line, CRM row"
+        default=None,
+        description="Position inside the record: #ts=<message> or #p<page>:L<line>",
     )
-    quote: str | None = Field(default=None, description="Source text the value was read from")
+    quote: str | None = Field(
+        default=None, description="Source text the value was read from (strongest source only)"
+    )
 
 
-class Alternative(BaseModel):
+class Alternative(_Compact):
     value: str | float | int
     score: float
-    last_updated: date | None
-    sources: list[SourceRef]
+    last_updated: date | None = None
+    sources: list[SourceRef] = Field(description="Strongest source of this value")
+    more_sources: int = 0
 
 
-class Answer(BaseModel):
+class Answer(_Compact):
+    _keep: ClassVar[frozenset[str]] = frozenset(
+        {"value", "confidence", "last_updated", "sources", "alternatives"}
+    )
     field: str
     value: str | float | int | None
     confidence: float = Field(description="0-1; low values mean stale or contested evidence")
-    last_updated: date | None
-    sources: list[SourceRef]
+    last_updated: date | None = None
+    sources: list[SourceRef] = Field(description="Strongest sources first (at most 3)")
+    more_sources: int = Field(default=0, description="Further sources agreeing, not listed")
     alternatives: list[Alternative] = Field(default_factory=list)
     conflict: bool = False
     explanation: str = ""
 
 
-class CustomerMatch(BaseModel):
+class CustomerMatch(_Compact):
     entity_id: str
     name: str | None
     match_score: float
 
 
-class _Lookup(BaseModel):
+class _Lookup(_Compact):
     found: bool
     message: str = ""
     partial_view: bool = Field(
@@ -60,6 +85,9 @@ class _Lookup(BaseModel):
     customer: CustomerMatch | None = None
     candidates: list[CustomerMatch] = Field(
         default_factory=list, description="Other plausible matches when the name is ambiguous"
+    )
+    records: dict[str, str] = Field(
+        default_factory=dict, description="record_id -> where it lives (file, channel, export)"
     )
     withheld: int = Field(
         default=0,

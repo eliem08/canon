@@ -32,7 +32,7 @@ a model without the client's written consent (`docs/AUDIT_SCOPE.md`).
 Every fact carries `source_ref` and `quote`, and both are returned by the MCP tools in each source:
 - Slack: `<export>/<channel>#ts=<message ts>` plus the message text.
 - Contracts: `<file>#p<page>:L<line>` (pages split on form feeds, as `pdftotext` emits them) plus the line.
-- CRM: `<file>#id=<row id>`.
+- CRM: `<file>#<row id>`, the same as the record locator.
 
 ## Results
 `tests/fixtures/slack_messages.json`: 92 hand-written messages, 26 **dev** (used while writing the rules)

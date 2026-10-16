@@ -13,6 +13,7 @@ from __future__ import annotations
 import json
 import sqlite3
 from dataclasses import dataclass, field
+from functools import partial
 from pathlib import Path
 
 from pydantic import BaseModel
@@ -88,6 +89,7 @@ class ServiceConfig:
     facts: FactScoringConfig = field(default_factory=FactScoringConfig)
     match_threshold: float = 0.8  # minimum name similarity to accept a lookup
     ambiguity_margin: float = 0.03  # top-2 matches closer than this -> ambiguous
+    max_sources: int = 3  # sources listed per answer; the rest are counted in more_sources
 
 
 class CanonService:
@@ -170,11 +172,17 @@ class CanonService:
         return top, rest[:3], ""
 
     # ------------------------------------------------------------- tools
-    def get_customer(self, name: str, caller_id: str) -> CustomerProfile:
-        return self._serve("get_customer", self._get_customer, name, caller_id)
+    def get_customer(
+        self, name: str, caller_id: str, fields: list[str] | None = None
+    ) -> CustomerProfile:
+        impl = partial(self._get_customer, fields=fields)
+        return self._serve("get_customer", impl, name, caller_id)
 
-    def find_contract_terms(self, customer: str, caller_id: str) -> ContractTerms:
-        return self._serve("find_contract_terms", self._find_contract_terms, customer, caller_id)
+    def find_contract_terms(
+        self, customer: str, caller_id: str, fields: list[str] | None = None
+    ) -> ContractTerms:
+        impl = partial(self._find_contract_terms, fields=fields)
+        return self._serve("find_contract_terms", impl, customer, caller_id)
 
     def who_owns(self, customer: str, caller_id: str) -> OwnerAnswer:
         return self._serve("who_owns", self._who_owns, customer, caller_id)
@@ -186,40 +194,49 @@ class CanonService:
         """Run a tool, withhold injected source text, then write the audit line."""
         response = impl(query, caller_id)
         response.withheld = _screen(response)
+        response.records = {rid: self.records[rid].locator for rid in sorted(_cited_ids(response))}
         if self.audit is not None:
             known = caller_id in self.directory.callers
             self.audit.record(tool, caller_id, known, query, response, response.withheld)
         return response
 
-    def _get_customer(self, name: str, caller_id: str) -> CustomerProfile:
+    def _get_customer(
+        self, name: str, caller_id: str, fields: list[str] | None = None
+    ) -> CustomerProfile:
         caller = self.directory.resolve(caller_id)
         match, candidates, msg = self._match(name, caller)
         if match is None:
             return CustomerProfile(found=False, message=msg, candidates=candidates)
         visible = self._visible(match.entity_id, caller)
+        wanted = set(fields) if fields else None  # None: everything
         facts = self._facts(visible)
-        fields = {"name": self._name_answer(visible)}
+        answers = {}
+        if wanted is None or "name" in wanted:
+            answers["name"] = self._name_answer(visible)
         for f in (*IDENTITY_FIELDS, *PROFILE_FIELDS):
-            if f in facts:
-                fields[f] = facts[f]
-        aliases = sorted({n for r in visible for n in r.all_names() if n})
+            if f in facts and (wanted is None or f in wanted):
+                answers[f] = facts[f]
+        show_aliases = wanted is None or "aliases" in wanted
+        aliases = sorted({n for r in visible for n in r.all_names() if n}) if show_aliases else []
         return CustomerProfile(
             found=True,
             customer=match,
             candidates=candidates,
             partial_view=self._partial(match.entity_id, visible),
             aliases=aliases,
-            fields=fields,
+            fields=answers,
         )
 
-    def _find_contract_terms(self, customer: str, caller_id: str) -> ContractTerms:
+    def _find_contract_terms(
+        self, customer: str, caller_id: str, fields: list[str] | None = None
+    ) -> ContractTerms:
         caller = self.directory.resolve(caller_id)
         match, candidates, msg = self._match(customer, caller)
         if match is None:
             return ContractTerms(found=False, message=msg, candidates=candidates)
         visible = self._visible(match.entity_id, caller)
         facts = self._facts(visible)
-        terms = {f: facts[f] for f in CONTRACT_FIELDS if f in facts}
+        terms = {f: facts[f] for f in CONTRACT_FIELDS if f in facts and (not fields or f in fields)}
         documents = [
             _record_ref(r)
             for r in sorted(visible, key=lambda r: r.record_id)
@@ -280,32 +297,37 @@ class CanonService:
                 resolved[f] = fact
         return {name: self._answer(fact) for name, fact in resolved.items()}
 
-    def _ref(self, e: Evidence) -> SourceRef:
+    def _ref(self, e: Evidence, quote: bool = False) -> SourceRef:
+        locator = self.records[e.record_id].locator
+        ref = e.source_ref
+        if ref and ref.startswith(locator):  # the locator is in `records`; keep the fragment
+            ref = ref[len(locator) :] or None
         return SourceRef(
             record_id=e.record_id,
             source=e.source,
             status=e.status,
-            locator=self.records[e.record_id].locator,
             observed_at=e.observed_at,
-            value=e.value,
             weight=e.weight,
-            source_ref=e.source_ref,
-            quote=e.quote,
+            source_ref=ref,
+            quote=e.quote if quote else None,
         )
 
     def _answer(self, fact: ResolvedFact) -> Answer:
+        n = self.config.max_sources
         return Answer(
             field=fact.field,
             value=fact.value,
             confidence=fact.confidence,
             last_updated=fact.last_updated,
-            sources=[self._ref(e) for e in fact.sources],
+            sources=[self._ref(e, quote=i == 0) for i, e in enumerate(fact.sources[:n])],
+            more_sources=max(len(fact.sources) - n, 0),
             alternatives=[
                 Alternative(
                     value=a.value,
                     score=a.score,
                     last_updated=a.last_updated,
-                    sources=[self._ref(e) for e in a.sources],
+                    sources=[self._ref(e) for e in _diverse(a.sources)],
+                    more_sources=max(len(a.sources) - len(_diverse(a.sources)), 0),
                 )
                 for a in fact.alternatives
             ],
@@ -325,7 +347,8 @@ class CanonService:
             value=name.value,
             confidence=round(len(agree) / len(latin), 4) if latin else 0.0,
             last_updated=max(dates) if dates else None,
-            sources=[_record_ref(r) for r in agree],
+            sources=[_record_ref(r) for r in agree[: self.config.max_sources]],
+            more_sources=max(len(agree) - self.config.max_sources, 0),
             explanation=f"{name.rule}; {len(agree)}/{len(latin)} Latin-script names agree",
         )
 
@@ -342,9 +365,7 @@ def _record_ref(r: SourceRecord) -> SourceRef:
         record_id=r.record_id,
         source=r.source,
         status=r.status,
-        locator=r.locator,
         observed_at=r.updated_at,
-        value=r.name or "",
         weight=1.0,
     )
 
@@ -383,3 +404,24 @@ def _screen(obj: object) -> int:
     elif isinstance(obj, dict):
         hits += sum(_screen(v) for v in obj.values())
     return hits
+
+
+def _cited_ids(obj: object) -> set[str]:
+    if isinstance(obj, SourceRef):
+        return {obj.record_id}
+    if isinstance(obj, BaseModel):
+        return set().union(*(_cited_ids(v) for _, v in obj)) if list(obj) else set()
+    if isinstance(obj, list | tuple):
+        return set().union(*(_cited_ids(v) for v in obj)) if obj else set()
+    if isinstance(obj, dict):
+        return set().union(*(_cited_ids(v) for v in obj.values())) if obj else set()
+    return set()
+
+
+def _diverse(sources: list[Evidence]) -> list[Evidence]:
+    """The strongest source plus the first one with another status (e.g. a superseded contract
+    behind a stale CRM value), so an alternative still shows why it lost."""
+    if not sources:
+        return []
+    other = next((e for e in sources[1:] if e.status != sources[0].status), None)
+    return [sources[0], other] if other else [sources[0]]

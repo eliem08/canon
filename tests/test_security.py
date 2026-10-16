@@ -65,7 +65,7 @@ def test_private_channel_acl_is_its_members(private_world):
 
 def _cited(obj) -> set[str]:
     if isinstance(obj, dict):
-        own = {obj["record_id"]} if "record_id" in obj and "locator" in obj else set()
+        own = {obj["record_id"]} if "record_id" in obj and "source" in obj else set()
         return own.union(*(_cited(v) for v in obj.values()))
     if isinstance(obj, list):
         return set().union(*(_cited(v) for v in obj)) if obj else set()

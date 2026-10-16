@@ -56,9 +56,9 @@
           "failure": null,
           "trace": [
             "linked to E5a17c5e932 (score 1.00, span of 2 words)",
-            "called find_contract_terms(E5a17c5e932)"
+            "called find_contract_terms(E5a17c5e932, fields=['contract_value'])"
           ],
-          "context_chars": 8211,
+          "context_chars": 1841,
           "restricted": 0
         }
       }
@@ -116,9 +116,9 @@
           "failure": null,
           "trace": [
             "linked to Ea6a2457c12 (score 1.00, span of 4 words)",
-            "called find_contract_terms(Ea6a2457c12)"
+            "called find_contract_terms(Ea6a2457c12, fields=['contract_value'])"
           ],
-          "context_chars": 8082,
+          "context_chars": 1846,
           "restricted": 0
         }
       }
@@ -176,9 +176,9 @@
           "failure": null,
           "trace": [
             "linked to E6ac4ca59c0 (score 1.00, span of 2 words)",
-            "called find_contract_terms(E6ac4ca59c0)"
+            "called find_contract_terms(E6ac4ca59c0, fields=['contract_value'])"
           ],
-          "context_chars": 7687,
+          "context_chars": 1662,
           "restricted": 0
         }
       }
@@ -236,9 +236,9 @@
           "failure": null,
           "trace": [
             "linked to Ed780791203 (score 1.00, span of 2 words)",
-            "called find_contract_terms(Ed780791203)"
+            "called find_contract_terms(Ed780791203, fields=['contract_value'])"
           ],
-          "context_chars": 7297,
+          "context_chars": 1617,
           "restricted": 0
         }
       }
@@ -296,9 +296,9 @@
           "failure": null,
           "trace": [
             "linked to Ee8a34a7a4c (score 1.00, span of 4 words)",
-            "called find_contract_terms(Ee8a34a7a4c)"
+            "called find_contract_terms(Ee8a34a7a4c, fields=['contract_value'])"
           ],
-          "context_chars": 6952,
+          "context_chars": 1626,
           "restricted": 0
         }
       }
@@ -356,9 +356,9 @@
           "failure": null,
           "trace": [
             "linked to E5f5fac9e03 (score 1.00, span of 2 words)",
-            "called find_contract_terms(E5f5fac9e03)"
+            "called find_contract_terms(E5f5fac9e03, fields=['contract_value'])"
           ],
-          "context_chars": 8213,
+          "context_chars": 1842,
           "restricted": 0
         }
       }
@@ -416,9 +416,9 @@
           "failure": null,
           "trace": [
             "linked to E22e43d15c3 (score 1.00, span of 4 words)",
-            "called find_contract_terms(E22e43d15c3)"
+            "called find_contract_terms(E22e43d15c3, fields=['contract_value'])"
           ],
-          "context_chars": 6979,
+          "context_chars": 1622,
           "restricted": 0
         }
       }
@@ -476,9 +476,9 @@
           "failure": null,
           "trace": [
             "linked to E88150301f2 (score 1.00, span of 3 words)",
-            "called find_contract_terms(E88150301f2)"
+            "called find_contract_terms(E88150301f2, fields=['contract_value'])"
           ],
-          "context_chars": 7079,
+          "context_chars": 1655,
           "restricted": 0
         }
       }
@@ -536,9 +536,9 @@
           "failure": null,
           "trace": [
             "linked to Eadd4d540f5 (score 1.00, span of 3 words)",
-            "called find_contract_terms(Eadd4d540f5)"
+            "called find_contract_terms(Eadd4d540f5, fields=['contract_value'])"
           ],
-          "context_chars": 7620,
+          "context_chars": 1649,
           "restricted": 0
         }
       }
@@ -596,9 +596,9 @@
           "failure": null,
           "trace": [
             "linked to Ec1194c4c12 (score 1.00, span of 2 words)",
-            "called find_contract_terms(Ec1194c4c12)"
+            "called find_contract_terms(Ec1194c4c12, fields=['contract_value'])"
           ],
-          "context_chars": 6453,
+          "context_chars": 1458,
           "restricted": 0
         }
       }
@@ -656,9 +656,9 @@
           "failure": null,
           "trace": [
             "linked to E5a17c5e932 (score 0.97, span of 2 words)",
-            "called find_contract_terms(E5a17c5e932)"
+            "called find_contract_terms(E5a17c5e932, fields=['renewal_date'])"
           ],
-          "context_chars": 8211,
+          "context_chars": 1873,
           "restricted": 0
         }
       }
@@ -716,9 +716,9 @@
           "failure": null,
           "trace": [
             "linked to Eacdf3bf222 (score 1.00, span of 3 words)",
-            "called find_contract_terms(Eacdf3bf222)"
+            "called find_contract_terms(Eacdf3bf222, fields=['renewal_date'])"
           ],
-          "context_chars": 7588,
+          "context_chars": 1489,
           "restricted": 0
         }
       }
@@ -776,9 +776,9 @@
           "failure": null,
           "trace": [
             "linked to E1c42679cb9 (score 1.00, span of 2 words)",
-            "called find_contract_terms(E1c42679cb9)"
+            "called find_contract_terms(E1c42679cb9, fields=['renewal_date'])"
           ],
-          "context_chars": 6475,
+          "context_chars": 1491,
           "restricted": 0
         }
       }
@@ -836,9 +836,9 @@
           "failure": null,
           "trace": [
             "linked to Ede7c1c956e (score 1.00, span of 3 words)",
-            "called find_contract_terms(Ede7c1c956e)"
+            "called find_contract_terms(Ede7c1c956e, fields=['renewal_date'])"
           ],
-          "context_chars": 8223,
+          "context_chars": 1877,
           "restricted": 0
         }
       }
@@ -896,9 +896,9 @@
           "failure": null,
           "trace": [
             "linked to E5f5fac9e03 (score 1.00, span of 3 words)",
-            "called find_contract_terms(E5f5fac9e03)"
+            "called find_contract_terms(E5f5fac9e03, fields=['renewal_date'])"
           ],
-          "context_chars": 8213,
+          "context_chars": 1874,
           "restricted": 0
         }
       }
@@ -956,9 +956,9 @@
           "failure": null,
           "trace": [
             "linked to E604b5d1a92 (score 1.00, span of 2 words)",
-            "called find_contract_terms(E604b5d1a92)"
+            "called find_contract_terms(E604b5d1a92, fields=['renewal_date'])"
           ],
-          "context_chars": 8271,
+          "context_chars": 1871,
           "restricted": 0
         }
       }
@@ -1016,9 +1016,9 @@
           "failure": null,
           "trace": [
             "linked to E16106be8f5 (score 1.00, span of 3 words)",
-            "called find_contract_terms(E16106be8f5)"
+            "called find_contract_terms(E16106be8f5, fields=['renewal_date'])"
           ],
-          "context_chars": 7706,
+          "context_chars": 1870,
           "restricted": 0
         }
       }
@@ -1076,9 +1076,9 @@
           "failure": null,
           "trace": [
             "linked to E88150301f2 (score 1.00, span of 4 words)",
-            "called find_contract_terms(E88150301f2)"
+            "called find_contract_terms(E88150301f2, fields=['renewal_date'])"
           ],
-          "context_chars": 7079,
+          "context_chars": 1670,
           "restricted": 0
         }
       }
@@ -1136,9 +1136,9 @@
           "failure": null,
           "trace": [
             "linked to Ec1194c4c12 (score 1.00, span of 2 words)",
-            "called find_contract_terms(Ec1194c4c12)"
+            "called find_contract_terms(Ec1194c4c12, fields=['renewal_date'])"
           ],
-          "context_chars": 6453,
+          "context_chars": 1490,
           "restricted": 0
         }
       }
@@ -1196,9 +1196,9 @@
           "failure": null,
           "trace": [
             "linked to Ef031fca955 (score 1.00, span of 2 words)",
-            "called find_contract_terms(Ef031fca955)"
+            "called find_contract_terms(Ef031fca955, fields=['renewal_date'])"
           ],
-          "context_chars": 6980,
+          "context_chars": 1648,
           "restricted": 0
         }
       }
@@ -1256,9 +1256,9 @@
           "failure": null,
           "trace": [
             "linked to E2dc070a02d (score 1.00, span of 2 words)",
-            "called who_owns(E2dc070a02d)"
+            "called who_owns(E2dc070a02d, fields=None)"
           ],
-          "context_chars": 1512,
+          "context_chars": 1057,
           "restricted": 0
         }
       }
@@ -1316,9 +1316,9 @@
           "failure": null,
           "trace": [
             "linked to E0f3554aac5 (score 1.00, span of 2 words)",
-            "called who_owns(E0f3554aac5)"
+            "called who_owns(E0f3554aac5, fields=None)"
           ],
-          "context_chars": 1175,
+          "context_chars": 863,
           "restricted": 0
         }
       }
@@ -1376,9 +1376,9 @@
           "failure": null,
           "trace": [
             "linked to E7060296576 (score 1.00, span of 5 words)",
-            "called who_owns(E7060296576)"
+            "called who_owns(E7060296576, fields=None)"
           ],
-          "context_chars": 1224,
+          "context_chars": 883,
           "restricted": 0
         }
       }
@@ -1436,9 +1436,9 @@
           "failure": null,
           "trace": [
             "linked to Ed780791203 (score 1.00, span of 2 words)",
-            "called who_owns(Ed780791203)"
+            "called who_owns(Ed780791203, fields=None)"
           ],
-          "context_chars": 1480,
+          "context_chars": 933,
           "restricted": 0
         }
       }
@@ -1496,9 +1496,9 @@
           "failure": null,
           "trace": [
             "linked to Ee8a34a7a4c (score 1.00, span of 4 words)",
-            "called who_owns(Ee8a34a7a4c)"
+            "called who_owns(Ee8a34a7a4c, fields=None)"
           ],
-          "context_chars": 1154,
+          "context_chars": 848,
           "restricted": 0
         }
       }
@@ -1556,9 +1556,9 @@
           "failure": null,
           "trace": [
             "linked to Ef37f90a6c6 (score 0.97, span of 3 words)",
-            "called who_owns(Ef37f90a6c6)"
+            "called who_owns(Ef37f90a6c6, fields=None)"
           ],
-          "context_chars": 1526,
+          "context_chars": 1147,
           "restricted": 0
         }
       }
@@ -1616,9 +1616,9 @@
           "failure": null,
           "trace": [
             "linked to E16106be8f5 (score 1.00, span of 2 words)",
-            "called who_owns(E16106be8f5)"
+            "called who_owns(E16106be8f5, fields=None)"
           ],
-          "context_chars": 1507,
+          "context_chars": 1061,
           "restricted": 0
         }
       }
@@ -1676,9 +1676,9 @@
           "failure": null,
           "trace": [
             "linked to E22e43d15c3 (score 1.00, span of 3 words)",
-            "called who_owns(E22e43d15c3)"
+            "called who_owns(E22e43d15c3, fields=None)"
           ],
-          "context_chars": 1160,
+          "context_chars": 853,
           "restricted": 0
         }
       }
@@ -1736,9 +1736,9 @@
           "failure": null,
           "trace": [
             "linked to E88150301f2 (score 1.00, span of 3 words)",
-            "called who_owns(E88150301f2)"
+            "called who_owns(E88150301f2, fields=None)"
           ],
-          "context_chars": 1013,
+          "context_chars": 730,
           "restricted": 0
         }
       }
@@ -1796,9 +1796,9 @@
           "failure": null,
           "trace": [
             "linked to E82151253c7 (score 1.00, span of 2 words)",
-            "called who_owns(E82151253c7)"
+            "called who_owns(E82151253c7, fields=None)"
           ],
-          "context_chars": 1536,
+          "context_chars": 1142,
           "restricted": 0
         }
       }
@@ -1856,9 +1856,9 @@
           "failure": null,
           "trace": [
             "linked to Ea6a2457c12 (score 1.00, span of 2 words)",
-            "called get_customer(Ea6a2457c12)"
+            "called get_customer(Ea6a2457c12, fields=['phone'])"
           ],
-          "context_chars": 14072,
+          "context_chars": 1250,
           "restricted": 0
         }
       }
@@ -1916,9 +1916,9 @@
           "failure": null,
           "trace": [
             "linked to Ee8a34a7a4c (score 1.00, span of 4 words)",
-            "called get_customer(Ee8a34a7a4c)"
+            "called get_customer(Ee8a34a7a4c, fields=['phone'])"
           ],
-          "context_chars": 11283,
+          "context_chars": 863,
           "restricted": 0
         }
       }
@@ -1976,9 +1976,9 @@
           "failure": null,
           "trace": [
             "linked to E5f5fac9e03 (score 1.00, span of 3 words)",
-            "called get_customer(E5f5fac9e03)"
+            "called get_customer(E5f5fac9e03, fields=['phone'])"
           ],
-          "context_chars": 15101,
+          "context_chars": 1243,
           "restricted": 0
         }
       }
@@ -2036,9 +2036,9 @@
           "failure": "stale_value",
           "trace": [
             "linked to E604b5d1a92 (score 1.00, span of 2 words)",
-            "called get_customer(E604b5d1a92)"
+            "called get_customer(E604b5d1a92, fields=['phone'])"
           ],
-          "context_chars": 14335,
+          "context_chars": 1235,
           "restricted": 0
         }
       }
@@ -2096,9 +2096,9 @@
           "failure": null,
           "trace": [
             "linked to E88150301f2 (score 0.85, span of 1 words)",
-            "called get_customer(E88150301f2)"
+            "called get_customer(E88150301f2, fields=['phone'])"
           ],
-          "context_chars": 10622,
+          "context_chars": 684,
           "restricted": 0
         }
       }
@@ -2156,9 +2156,9 @@
           "failure": null,
           "trace": [
             "linked to E2dc070a02d (score 1.00, span of 2 words)",
-            "called get_customer(E2dc070a02d)"
+            "called get_customer(E2dc070a02d, fields=['address'])"
           ],
-          "context_chars": 12863,
+          "context_chars": 963,
           "restricted": 0
         }
       }
@@ -2216,9 +2216,9 @@
           "failure": null,
           "trace": [
             "linked to E7060296576 (score 1.00, span of 4 words)",
-            "called get_customer(E7060296576)"
+            "called get_customer(E7060296576, fields=['address'])"
           ],
-          "context_chars": 10796,
+          "context_chars": 790,
           "restricted": 0
         }
       }
@@ -2276,9 +2276,9 @@
           "failure": null,
           "trace": [
             "linked to Ede7c1c956e (score 1.00, span of 3 words)",
-            "called get_customer(Ede7c1c956e)"
+            "called get_customer(Ede7c1c956e, fields=['address'])"
           ],
-          "context_chars": 13805,
+          "context_chars": 949,
           "restricted": 0
         }
       }
@@ -2336,9 +2336,9 @@
           "failure": null,
           "trace": [
             "linked to Ee8a34a7a4c (score 1.00, span of 3 words)",
-            "called get_customer(Ee8a34a7a4c)"
+            "called get_customer(Ee8a34a7a4c, fields=['address'])"
           ],
-          "context_chars": 11283,
+          "context_chars": 983,
           "restricted": 0
         }
       }
@@ -2396,9 +2396,9 @@
           "failure": null,
           "trace": [
             "linked to Ef031fca955 (score 0.88, span of 1 words)",
-            "called get_customer(Ef031fca955)"
+            "called get_customer(Ef031fca955, fields=['address'])"
           ],
-          "context_chars": 12123,
+          "context_chars": 1404,
           "restricted": 0
         }
       }

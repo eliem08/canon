@@ -35,7 +35,7 @@ def call(service, tool, customer, caller):
 def source_refs(obj):
     """Every SourceRef-shaped dict anywhere in a response."""
     if isinstance(obj, dict):
-        if {"record_id", "source", "locator"} <= obj.keys():
+        if {"record_id", "source", "weight"} <= obj.keys():
             yield obj
         for v in obj.values():
             yield from source_refs(v)
@@ -52,7 +52,9 @@ def test_unauthorized_callers_get_nothing(service, caller):
     for name in NAMES:
         for tool in TOOLS:
             r = call(service, tool, name, caller).model_dump(mode="json")
-            assert r["found"] is False and r["customer"] is None and r["candidates"] == []
+            assert (
+                r["found"] is False and r.get("customer") is None and r.get("candidates", []) == []
+            )
             assert not list(source_refs(r)), (tool, name)
     for entity_id in service.clusters:  # guessing ids does not help either
         assert not service.get_customer(entity_id, "intern").found
@@ -63,12 +65,16 @@ def test_unauthorized_callers_get_nothing(service, caller):
 )
 def test_no_response_cites_a_record_the_caller_cannot_see(service, caller):
     groups = service.directory.resolve(caller).groups
+    seen = 0
     for name in NAMES:
         for tool in TOOLS:
             r = call(service, tool, name, caller).model_dump(mode="json")
-            for ref in source_refs(r):
-                record = service.records[ref["record_id"]]
-                assert groups & set(record.acl), (caller, tool, name, ref["record_id"])
+            cited = {ref["record_id"] for ref in source_refs(r)} | set(r.get("records", {}))
+            seen += len(cited)
+            for rid in cited:
+                assert groups & set(service.records[rid].acl), (caller, tool, name, rid)
+            assert set(r.get("records", {})) >= {ref["record_id"] for ref in source_refs(r)}
+    assert seen > 0 or not groups  # the check must not pass vacuously
 
 
 def test_role_specific_views(service):
@@ -150,7 +156,7 @@ def test_tools_over_mcp_protocol(service):
     assert not ok.is_error and ok.structured_content["found"] is True
     assert ok.structured_content["owner"]["value"]
     assert denied.structured_content["found"] is False
-    assert denied.structured_content["owner"] is None
+    assert denied.structured_content.get("owner") is None
 
 
 def test_pinned_caller_cannot_be_overridden_by_the_model(service):
@@ -161,3 +167,34 @@ def test_pinned_caller_cannot_be_overridden_by_the_model(service):
 
     result = anyio.run(scenario)
     assert result.structured_content["found"] is False
+
+
+# ---------------------------------------------------------------- compact responses
+
+
+def test_fields_argument_returns_only_what_was_asked(service):
+    phone = service.get_customer("Atlas Logistique", "revops.admin", fields=["phone"])
+    assert set(phone.fields) == {"phone"} and phone.aliases == []
+    full = service.get_customer("Atlas Logistique", "revops.admin")
+    assert {"name", "phone", "owner", "contract_value"} <= set(full.fields) and full.aliases
+    terms = service.find_contract_terms("Atlas Logistique", "revops.admin", ["renewal_date"])
+    assert set(terms.terms) == {"renewal_date"} and terms.documents
+
+
+def test_responses_are_compact_but_every_citation_resolves(service):
+    r = service.find_contract_terms("Atlas Logistique", "revops.admin")
+    data = r.model_dump(mode="json")
+    refs = list(source_refs(data))
+    assert refs and all("locator" not in ref and "value" not in ref for ref in refs)
+    assert {ref["record_id"] for ref in refs} <= set(data["records"])  # locators listed once
+    value = r.terms["contract_value"]
+    assert len(value.sources) <= 3 and value.sources[0].quote  # strongest source quoted
+    assert all(s.quote is None for s in value.sources[1:])
+    assert "null" not in json.dumps(data)  # empty fields are omitted...
+    assert "alternatives" in data["terms"]["contract_value"]  # ...except required ones
+
+
+def test_alternatives_keep_the_superseded_source(service):
+    value = service.find_contract_terms("Atlas Logistique", "revops.admin").terms["contract_value"]
+    statuses = {s.status for a in value.alternatives for s in a.sources}
+    assert "superseded" in statuses
