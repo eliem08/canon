@@ -12,12 +12,12 @@
 
 | Agent | Correct | Accuracy | 95% CI (Wilson) | Context read (chars, mean) | Answers that read restricted text |
 |---|---|---|---|---|---|
-| Baseline (BM25 over raw files) | 22/30 | 73.3% | 56%–86% | 2,150 | 0/30 |
+| Baseline (BM25 over raw files) | 21/30 | 70.0% | 52%–83% | 2,150 | 0/30 |
 | Strong RAG (hybrid fuzzy retrieval, multi-query, top 10) | 28/30 | 93.3% | 79%–98% | 3,695 | 0/30 |
 | Oracle retrieval (every raw record of the right customer) | 28/30 | 93.3% | 79%–98% | 2,712 | 0/30 |
-| **Canon (MCP tools)** | 29/30 | 96.7% | 83%–99% | 7,088 | 0/30 |
+| **Canon (MCP tools)** | 29/30 | 96.7% | 83%–99% | 1,362 | 0/30 |
 
-Lift, Canon vs. baseline: **+23.3 pts**. On the same questions, Canon alone is right on 7 and the baseline alone on 0 (exact McNemar p = 0.016).
+Lift, Canon vs. baseline: **+26.7 pts**. On the same questions, Canon alone is right on 8 and the baseline alone on 0 (exact McNemar p = 0.0078).
 Canon vs. hybrid: **+3.3 pts**; Canon alone right on 2, hybrid alone on 1 (exact McNemar p = 1). This is the comparison to quote: the strongest baseline that does not need Canon or the answer key.
 Canon vs. oracle: **+3.3 pts**; Canon alone right on 1, oracle alone on 0 (exact McNemar p = 1). The oracle needs the answer key; it bounds what any retrieval over raw files could do.
 
@@ -28,14 +28,14 @@ Canon vs. oracle: **+3.3 pts**; Canon alone right on 1, oracle alone on 0 (exact
 | contract_value | 8 | 62% | 88% | 100% | 100% |
 | renewal_date | 7 | 71% | 100% | 100% | 100% |
 | owner | 8 | 62% | 100% | 88% | 88% |
-| phone | 4 | 100% | 75% | 75% | 100% |
+| phone | 4 | 75% | 75% | 75% | 100% |
 | address | 3 | 100% | 100% | 100% | 100% |
 
 ## Failure analysis
 
 | Failure | baseline | hybrid | oracle | canon |
 |---|---|---|---|---|
-| stale / superseded value of the right customer | 4 | 2 | 2 | 1 |
+| stale / superseded value of the right customer | 5 | 2 | 2 | 1 |
 | value belonging to a different customer | 0 | 0 | 0 | 0 |
 | no answer found | 3 | 0 | 0 | 0 |
 | other | 1 | 0 | 0 | 0 |
@@ -44,7 +44,7 @@ Accuracy by how the customer was named:
 
 | Mention style | Questions | baseline | hybrid | oracle | canon |
 |---|---|---|---|---|---|
-| hand-written | 30 | 73% | 93% | 93% | 97% |
+| hand-written | 30 | 70% | 93% | 93% | 97% |
 
 ### Every miss
 
@@ -57,7 +57,7 @@ Accuracy by how the customer was named:
 | P21 | Who looks after Al Massira Transport these days? | `Salma El Idrissi` | ✗ `<@U02>` (other) | ✓ | ✓ | ✓ |
 | P24 | Is Atlas Tours still handled by the same account owner? Who is it? | `Nadia Berrada` | ✗ `unknown` (no_answer) | ✓ | ✓ | ✓ |
 | P25 | Sahara Tours ch7al kaykhalsou f l3am? | `968000` | ✗ `920.000 DH` (stale_value) | ✗ `920 000 MAD` (stale_value) | ✓ | ✓ |
-| P27 | Quel est le numéro de Boulangerie Al Baraka ? | `+212546677565` | ✓ | ✗ `+212 (0)6 29 98 03 18` (stale_value) | ✗ `+212 (0)6 29 98 03 18` (stale_value) | ✓ |
+| P27 | Quel est le numéro de Boulangerie Al Baraka ? | `+212546677565` | ✗ `+212 (0)6 29 98 03 18` (stale_value) | ✗ `+212 (0)6 29 98 03 18` (stale_value) | ✗ `+212 (0)6 29 98 03 18` (stale_value) | ✓ |
 | P30 | My manager asked when Fennec Software renews - do you know? | `2027-09-01` | ✗ `2026-06-01` (stale_value) | ✓ | ✓ | ✓ |
 
 ## Reading this report
