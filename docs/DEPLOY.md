@@ -62,6 +62,8 @@ docker run --rm --network none -v "$PWD/export:/data:ro" -v "$PWD/out:/out" cano
 # -> out/audit_report.md, out/audit.json,
 #    out/audit_report.html (the client's report: open in a browser, print to PDF)
 #    out/review.html       (merges to confirm, filled in by the client)
+#    out/crm_fixes.csv     (one row per stale CRM value: CRM record id, column, value now, suggested value)
+#    out/quarantine.csv    (every refused or flagged value, with the reason and what to do about it)
 ```
 
 **Day 3: merges to confirm.** Send `review.html` to the account owners. It is one offline file: each card
@@ -71,7 +73,11 @@ at `export/overrides.json` and rerun with `--overrides /data/overrides.json`: de
 review queue and are applied on every later run. A new `review.html` already contains the earlier answers,
 so the file grows instead of being overwritten.
 
-Both HTML files contain the client's data. They stay with the client like the export itself.
+**The fix files** open in Excel (UTF-8 with BOM, so Arabic names display). `crm_fixes.csv` uses the CRM's own
+record ids and column names (from `canon.json`), so a CRM admin can review it and load it with the CRM's bulk
+update tool; nothing is written to their CRM by Canon. `canon eval` also writes `eval.html` next to `eval.md`.
+
+The HTML and CSV files contain the client's data. They stay with the client like the export itself.
 
 ## 2. Serve to an agent (optional trial)
 ```bash

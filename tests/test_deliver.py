@@ -93,3 +93,45 @@ def test_audit_writes_the_client_files_and_answers_close_the_loop(tmp_path):
     cluster = {rid: i for i, members in enumerate(res2.clusters) for rid in members}
     assert cluster[first["left"]] == cluster[first["right"]]
     assert cluster[second["left"]] != cluster[second["right"]]
+
+
+def test_fix_files_are_ready_for_a_crm_bulk_update(tmp_path):
+    import csv
+    from dataclasses import asdict
+
+    from canon.deliver import write_fix_files
+    from canon.ingest.crm import CRMFieldMap
+
+    as_of = date(2026, 10, 1)
+    records, res, unreadable = build_store(DATA, tmp_path / "out", as_of)
+    audit = build_audit(records, res, None, unreadable, as_of)
+    fixes, quarantine = write_fix_files(tmp_path, audit, records, unreadable, asdict(CRMFieldMap()))
+    raw = fixes.read_bytes()
+    assert raw.startswith(b"\xef\xbb\xbf")  # BOM so Excel opens UTF-8 (Arabic names) correctly
+    rows = list(csv.DictReader(fixes.open(encoding="utf-8-sig")))
+    assert len(rows) == len(audit.stale_crm) + len(audit.slack_only_owner_changes)
+    by_id = {r.record_id: r for r in records}
+    for row in rows:
+        rec = by_id["crm:" + row["crm_record_id"]]  # the CRM's own id, as it appears in the CRM
+        assert rec.source == "crm"
+        assert row["crm_column"] in asdict(CRMFieldMap()).values()
+        assert row["suggested_value"] and row["suggested_value"] != row["crm_value_now"]
+        assert not row["suggested_value"].endswith(".0")
+    q = list(csv.DictReader(quarantine.open(encoding="utf-8-sig")))
+    issues = sum(len(r.issues) for r in records) + len(unreadable)
+    assert len(q) == issues and all(r["what_to_do"] for r in q)
+
+
+def test_every_refusal_code_in_the_parsers_has_a_specific_hint():
+    """A new reason code needs a sentence a client can act on (canon/deliver.py REASON_HINTS)."""
+    import re as _re
+
+    from canon.deliver import REASON_HINTS
+
+    root = Path(__file__).resolve().parents[1] / "canon" / "ingest"
+    source = "\n".join(p.read_text(encoding="utf-8") for p in root.glob("*.py"))
+    codes = set(_re.findall(r'reason="([a-z_]+)"', source))
+    codes |= set(_re.findall(r'refuse\([^)]*?"([a-z_]+)"\)', source))
+    absent = {"empty", "no_amount", "no_date", "no_phone", "unparseable", "llm_value_not_in_source"}
+    missing = sorted(c for c in codes - absent if c not in REASON_HINTS)
+    assert missing == [], missing

@@ -25,7 +25,7 @@ uv run canon serve                         # MCP server over stdio (see docs/MCP
 uv run python examples/mcp_client.py       # example client: same questions, four callers
 uv run canon eval --seeds 10               # before/after eval (stub model; --model claude for real)
 uv run canon check --data export/          # day-1 intake check of a client export (+ suggested canon.json)
-uv run canon audit                         # readiness audit -> out/audit_report.{md,html}, out/review.html
+uv run canon audit                         # audit -> report (.md/.html), review.html, crm_fixes.csv, quarantine.csv
 docker build -t canon .                    # client-side image; see docs/DEPLOY.md
 ```
 

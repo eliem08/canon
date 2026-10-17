@@ -25,6 +25,7 @@ body { margin: 0; background: var(--bg); color: var(--fg);
        sans-serif; }
 main { max-width: 1040px; margin: 0 auto; padding: 32px 16px 64px; }
 h1 { font-size: 26px; margin: 0 0 8px; }
+h3 { font-size: 16px; margin: 20px 0 8px; }
 h2 { font-size: 19px; margin: 36px 0 10px; padding-top: 12px; border-top: 1px solid var(--line); }
 p, li { color: var(--fg); }
 em { color: var(--muted); }
@@ -86,7 +87,7 @@ def _cells(row: str) -> list[str]:
 
 
 def markdown_to_html(md: str) -> str:
-    """The subset `render_audit` writes: #/## headings, pipe tables, `-` lists, paragraphs,
+    """The subset Canon's reports use: #/##/### headings, pipe tables, `-` lists, paragraphs,
     `code`, **bold**, *italics*. Everything is escaped before formatting is applied."""
     out: list[str] = []
     lines = md.splitlines()
@@ -94,6 +95,9 @@ def markdown_to_html(md: str) -> str:
     while i < len(lines):
         line = lines[i]
         if not line.strip():
+            i += 1
+        elif line.startswith("### "):
+            out.append(f"<h3>{_inline(line[4:])}</h3>")
             i += 1
         elif line.startswith("## "):
             out.append(f"<h2>{_inline(line[3:])}</h2>")
@@ -135,8 +139,8 @@ def markdown_to_html(md: str) -> str:
     return "\n".join(out)
 
 
-def render_audit_html(markdown_report: str) -> str:
-    return _page("MCP Readiness Audit", markdown_to_html(markdown_report))
+def render_audit_html(markdown_report: str, title: str = "MCP Readiness Audit") -> str:
+    return _page(title, markdown_to_html(markdown_report))
 
 
 # ---------------------------------------------------------------- review page
@@ -248,3 +252,124 @@ def render_review_html(
         + f'<script type="application/json" id="data">{_script_json(data)}</script>'
     )
     return _page("Confirm customer matches", body, _REVIEW_JS)
+
+
+# ---------------------------------------------------------------- fix files (CSV)
+
+# what a person can do about each refusal; codes not listed get the generic hint
+REASON_HINTS = {
+    "single_separator_read_as_thousands": "Read as thousands (385,000 = 385000); confirm it.",
+    "ambiguous_separator": "Write the amount without ambiguous separators (1426000 or 1 426 000).",
+    "malformed_grouping": "Check the digit grouping of the amount.",
+    "multiple_amounts": "The field holds several amounts; keep one.",
+    "unexpected_currency": "Amount in another currency; record it in the deployment currency.",
+    "two_digit_year": "Write the year with four digits, or set ingest.century in canon.json.",
+    "impossible_date": "The date does not exist (e.g. 31/02); correct it.",
+    "multiple_dates": "The field holds several dates; keep one.",
+    "month_only": "Only a month is given; add the day.",
+    "conflicting_date_conventions_in_file": "The file mixes day/month orders; set ingest.dayfirst.",
+    "identifier_stored_as_number": "Export the tax id as text: leading zeros may be lost.",
+    "malformed_identifier": "Check the tax id.",
+    "missing_country_or_trunk_prefix": "Add the country code or the leading 0.",
+    "no_default_country": "National number with no country set; set ingest.default_country.",
+    "bad_length": "Check the number of digits of the phone number.",
+    "contains_letters": "The phone field contains text; keep only the number.",
+    "implausible_value": "The amount is implausibly large; check it.",
+    "malformed_amount": "The amount is not a number Canon can read safely; correct it.",
+    "mixed_currencies": "Several currencies in one value; keep one.",
+    "negative_or_signed": "Negative or signed amount; check it.",
+    "bad_national_format": "Check the number of digits of the phone number.",
+    "bad_length_for_country": "Check the number of digits of the phone number.",
+    "invalid_prefix": "Check the phone number: this prefix does not exist.",
+    "placeholder": "Placeholder number (000…); replace it or leave it empty.",
+    "fax_number": "A fax number in a phone field; move it.",
+    "conflicting_values_in_contract": "The contract states two different values; check it.",
+    "unsure_ocr_digits": "Some digits on the scan are illegible; check the paper copy.",
+    "low_ocr_confidence": "Poor scan; rescan or provide the original file.",
+    "ocr_unavailable": "Install tesseract (fra+ara+eng) and rerun.",
+    "unreadable_pdf": "The PDF cannot be opened (damaged or encrypted); provide another copy.",
+    "unreadable_docx": "The DOCX cannot be opened; provide another copy.",
+    "possible_prompt_injection": "Text that reads like instructions to an AI; check who wrote it.",
+}
+GENERIC_HINT = "Check the value in the source system."
+
+
+def hint_for(reason: str) -> str:
+    return REASON_HINTS.get(reason.split(":", 1)[0], GENERIC_HINT)
+
+
+def _cell(v):
+    if v is None:
+        return ""
+    if isinstance(v, float) and v.is_integer():
+        return int(v)  # 830000, not 830000.0
+    return v
+
+
+def _write_csv(path, header: list[str], rows: list[list]) -> None:
+    import csv
+
+    with open(path, "w", encoding="utf-8-sig", newline="") as fh:  # BOM: Excel reads UTF-8
+        writer = csv.writer(fh)
+        writer.writerow(header)
+        writer.writerows([[_cell(v) for v in row] for row in rows])
+
+
+def write_fix_files(out, audit, records: list[SourceRecord], unreadable, crm_columns: dict) -> list:
+    """`crm_fixes.csv`: one row per stale CRM value with the record id and column to change and
+    the value to put there, ready for a CRM bulk update. `quarantine.csv`: every refused or
+    flagged value with its reason and what to do about it. Returns the paths written."""
+    from pathlib import Path
+
+    out = Path(out)
+    column_of = {"street": "address", "address": "street"}
+    fixes = [
+        [
+            s.stale_record.removeprefix("crm:"),
+            s.customer,
+            s.field,
+            crm_columns.get(column_of.get(s.field, s.field)) or crm_columns.get(s.field),
+            s.stale_value,
+            s.current_value,
+            s.current_source,
+            f"{s.confidence:.2f}",
+            "owner change seen only in Slack" if kind == "slack" else "",
+        ]
+        for kind, items in (("crm", audit.stale_crm), ("slack", audit.slack_only_owner_changes))
+        for s in items
+    ]
+    _write_csv(
+        out / "crm_fixes.csv",
+        [
+            "crm_record_id",
+            "customer",
+            "field",
+            "crm_column",
+            "crm_value_now",
+            "suggested_value",
+            "evidence_record",
+            "confidence",
+            "note",
+        ],
+        fixes,
+    )
+    by_id = {r.record_id: r for r in records}
+    issues = [i for r in records for i in r.issues] + list(unreadable or [])
+    rows = [
+        [
+            i.severity,
+            i.record_id,
+            by_id[i.record_id].locator if i.record_id in by_id else "",
+            i.field,
+            i.raw,
+            i.reason,
+            hint_for(i.reason),
+        ]
+        for i in sorted(issues, key=lambda i: (i.severity != "quarantined", i.reason, i.record_id))
+    ]
+    _write_csv(
+        out / "quarantine.csv",
+        ["severity", "record_id", "where", "field", "raw_text", "reason", "what_to_do"],
+        rows,
+    )
+    return [out / "crm_fixes.csv", out / "quarantine.csv"]

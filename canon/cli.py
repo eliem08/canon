@@ -130,8 +130,18 @@ def cmd_audit(args: argparse.Namespace) -> None:
     (out / "audit_report.md").write_text(report, encoding="utf-8")
     (out / "audit.json").write_text(audit.model_dump_json(indent=2), encoding="utf-8")
     write_deliverables(out, report, res.review, records, overrides)
+    from dataclasses import asdict
+
+    from canon.deliver import write_fix_files
+    from canon.ingest import load_deployment
+
+    crm_columns = asdict(load_deployment(data).crm_fields)
+    write_fix_files(out, audit, records, unreadable, crm_columns)
     print(report)
-    print(f"Client files: {out / 'audit_report.html'} (print to PDF), {out / 'review.html'}")
+    print(
+        f"Client files in {out}: audit_report.html (print to PDF), review.html (merges "
+        "to confirm), crm_fixes.csv (CRM bulk update), quarantine.csv (values to check)"
+    )
 
 
 def write_deliverables(out: Path, report: str, review, records, overrides: Path | None) -> None:
@@ -224,6 +234,11 @@ def cmd_eval(args: argparse.Namespace) -> None:
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(report, encoding="utf-8")
     out.with_suffix(".json").write_text(run.model_dump_json(indent=2), encoding="utf-8")
+    from canon.deliver import render_audit_html
+
+    out.with_suffix(".html").write_text(
+        render_audit_html(report, "Before/after evaluation"), encoding="utf-8"
+    )
     print(report)
 
 

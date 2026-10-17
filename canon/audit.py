@@ -50,6 +50,8 @@ class StaleValue(BaseModel):
     stale: str
     stale_record: str
     confidence: float
+    current_value: str | float | int | None = None  # unformatted, for the fix files
+    stale_value: str | float | int | None = None
 
 
 class CallerView(BaseModel):
@@ -130,6 +132,8 @@ def _stale_values(golden: list[GoldenRecord], by_id: dict[str, SourceRecord]):
                         stale=show_value(value),
                         stale_record=rid,
                         confidence=fact.confidence,
+                        current_value=fact.value,
+                        stale_value=value,
                     )
                     if field == "owner" and all(e.source == "slack" for e in fact.sources):
                         slack_only.append(item)
