@@ -12,6 +12,8 @@ Agent-ready data layer: ingest → resolve → score → serve (MCP) → eval. S
   `uv run canon eval --seeds 10 --out docs/reports/eval_report.md`
 - `uv run canon check --data DIR` — day-1 intake check; per-client settings live in `<data>/canon.json`
   (`canon/ingest/deployment.py`), never in code
+- `uv run python scripts/cuad_benchmark.py --split dev` — contract reader on real contracts (CUAD, downloaded
+  to `~/.cache/canon`, never committed); tune on `dev` only, report `--split all` in `docs/reports/cuad_report.md`
 - `uv run canon serve` — MCP server over stdio; `uv run python examples/mcp_client.py` exercises it
 
 ## Rules

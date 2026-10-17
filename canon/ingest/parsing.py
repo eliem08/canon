@@ -258,7 +258,7 @@ _DATE_PATTERNS = (
     (
         "day_month_year",
         re.compile(
-            rf"(?<!\d)(\d{{1,2}})(?:er|st|nd|rd|th|e|eme)?\s+(?:de\s+|of\s+)?({_MONTH_RE})\.?,?\s+(\d{{4}})(?!\d)"
+            rf"(?<!\d)(\d{{1,2}})\s?(?:er|s\s?t|n\s?d|r\s?d|t\s?h|e|eme)?\s+(?:day\s+of\s+|de\s+|of\s+)?({_MONTH_RE})\.?,?\s+(\d{{4}})(?!\d)"
         ),
     ),
     (

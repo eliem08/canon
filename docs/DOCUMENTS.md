@@ -33,6 +33,48 @@ Excel date cells (day serials with a date format) become ISO dates. Identifiers 
 numbers, such as a tax id that lost its leading zeros, are refused (`identifier_stored_as_number`),
 and so are phones stored as numbers.
 
+## Free-form contracts (real contracts: CUAD)
+Real contracts don't follow Canon's template ("Le Client :", "Date d'effet :"). When those lines are
+missing, `canon/ingest/contract_terms.py` reads what most commercial contracts share, in English and
+French:
+- the preamble's parties: "by and between A, a Delaware corporation ("A"), and B ...",
+  "Entre les soussignés : A ... et B ...", "Party A: ...";
+- the agreement date, from the sentence that introduces *this* contract or a "Dated:" title line,
+  skipping dates that name another document ("the Supply Agreement dated ...");
+- the effective date, from a defined term (`<date> (the "Effective Date")`) or "effective as of";
+- the end date (`renewal_date`), from "shall expire on <date>" in a clause about the term, or
+  computed from "a term of three (3) years from the Effective Date". A computed date carries a
+  `derived_from_term_length` warning, and a stated end date wins over a computed one.
+
+Two readings that disagree are refused (`conflicting_values_in_contract`). Numeric dates like
+03/04/2021 are read only when the deployment states its date order (`ingest.dayfirst` in
+`canon.json`). A contract lists every party in `parties`; which one is the **customer** is decided
+only with the deployment's own legal names (`ingest.own_names`). Without them the record has no name
+rather than a guessed one.
+
+**Measured on CUAD v1** (510 public commercial contracts from SEC filings, answers normalized by
+lawyers, CC BY 4.0; `uv run python scripts/cuad_benchmark.py --split all`). The rules were written
+against the dev half only. Test half (267 contracts):
+
+| field | before (template only) | recall | precision | wrong values |
+|---|---|---|---|---|
+| parties (one listed party found) | 0% | 57% | 99% | 1 |
+| agreement date | 0% | 66% | 94% | 7 |
+| effective date | 2% | 60% | 95% | 5 |
+| end date | 0% | 21% | 90% | 3 |
+
+Full table (dev and test): [`reports/cuad_report.md`](reports/cuad_report.md). The files are downloaded
+at a pinned revision into `~/.cache/canon` (or `$CANON_CACHE`); no CUAD text is committed.
+
+What this shows, and what it doesn't:
+* The template-only connector read nothing from real contracts. The general reader gets the parties
+  and the start dates of most contracts, with a few wrong values per hundred. The end date is still
+  usually missed: real term clauses are relative ("until the later of ...", "renews each year"),
+  and the reader refuses rather than guesses.
+* CUAD is US and English. French rules are only tested on sentences written for the tests. The first
+  French-language client corpus has to be measured the same way before any accuracy is quoted.
+* Contract values aren't scored: CUAD has no normalized amount answer.
+
 ## OCR results (synthetic)
 `uv run python scripts/ocr_benchmark.py --out docs/reports/ocr_report.md` renders all 50 synthetic
 contracts as 2-page image-only PDFs and reads them back. Full table:

@@ -695,6 +695,42 @@
    "kind": "identifier",
    "raw": "ICE: n/a ?",
    "expect": null
+  },
+  {
+   "id": "da31",
+   "kind": "date",
+   "raw": "this 8th day of May 2014",
+   "expect": "2014-05-08"
+  },
+  {
+   "id": "da32",
+   "kind": "date",
+   "raw": "the 20t h day of November, 2018",
+   "expect": "2018-11-20"
+  },
+  {
+   "id": "da33",
+   "kind": "date",
+   "raw": "made as of1 August 2019",
+   "expect": "2019-08-01"
+  },
+  {
+   "id": "da34",
+   "kind": "date",
+   "raw": "the 15th day of June, 2015 and the 1st day of July, 2015",
+   "expect": null
+  },
+  {
+   "id": "da35",
+   "kind": "date",
+   "raw": "the 31st day of February, 2015",
+   "expect": null
+  },
+  {
+   "id": "da36",
+   "kind": "date",
+   "raw": "made this 1s t day of October 2008",
+   "expect": "2008-10-01"
   }
  ]
 }

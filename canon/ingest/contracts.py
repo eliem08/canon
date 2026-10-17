@@ -12,6 +12,7 @@ from pathlib import Path
 
 from canon.ingest.common import business_domain, find_emails
 from canon.ingest.config import IngestConfig
+from canon.ingest.contract_terms import Term, read_terms
 from canon.ingest.documents import OCRConfig, extract_text, folder_acl, iter_documents
 from canon.ingest.parsing import IssueLog, parse_amount, parse_date, parse_phone
 from canon.models import Fact, ParseIssue, SourceRecord
@@ -63,17 +64,41 @@ def _arabic_party(text: str) -> str | None:
 def _where(text: str, key: str, locator: str) -> tuple[str | None, str | None]:
     """(`file#p<page>:L<line>`, the line's text) for a pattern; pages are split by form feeds."""
     m = re.search(PATTERNS[key], text, re.MULTILINE | re.IGNORECASE)
-    if not m:
-        return None, None
-    before = text[: m.start(1)]
+    return _cite(text, m.start(1), locator) if m else (None, None)
+
+
+def _cite(text: str, pos: int, locator: str) -> tuple[str, str]:
+    before = text[:pos]
     page = before.count("\f") + 1
     line_start = max(before.rfind("\n"), before.rfind("\f")) + 1
     line = before.split("\f")[-1].count("\n") + 1
-    end = min(
-        i for i in (text.find("\n", m.start(1)), text.find("\f", m.start(1)), len(text)) if i != -1
-    )
+    end = min(i for i in (text.find("\n", pos), text.find("\f", pos), len(text)) if i != -1)
     quote = text[line_start:end].strip()
-    return f"{locator}#p{page}:L{line}", quote[:300]
+    if len(quote) > 300:  # prose: one long line per paragraph; quote around the value
+        lo = max(line_start, pos - 120)
+        quote = text[lo : min(end, lo + 300)].strip()
+    return f"{locator}#p{page}:L{line}", quote
+
+
+def _fold_name(name: str) -> str:
+    import unicodedata
+
+    text = unicodedata.normalize("NFKD", name)
+    text = "".join(c for c in text if not unicodedata.combining(c)).lower()
+    return " ".join(re.findall(r"[a-z0-9]+", text))
+
+
+def counterparty(parties: list[str], own_names: tuple[str, ...]) -> str | None:
+    """The one party that is not the deployment itself; None when that is not clear-cut."""
+    if not own_names:
+        return None
+    from rapidfuzz import fuzz
+
+    own = [_fold_name(n) for n in own_names]
+    others = [
+        p for p in parties if not any(fuzz.token_set_ratio(_fold_name(p), o) >= 90 for o in own)
+    ]
+    return others[0] if len(others) == 1 and len(others) < len(parties) else None
 
 
 def parse_contract(
@@ -92,7 +117,17 @@ def parse_contract(
         raw = _grab(text, key)
         return log.take(field, parse_date(raw, dayfirst=dayfirst)) if raw else None
 
-    signed = date_of("signed", "signature_date")
+    # free-form contracts: the template lines below win when present (see contract_terms.py)
+    terms = read_terms(text, config.dayfirst)
+    generic: dict[str, Term] = {}
+
+    def fallback(value, field: str, term: Term | None):
+        if value is not None or term is None:
+            return value
+        generic[field] = term
+        return term.value
+
+    signed = fallback(date_of("signed", "signature_date"), "signature_date", terms.agreement_date)
     address_line = _grab(text, "address")
     address, city = address_line, None
     if address_line and "," in address_line:
@@ -115,13 +150,27 @@ def parse_contract(
     facts = []
 
     number = _grab(text, "number")
-    start = date_of("start", "contract_start")
-    renewal = date_of("renewal", "renewal_date")
+    start = fallback(date_of("start", "contract_start"), "contract_start", terms.effective_date)
+    renewal = fallback(date_of("renewal", "renewal_date"), "renewal_date", terms.end_date)
+    for field, raw, reason in terms.refused:
+        if field not in generic and not any(i.field == field for i in log.items):
+            log.refuse(field, raw, reason)
+    for field, term in generic.items():
+        for w in term.warnings:
+            log.items.append(
+                ParseIssue(
+                    record_id=record_id, field=field, raw=str(term.value), reason=w,
+                    severity="warning",
+                )
+            )  # fmt: skip
 
     def fact(name: str, v, key: str) -> None:
         # Contract terms are asserted for the whole contract period.
         if v not in (None, ""):
-            ref, quote = _where(text, key, locator)
+            if name in generic:
+                ref, quote = _cite(text, generic[name].start, locator)
+            else:
+                ref, quote = _where(text, key, locator)
             facts.append(
                 Fact(
                     field=name,
@@ -140,11 +189,13 @@ def parse_contract(
     fact("renewal_date", renewal.isoformat() if renewal else None, "renewal")
     fact("signatory", _grab(text, "signatory"), "signatory")
     fact("address", address, "address")
+    parties = [p.value for p in terms.parties]
     record = SourceRecord(
         record_id=record_id,
         source="contract",
         locator=locator,
-        name=_grab(text, "party"),
+        name=_grab(text, "party") or counterparty(parties, config.own_names),
+        parties=parties,
         alt_names=[n for n in [_arabic_party(text)] if n],
         domain=business_domain(emails[0]) if emails else None,
         phone=phone,

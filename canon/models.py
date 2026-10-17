@@ -52,6 +52,9 @@ class SourceRecord(BaseModel):
     locator: str = Field(description="Where the record came from (file path, channel, ...)")
     name: str | None = None
     alt_names: list[str] = Field(default_factory=list)
+    parties: list[str] = Field(
+        default_factory=list, description="Every party a contract names, the record's own included"
+    )
     domain: str | None = None
     phone: str | None = None
     email: str | None = None
