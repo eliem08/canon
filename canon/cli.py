@@ -129,7 +129,24 @@ def cmd_audit(args: argparse.Namespace) -> None:
     report = render_audit(audit)
     (out / "audit_report.md").write_text(report, encoding="utf-8")
     (out / "audit.json").write_text(audit.model_dump_json(indent=2), encoding="utf-8")
+    write_deliverables(out, report, res.review, records, overrides)
     print(report)
+    print(f"Client files: {out / 'audit_report.html'} (print to PDF), {out / 'review.html'}")
+
+
+def write_deliverables(out: Path, report: str, review, records, overrides: Path | None) -> None:
+    """The HTML report and the offline review page the client fills in (see canon/deliver.py)."""
+    import hashlib
+
+    from canon.deliver import render_audit_html, render_review_html
+    from canon.resolve.pipeline import Overrides
+
+    by_id = {r.record_id: r for r in records}
+    run = hashlib.sha1("".join(f"{i.left}{i.right}" for i in review).encode()).hexdigest()[:12]
+    (out / "audit_report.html").write_text(render_audit_html(report), encoding="utf-8")
+    (out / "review.html").write_text(
+        render_review_html(review, by_id, Overrides.load(overrides), run), encoding="utf-8"
+    )
 
 
 def cmd_check(args: argparse.Namespace) -> None:

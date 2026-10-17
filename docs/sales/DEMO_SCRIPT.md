@@ -26,7 +26,9 @@ uv run canon audit --as-of 2026-10-01 | head -40
 - Walk the **fix list**: stale contract values, stale renewal dates, stale owners, duplicate CRM accounts. Each item names who
   fixes it.
 - Point at one example and open its source, e.g. *Marjana Distribution: CRM says 830,000, contract says 959,000*.
-- Then **merges to confirm**: "we don't guess on borderline duplicates, we ask you."
+- Then **merges to confirm**: "we don't guess on borderline duplicates, we ask you." Open `out/review.html`
+  in a browser: two records side by side, *same / different / not sure*, one button to send the answers back.
+  (Prebuilt from the synthetic data: `docs/sales/samples/audit_report.html`, `docs/sales/samples/review.html`.)
 - Then **quarantine**: "values we can't read safely are listed, never guessed."
 
 ## 3. Same question, different people (3 min): permissions

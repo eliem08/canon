@@ -84,6 +84,13 @@ class Audit(BaseModel):
     findings: list[Finding]
 
 
+def show_value(value) -> str:
+    """1426000.0 -> '1,426,000'; other values as they are."""
+    if isinstance(value, float | int) and not isinstance(value, bool):
+        return f"{value:,.0f}" if float(value).is_integer() else f"{value:,.2f}"
+    return str(value)
+
+
 def _same(a, b) -> bool:
     if isinstance(a, int | float) and isinstance(b, int | float):
         return math.isclose(float(a), float(b), rel_tol=0.005)
@@ -118,9 +125,9 @@ def _stale_values(golden: list[GoldenRecord], by_id: dict[str, SourceRecord]):
                         entity_id=g.entity_id,
                         customer=_name(g),
                         field=field,
-                        current=str(fact.value),
+                        current=show_value(fact.value),
                         current_source=best.record_id,
-                        stale=str(value),
+                        stale=show_value(value),
                         stale_record=rid,
                         confidence=fact.confidence,
                     )

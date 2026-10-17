@@ -53,14 +53,25 @@ docker run --rm --network none \
 | `quarantine.json` | values refused (with raw text and reason), unreadable documents, possible prompt injections |
 | `review_queue.json` | borderline merges for the client to confirm; their answers go in `overrides.json` |
 
-Re-running keeps entity ids stable. Send `quarantine.json` and `review_queue.json` to the client on day 3.
+Re-running keeps entity ids stable.
 
 The readiness report (fix list, duplicates, stale CRM values, quarantine, merges to confirm, permission
 map) is produced the same way:
 ```bash
 docker run --rm --network none -v "$PWD/export:/data:ro" -v "$PWD/out:/out" canon audit
-# -> out/audit_report.md, out/audit.json
+# -> out/audit_report.md, out/audit.json,
+#    out/audit_report.html (the client's report: open in a browser, print to PDF)
+#    out/review.html       (merges to confirm, filled in by the client)
 ```
+
+**Day 3: merges to confirm.** Send `review.html` to the account owners. It is one offline file: each card
+shows two records that may be the same customer, and they answer *same / different / not sure*. Answers
+are saved in their browser as they go; *Download overrides.json* produces the file to send back. Put it
+at `export/overrides.json` and rerun with `--overrides /data/overrides.json`: decided pairs leave the
+review queue and are applied on every later run. A new `review.html` already contains the earlier answers,
+so the file grows instead of being overwritten.
+
+Both HTML files contain the client's data. They stay with the client like the export itself.
 
 ## 2. Serve to an agent (optional trial)
 ```bash
