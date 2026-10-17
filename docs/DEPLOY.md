@@ -19,12 +19,24 @@ selects a mirror of `ubuntu:24.04` if Docker Hub is unavailable.
 ## Lay out the export
 ```
 export/
-  crm/accounts.csv            (or accounts.json; column names via CRMFieldMap)
+  canon.json                  per-client settings: CRM file and column names, ACLs, currency (optional)
+  crm/accounts.csv            (or .json / .xlsx; any name if canon.json sets crm.file)
   slack/                      native Slack export: users.json, channels.json, groups.json, <channel>/<day>.json
   contracts/                  PDF / DOCX / scans / .txt, any folder depth
     board/_acl.json           {"acl": ["exec"]}: who may read this folder (default: legal, exec)
   identities.json             callers -> groups (+ optional slack_user_id), from the role spreadsheet
 ```
+
+## 0. Intake check (day 1, minutes)
+```bash
+docker run --rm --network none -v "$PWD/export:/data:ro" -v "$PWD/out:/out" canon check
+# -> out/intake_check.md, and out/canon.suggested.json when columns need mapping
+```
+It lists what was found, which column feeds each CRM field, how many values each field would lose and why,
+and Slack/contract warnings (no `groups.json`, OCR missing, unsupported formats). It exits non-zero when no
+CRM record can be built (no id or name column, blank ids). Column suggestions come from common CRM and
+French names; **review them**, then copy the file to `export/canon.json`. Nothing is applied on its own.
+A typo in `canon.json` (unknown key or field) stops every command instead of silently using a default.
 
 ## 1. Ingest and resolve, with no network
 ```bash
@@ -64,9 +76,12 @@ reverse proxy). Only hashed tokens are stored. `canon token revoke --caller <id>
 ## 3. Before/after eval on the client's questions
 ```bash
 docker run --rm -v "$PWD/export:/data:ro" -v "$PWD/out:/out" \
-  -e ANTHROPIC_API_KEY canon eval --questions /data/questions.json --model claude --runs 3 --out /out/eval.md
+  -e ANTHROPIC_API_KEY canon eval --questions /data/questions.xlsx --model claude --runs 3 --out /out/eval.md
 ```
-This is the only step that needs network, and only to reach the model provider. Use it only with the
+The question sheet is the client's (CSV, XLSX or JSON) with columns `id, type, question, expected`; `type` is one
+of contract_value, renewal_date, owner, phone, address. Expected answers are parsed like source values: an
+amount that isn't one number or a date like `03/04/2027` stops the run with the row named, so the client
+writes it unambiguously (YYYY-MM-DD). This is the only step that needs network, and only to reach the model provider. Use it only with the
 client's written consent. Without consent, use a model the client hosts behind an OpenAI-compatible API
 (vLLM, Ollama, TGI...), so no data leaves their network:
 ```bash

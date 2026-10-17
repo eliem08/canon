@@ -132,6 +132,26 @@ def cmd_audit(args: argparse.Namespace) -> None:
     print(report)
 
 
+def cmd_check(args: argparse.Namespace) -> None:
+    import json
+
+    from canon.intake import check_export, render_check, suggested_deployment
+
+    report = check_export(Path(args.data))
+    out = Path(args.out)
+    out.mkdir(parents=True, exist_ok=True)
+    text = render_check(report)
+    (out / "intake_check.md").write_text(text, encoding="utf-8")
+    suggestion = suggested_deployment(report)
+    if suggestion:
+        path = out / "canon.suggested.json"
+        path.write_text(json.dumps(suggestion, ensure_ascii=False, indent=2), encoding="utf-8")
+        text += f"\nSuggested deployment file: {path} (review, then copy to <data>/canon.json)\n"
+    print(text)
+    if not report["ok"]:
+        raise SystemExit(1)
+
+
 def cmd_token(args: argparse.Namespace) -> None:
     from canon.mcp_server.auth import issue_token, revoke_caller
 
@@ -239,6 +259,11 @@ def main(argv: list[str] | None = None) -> None:
     a.add_argument("--as-of", default=None)
     a.set_defaults(func=cmd_audit)
 
+    c = sub.add_parser("check", help="day-1 intake check of a client export (no resolution)")
+    c.add_argument("--data", default=str(_data_dir()))
+    c.add_argument("--out", default=os.environ.get("CANON_OUT_DIR", "out"))
+    c.set_defaults(func=cmd_check)
+
     t = sub.add_parser("token", help="issue or revoke HTTP bearer tokens for callers")
     t.add_argument("action", choices=["add", "revoke"])
     t.add_argument("--caller", required=True, help="caller id from the identities file")
@@ -272,7 +297,7 @@ def main(argv: list[str] | None = None) -> None:
     e.add_argument(
         "--questions",
         default=None,
-        help="question file (JSON, e.g. a client's); "
+        help="question file (JSON, CSV or XLSX, e.g. a client's); "
         "default <data>/ground_truth/eval_questions.json",
     )
     e.add_argument("--runs", type=int, default=1, help="repeat the eval N times (real models)")

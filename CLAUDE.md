@@ -10,6 +10,8 @@ Agent-ready data layer: ingest → resolve → score → serve (MCP) → eval. S
 - `uv run canon resolve --report` — run entity resolution and print P/R/F1
 - `uv run canon eval [--seeds N] [--model claude]` — before/after eval; refresh `docs/reports/eval_report.md` with
   `uv run canon eval --seeds 10 --out docs/reports/eval_report.md`
+- `uv run canon check --data DIR` — day-1 intake check; per-client settings live in `<data>/canon.json`
+  (`canon/ingest/deployment.py`), never in code
 - `uv run canon serve` — MCP server over stdio; `uv run python examples/mcp_client.py` exercises it
 
 ## Rules

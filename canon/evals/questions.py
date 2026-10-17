@@ -74,8 +74,12 @@ def load_questions(path: Path, truth: dict | None = None) -> list[Question]:
     """Questions from a file: a JSON list, or {"questions": [...]}. A question without
     `expected` takes it from the ground truth (`truth["entities"][entity_id]`). This is how a
     client's own question set plugs in: id, type, question, expected."""
-    data = json.loads(Path(path).read_text(encoding="utf-8"))
-    rows = data["questions"] if isinstance(data, dict) else data
+    path = Path(path)
+    if path.suffix.lower() in (".csv", ".xlsx"):
+        rows = _spreadsheet_questions(path)
+    else:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        rows = data["questions"] if isinstance(data, dict) else data
     out = []
     for row in rows:
         if "expected" not in row:
@@ -86,6 +90,46 @@ def load_questions(path: Path, truth: dict | None = None) -> list[Question]:
                 "expected": truth["entities"][row["entity_id"]][ANSWER_FIELD[row["type"]]],
             }
         out.append(Question.model_validate(row))
+    return out
+
+
+def _spreadsheet_questions(path: Path) -> list[dict]:
+    """A client's question sheet: columns id (optional), type, question, expected.
+
+    Expected answers are typed by people, so they are parsed like any other source value and
+    refused (an error naming the row) rather than guessed: an amount must parse to one number,
+    a date to one unambiguous calendar day."""
+    from canon.ingest.crm import read_rows
+    from canon.ingest.parsing import parse_amount, parse_date
+
+    out = []
+    for i, row in enumerate(read_rows(path), start=2):  # row 1 is the header
+        row = {str(k).strip().lower(): v for k, v in row.items() if k}
+        if not any(str(v).strip() for v in row.values() if v is not None):
+            continue
+        qid = str(row.get("id") or f"row{i}")
+        qtype = str(row.get("type") or "").strip()
+        if qtype not in QUESTION_TYPES:
+            raise ValueError(f"{path.name} {qid}: type must be one of {sorted(QUESTION_TYPES)}")
+        expected = row.get("expected")
+        if expected in (None, ""):
+            raise ValueError(f"{path.name} {qid}: no expected answer")
+        if qtype == "contract_value":
+            parsed = parse_amount(expected, expected_currency=None)
+            if not parsed.ok:
+                raise ValueError(f"{path.name} {qid}: expected amount refused ({parsed.reason})")
+            expected = parsed.value.value
+        elif qtype == "renewal_date":
+            parsed = parse_date(expected)
+            if not parsed.ok or "day_month_order_by_convention" in parsed.warnings:
+                reason = parsed.reason or "ambiguous_day_month_order: write it as YYYY-MM-DD"
+                raise ValueError(f"{path.name} {qid}: expected date refused ({reason})")
+            expected = parsed.value.isoformat()
+        else:
+            expected = str(expected).strip()
+        out.append(
+            {"id": qid, "type": qtype, "question": str(row["question"]), "expected": expected}
+        )
     return out
 
 
