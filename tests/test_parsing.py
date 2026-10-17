@@ -38,10 +38,10 @@ def run_case(case):
         p = parse_amount(raw)
         return p.value.value if p.ok else None
     if kind == "date":
-        p = parse_date(raw, dayfirst=case.get("dayfirst", True))
+        p = parse_date(raw, dayfirst=case.get("dayfirst", True), century=case.get("century"))
         return p.value.isoformat() if p.ok else None
     if kind == "phone":
-        return parse_phone(raw).value
+        return parse_phone(raw, case.get("country", "212")).value
     if kind == "identifier":
         return parse_identifier(raw).value
     record = parse_contract(

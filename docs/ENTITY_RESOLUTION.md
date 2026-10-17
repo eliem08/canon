@@ -108,6 +108,33 @@ Adversarial pair suite (`tests/fixtures/er_pairs.json`, 50 hand-written pairs: g
 cities, different business types, FR/AR translations, shared switchboards): precision 0.621 → **1.000**,
 recall 0.783 → **0.962**.
 
+## Real data: Fodors–Zagat
+`uv run --with pyarrow python scripts/er_benchmark.py --split all`
+([`reports/er_real_report.md`](reports/er_real_report.md)). This is the Magellan Fodors–Zagat
+benchmark (from `lighteval/EntityMatching` on Hugging Face): restaurant listings from two guides, with
+name, street address, city and phone, like CRM accounts written by different people. The resolver runs
+with its default settings. Listings are split by entity into dev (used to find the fixes below) and
+test (reported only).
+
+| test half: 211 listings, 55 true matches | precision | recall | F1 |
+|---|---|---|---|
+| exact normalized name | 0.952 | 0.727 | 0.825 |
+| Canon before the fixes below | 0.843 | 0.782 | 0.811 |
+| **Canon now** | **0.902** | **1.000** | **0.948** |
+
+The first run was worse than exact-name matching, and the reason was in the parsers, not the matcher.
+* **Phones were all refused.** US numbers are dialled without a trunk `0` (`212-260-6660`), which the
+  phone parser treated as "missing country or trunk prefix". Without phones, two restaurants at the same
+  casino address merged, and the same restaurant with a new address split. Countries without a trunk
+  prefix (`NANP`, Spain) now read national numbers when the deployment sets that `default_country`.
+  `212/260 -6660` is also one number, not two, when no part of it is a phone on its own.
+* **`new york` vs `new york city`** was a city conflict. The word for "city" (`city`, `ville de`) is no
+  longer part of a city's name.
+
+What's left on test: 6 false merges out of 61 merged pairs, mostly look-alike names at nearby
+addresses with no phone or a shared switchboard. The dataset is US-only and English. It tests the
+matching machinery on real spelling variation, not the French/Arabic lexicon.
+
 ## Known gaps
 * Weights are hand-set, not learned. The synthetic generator and the resolver were written by the same
   team, so these numbers are an upper bound. Real data needs a labelled sample and EM/logistic fitting.

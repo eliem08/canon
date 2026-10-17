@@ -56,6 +56,11 @@ Contracts on **real data** (CUAD: 510 public SEC-filed contracts, lawyer answers
 parties found in 57% at 99% precision, agreement date 66% at 94%, effective date 60% at 95%, end date
 21% at 90%, up from 0% for the template-only reader. Details: [`docs/DOCUMENTS.md`](docs/DOCUMENTS.md).
 
+Entity resolution on **real listings** (Fodors–Zagat, held-out half): F1 **0.948** (P 0.902 / R 1.000)
+vs 0.825 for exact names. OCR on **real scanned receipts** (SROIE, 361): dates 59% correct, 2% wrong,
+the rest withheld (76% / 4% if unsure digits are not withheld). Details: [`docs/ENTITY_RESOLUTION.md`](docs/ENTITY_RESOLUTION.md),
+[`docs/DOCUMENTS.md`](docs/DOCUMENTS.md).
+
 Fact scoring (freshness × authority, losers kept as alternatives): **0.968** of current facts
 correct, versus 0.904 for "latest wins". Contract value and renewal date are 1.00, owner is 0.92,
 and both owner misses are flagged at confidence ≈ 0.09. Details: [`docs/FACT_SCORING.md`](docs/FACT_SCORING.md).

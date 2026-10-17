@@ -14,6 +14,8 @@ Agent-ready data layer: ingest → resolve → score → serve (MCP) → eval. S
   (`canon/ingest/deployment.py`), never in code
 - `uv run python scripts/cuad_benchmark.py --split dev` — contract reader on real contracts (CUAD, downloaded
   to `~/.cache/canon`, never committed); tune on `dev` only, report `--split all` in `docs/reports/cuad_report.md`
+- `uv run --with pyarrow python scripts/er_benchmark.py --split dev` / `scripts/receipts_benchmark.py` — ER on real
+  listings (Fodors–Zagat) and OCR on real receipts (SROIE); same rules: cache outside the repo, tune on dev
 - `uv run canon serve` — MCP server over stdio; `uv run python examples/mcp_client.py` exercises it
 
 ## Rules

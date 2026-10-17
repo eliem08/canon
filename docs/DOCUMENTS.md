@@ -97,6 +97,38 @@ contracts as 2-page image-only PDFs and reads them back. Full table:
   e.g. a misread letter). It is an identity field, so entity resolution tolerates it, but it is
   not quarantined.
 
+## OCR on real scans: receipts (SROIE)
+`uv run --with pyarrow python scripts/receipts_benchmark.py --split test`
+([`reports/receipts_report.md`](reports/receipts_report.md)). ICDAR 2019 SROIE: real scanned shop receipts
+(Malaysia, English) with human transcriptions and labelled company, date and total; 361 held-out receipts.
+The text from `ocr_image` goes through Canon's own parsers, with that deployment's conventions (day first,
+two-digit years in the 2000s).
+
+| test, 361 receipts | date correct | date wrong | date withheld | total read | company found |
+|---|---|---|---|---|---|
+| before (two-digit years refused, no digit mask) | 63% | 3% (12) | 13% | 78% | 84% |
+| + `century: 20` | 76% | 4% (16) | 19% | 78% | 84% |
+| + unsure digits withheld (**default now**) | 59% | **2% (8)** | 39% | 60% | 82% |
+| human transcription, parsers only | 98% | 1% (5) | 0% | 99% | 100% |
+
+Rows don't add to 100%: some receipts have no labelled date, or one in a format that is not a date.
+
+* OCR recovers about 80% of the transcription's words (70% once unsure digit words are withheld).
+  Receipts are small, faint thermal prints.
+* **The trade-off is explicit.** Withholding unsure digits halves the wrong dates (16 → 8) but loses about a
+  fifth of the correct dates and totals. For an audit, a refused value is a line in the quarantine report and
+  a wrong one is a wrong answer, so the default favours refusing. A deployment can set
+  `OCRConfig.min_digit_confidence = 0` to keep them.
+* **Unsure digits are withheld.** On the dev receipts every wrong date was a misread digit (5→6, 8→3) that
+  tesseract read at confidence 58–77, so digit words below 80 become `[?]` (`OCRConfig.min_digit_confidence`)
+  and the document gets an `unsure_ocr_digits` warning. Dev: wrong dates 5 → 0, correct 50 → 36; test in the
+  table above.
+* **Two-digit years** (`20/03/18`) are on 19% of these receipts. They are read only when the deployment sets
+  `ingest.century`.
+* The remaining wrong dates on test come from the first date on the receipt not being the purchase date
+  (the transcription-only row has 5 of those) and a few confident misreads.
+* Upscaling small images before OCR was tried on dev and made results worse; it is not used.
+
 ## Install
 `pypdf` and `pillow` are Python dependencies. OCR needs the tesseract binary with French and Arabic:
 `apt-get install tesseract-ocr tesseract-ocr-fra tesseract-ocr-ara` (CI does this), or

@@ -263,3 +263,16 @@ def test_question_sheet_refuses_rather_than_guesses(tmp_path, row, message):
         writer.writerow({"id": "x", "question": "?", **row})
     with pytest.raises(ValueError, match=message):
         load_questions(path)
+
+
+def test_two_digit_years_need_the_century_in_the_deployment_file(tmp_path):
+    rows = _rows()[:3]
+    for r in rows:
+        r["Renewal Date"] = "25/03/27"
+    _write_csv(tmp_path / "crm" / "accounts.csv", rows, {k: k for k in HUBSPOT})
+    refused = load_all(tmp_path)
+    assert all(not [f for f in r.facts if f.field == "renewal_date"] for r in refused)
+    assert all(any(i.reason == "two_digit_year" for i in r.issues) for r in refused)
+    (tmp_path / "canon.json").write_text(json.dumps({"ingest": {"century": 20, "dayfirst": True}}))
+    read = load_all(tmp_path)
+    assert {f.value for r in read for f in r.facts if f.field == "renewal_date"} == {"2027-03-25"}

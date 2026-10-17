@@ -97,7 +97,7 @@ def crm_row_to_record(
     log = IssueLog(rid)
 
     def date_field(name: str, raw):
-        parsed = parse_date(raw, dayfirst=dayfirst)
+        parsed = parse_date(raw, dayfirst=dayfirst, century=config.century)
         if date_conflict and parsed.ok and "day_month_order_by_convention" in parsed.warnings:
             log.refuse(name, raw, "conflicting_date_conventions_in_file")
             return None

@@ -190,3 +190,31 @@ def test_xlsx_numeric_tax_id_lost_its_leading_zeros(tmp_path):
     path.write_bytes(xlsx([row]))
     rec = load_crm(path)[0]
     assert rec.tax_id in (None, "000133528873882")
+
+
+def test_unsure_digits_are_masked_not_guessed(monkeypatch):
+    """A 5 read as a 6 makes a wrong date that looks right; low-confidence digit words are
+    withheld, confident ones and plain words are kept."""
+    import subprocess
+
+    from canon.ingest import documents
+    from canon.ingest.parsing import parse_date
+
+    header = "level\tpage\tblock\tpar\tline\tword\tleft\ttop\twidth\theight\tconf\ttext"
+    rows = [
+        "5\t1\t1\t1\t1\t1\t0\t0\t1\t1\t95.0\tDate:",
+        "5\t1\t1\t1\t1\t2\t0\t0\t1\t1\t66.0\t06/02/2018",  # tesseract unsure: misread 05
+        "5\t1\t1\t1\t2\t1\t0\t0\t1\t1\t55.0\tTOTAL",  # unsure, but no digits: kept
+        "5\t1\t1\t1\t2\t2\t0\t0\t1\t1\t93.0\t36.00",
+    ]
+    tsv = "\n".join([header, *rows]).encode()
+
+    class Done:
+        stdout = tsv
+
+    monkeypatch.setattr(subprocess, "run", lambda *a, **k: Done())
+    text, _ = documents._tesseract(b"png", OCRConfig())
+    assert text == "Date: [?]\nTOTAL 36.00"
+    assert not parse_date(text.splitlines()[0]).ok
+    text, _ = documents._tesseract(b"png", OCRConfig(min_digit_confidence=0))
+    assert "06/02/2018" in text

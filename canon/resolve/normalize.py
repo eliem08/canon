@@ -193,5 +193,11 @@ def normalize_address(address: str | None) -> str:
     return " ".join(tokens)
 
 
+_CITY_WORDS = re.compile(r"^(?:ville|city|municipalite)\s+(?:de\s+|d'|of\s+)?|\s+(?:city|ville)$")
+
+
 def normalize_city(city: str | None) -> str:
-    return re.sub(r"[^a-z]", "", fold(city)) if city else ""
+    """'New York City' = 'new york', 'Ville de Fès' = 'Fes': the word for city is not the name."""
+    if not city:
+        return ""
+    return re.sub(r"[^a-z]", "", _CITY_WORDS.sub("", fold(city).strip()))

@@ -261,9 +261,21 @@ _DATE_PATTERNS = (
             rf"(?<!\d)(\d{{1,2}})\s?(?:er|s\s?t|n\s?d|r\s?d|t\s?h|e|eme)?\s+(?:day\s+of\s+|de\s+|of\s+)?({_MONTH_RE})\.?,?\s+(\d{{4}})(?!\d)"
         ),
     ),
+    (  # 27/MAR/2018, 27-mar-2018
+        "day_mon_year_sep",
+        re.compile(rf"(?<!\d)(\d{{1,2}})[/.\-]({_MONTH_RE})\.?[/.\-](\d{{4}})(?!\d)"),
+    ),
     (
         "month_day_year",
         re.compile(rf"\b({_MONTH_RE})\.?\s+(\d{{1,2}})(?:st|nd|rd|th)?,?\s+(\d{{4}})(?!\d)"),
+    ),
+)
+# two-digit years, read only when the deployment states the century (`century=20`)
+_SHORT_DATE_PATTERNS = (
+    ("numeric", re.compile(r"(?<!\d)(\d{1,2})[/.\-](\d{1,2})[/.\-](\d{2})(?![\d/.\-])")),
+    (
+        "day_month_year",
+        re.compile(rf"(?<!\d)(\d{{1,2}})[\s/.\-]+({_MONTH_RE})\.?[\s/.\-]+(\d{{2}})(?![\d/.\-])"),
     ),
 )
 _TWO_DIGIT_YEAR = re.compile(r"(?<!\d)\d{1,2}[/.\-]\d{1,2}[/.\-]\d{2}(?![\d/.\-])")
@@ -282,16 +294,23 @@ def _make_date(
 
 
 def parse_date(
-    raw: object, dayfirst: bool = True, years: tuple[int, int] = (1990, 2100)
+    raw: object,
+    dayfirst: bool = True,
+    years: tuple[int, int] = (1990, 2100),
+    century: int | None = None,
 ) -> Parsed[date]:
-    """Parse a field or phrase that should contain exactly one calendar date."""
+    """Parse a field or phrase that should contain exactly one calendar date.
+
+    Two-digit years (20/03/18) are refused unless the deployment states the century
+    (`century=20` reads them as 2018); the parser never picks one."""
     if raw is None or not str(raw).strip():
         return Parsed("", reason="empty")
     text = clean_text(raw)
     low = _fold(text)
     found: list[tuple[date | None, str | None, str | None]] = []  # (value, reason, warning)
     spans: list[tuple[int, int]] = []
-    for kind, pattern in _DATE_PATTERNS:
+    patterns = _DATE_PATTERNS + (_SHORT_DATE_PATTERNS if century is not None else ())
+    for kind, pattern in patterns:
         for m in pattern.finditer(low):
             if any(s <= m.start() < e for s, e in spans):
                 continue
@@ -305,10 +324,12 @@ def parse_date(
                 d, mo = (a, b) if dayfirst else (b, a)
                 if a <= 12 and b <= 12 and a != b:
                     warning = "day_month_order_by_convention"
-            elif kind == "day_month_year":
+            elif kind in ("day_month_year", "day_mon_year_sep"):
                 d, mo, y = int(g[0]), _MONTHS[g[1]], int(g[2])
             else:
                 mo, d, y = _MONTHS[g[0]], int(g[1]), int(g[2])
+            if y < 100 and century is not None:
+                y += century * 100
             value, reason = _make_date(y, mo, d, years)
             found.append((value, reason, warning))
     if not found:
@@ -365,6 +386,8 @@ COUNTRY_RULES: dict[str, tuple[tuple[int, ...], str]] = {
     "966": ((9,), ""),  # Saudi Arabia
     "221": ((9,), ""),  # Senegal
 }
+# National numbers are dialled without a trunk "0" in these countries (US/Canada: 415 495 5775)
+NO_TRUNK_PREFIX = frozenset({"1", "34"})
 _EXT_RE = re.compile(r"(?i)\s*(?:ext\.?|extension|poste|p\.|x|#|داخلي)\s*(\d{1,6})\s*$")
 _SPLIT_RE = re.compile(r"\s*(?:/|;|,|\||\bou\b|\bor\b|\bet\b|\band\b)\s*", re.IGNORECASE)
 
@@ -418,6 +441,15 @@ def _one_phone(text: str, default_country: str | None) -> Parsed[str]:
         if prefixes and nsn[0] not in prefixes:
             return Parsed(text, reason="invalid_prefix")
         return Parsed(text, f"+{default_country}{nsn}")
+    if default_country in NO_TRUNK_PREFIX:
+        lengths, prefixes = COUNTRY_RULES[default_country]
+        nsn = digits[len(default_country) :] if len(digits) - len(default_country) in lengths and \
+            digits.startswith(default_country) else digits  # fmt: skip
+        if len(nsn) in lengths and not (prefixes and nsn[0] not in prefixes):
+            if _is_placeholder(nsn):
+                return Parsed(text, reason="placeholder")
+            return Parsed(text, f"+{default_country}{nsn}")
+        return Parsed(text, reason="bad_national_format")
     return Parsed(text, reason="missing_country_or_trunk_prefix")
 
 
@@ -433,9 +465,12 @@ def parse_phone(raw: object, default_country: str | None = "212") -> Parsed[str]
         text_wo_ext = text[: ext.start()]
     else:
         text_wo_ext = text
-    results = [
-        _one_phone(part, default_country) for part in _SPLIT_RE.split(text_wo_ext) if part.strip()
-    ]
+    parts = [part for part in _SPLIT_RE.split(text_wo_ext) if part.strip()]
+    results = [_one_phone(part, default_country) for part in parts]
+    if len(parts) > 1 and not any(r.ok for r in results):
+        whole = _one_phone(text_wo_ext, default_country)
+        if whole.ok:  # "212/260-6660": a separator inside one number, not a list of numbers
+            results = [whole]
     valid = list(dict.fromkeys(r.value for r in results if r.ok))
     if not valid:
         return Parsed(text, reason=results[0].reason if results else "no_phone")

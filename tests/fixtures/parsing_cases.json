@@ -731,6 +731,114 @@
    "kind": "date",
    "raw": "made this 1s t day of October 2008",
    "expect": "2008-10-01"
+  },
+  {
+   "id": "ph29",
+   "kind": "phone",
+   "raw": "212/260 -6660",
+   "country": "1",
+   "expect": "+12122606660"
+  },
+  {
+   "id": "ph30",
+   "kind": "phone",
+   "raw": "(415) 495-5775",
+   "country": "1",
+   "expect": "+14154955775"
+  },
+  {
+   "id": "ph31",
+   "kind": "phone",
+   "raw": "1-415-495-5775",
+   "country": "1",
+   "expect": "+14154955775"
+  },
+  {
+   "id": "ph32",
+   "kind": "phone",
+   "raw": "415 495 577",
+   "country": "1",
+   "expect": null
+  },
+  {
+   "id": "ph33",
+   "kind": "phone",
+   "raw": "115 495 5775",
+   "country": "1",
+   "expect": null
+  },
+  {
+   "id": "ph34",
+   "kind": "phone",
+   "raw": "212/260 -6660",
+   "expect": null
+  },
+  {
+   "id": "ph35",
+   "kind": "phone",
+   "raw": "0522 12 34 56 / 0661 23 45 67",
+   "expect": "+212522123456"
+  },
+  {
+   "id": "ph36",
+   "kind": "phone",
+   "raw": "912 345 678",
+   "country": "34",
+   "expect": "+34912345678"
+  },
+  {
+   "id": "da37",
+   "kind": "date",
+   "raw": "20/03/18",
+   "expect": null
+  },
+  {
+   "id": "da38",
+   "kind": "date",
+   "raw": "20/03/18",
+   "century": 20,
+   "expect": "2018-03-20"
+  },
+  {
+   "id": "da39",
+   "kind": "date",
+   "raw": "22 MAR 18",
+   "century": 20,
+   "expect": "2018-03-22"
+  },
+  {
+   "id": "da40",
+   "kind": "date",
+   "raw": "27/MAR/2018",
+   "expect": "2018-03-27"
+  },
+  {
+   "id": "da41",
+   "kind": "date",
+   "raw": "23.03.18",
+   "century": 20,
+   "expect": "2018-03-23"
+  },
+  {
+   "id": "da42",
+   "kind": "date",
+   "raw": "31/02/18",
+   "century": 20,
+   "expect": null
+  },
+  {
+   "id": "da43",
+   "kind": "date",
+   "raw": "Tel 03-3362 4137",
+   "century": 20,
+   "expect": null
+  },
+  {
+   "id": "da44",
+   "kind": "date",
+   "raw": "10:30 20/03/18 TABLE 12",
+   "century": 20,
+   "expect": "2018-03-20"
   }
  ]
 }

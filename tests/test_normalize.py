@@ -60,3 +60,20 @@ def test_strip_legal_suffix_keeps_casing():
 
 def test_address_abbreviations():
     assert normalize_address("112 Bd Zerktouni") == normalize_address("112, Boulevard Zerktouni")
+
+
+@pytest.mark.parametrize(
+    "a, b",
+    [("New York City", "new york"), ("Ville de Fès", "Fes"), ("Ville d'Agadir", "agadir")],
+)
+def test_the_word_for_city_is_not_part_of_the_name(a, b):
+    from canon.resolve.normalize import normalize_city
+
+    assert normalize_city(a) == normalize_city(b)
+
+
+def test_cities_that_merely_contain_city_stay_distinct():
+    from canon.resolve.normalize import normalize_city
+
+    assert normalize_city("Cityville") == "cityville"
+    assert normalize_city("Casablanca") != normalize_city("Rabat")

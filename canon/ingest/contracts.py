@@ -115,7 +115,11 @@ def parse_contract(
 
     def date_of(key: str, field: str):
         raw = _grab(text, key)
-        return log.take(field, parse_date(raw, dayfirst=dayfirst)) if raw else None
+        return (
+            log.take(field, parse_date(raw, dayfirst=dayfirst, century=config.century))
+            if raw
+            else None
+        )
 
     # free-form contracts: the template lines below win when present (see contract_terms.py)
     terms = read_terms(text, config.dayfirst)

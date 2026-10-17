@@ -26,6 +26,7 @@ IMAGE_SUFFIXES = {".png", ".jpg", ".jpeg", ".tif", ".tiff"}
 DOCUMENT_SUFFIXES = TEXT_SUFFIXES | PDF_SUFFIXES | DOCX_SUFFIXES | IMAGE_SUFFIXES
 ACL_SIDECAR = "_acl.json"
 _BIDI = re.compile("[\u200e\u200f\u202a-\u202e\u2066-\u2069]")  # direction marks OCR emits
+UNSURE = "[?]"  # stands for a word with digits that OCR was not sure of
 
 
 @dataclass(frozen=True)
@@ -35,6 +36,9 @@ class OCRConfig:
     low_confidence: float = 60.0  # mean tesseract word confidence below this is flagged
     median_filter: int = 3  # odd kernel size; 0 disables denoising
     denoise_below: float = 80.0  # retry with the median filter when confidence is below this
+    # a word with digits read below this confidence is masked as "[?]": a misread 5/6 or 3/8 makes
+    # a wrong date or amount that looks right (real receipts: 4 of 4 wrong dates were below 80)
+    min_digit_confidence: float = 80.0
     binary: str = "tesseract"
     timeout_s: int = 120
 
@@ -95,9 +99,12 @@ def _tesseract(png: bytes, config: OCRConfig) -> tuple[str, float | None]:
         cols = row.split("\t")
         if len(cols) < 12 or cols[0] != "5" or not cols[11].strip():
             continue
-        lines.setdefault(tuple(cols[1:5]), []).append(cols[11])
-        if float(cols[10]) >= 0:
-            confs.append(float(cols[10]))
+        word, conf = cols[11], float(cols[10])
+        if 0 <= conf < config.min_digit_confidence and any(c.isdigit() for c in word):
+            word = UNSURE
+        lines.setdefault(tuple(cols[1:5]), []).append(word)
+        if conf >= 0:
+            confs.append(conf)
     text = "\n".join(" ".join(words) for words in lines.values())
     return _BIDI.sub("", text), (sum(confs) / len(confs) if confs else None)
 
@@ -110,6 +117,12 @@ def _ocr_pages(images: list[bytes], config: OCRConfig, doc: DocumentText) -> lis
         doc.denoised |= denoised
         if conf is not None:
             confs.append(conf)
+    unsure = sum(p.count(UNSURE) for p in pages)
+    if unsure:
+        doc.issues.append(
+            ("unsure_ocr_digits", f"{unsure} word(s) with digits below confidence "
+             f"{config.min_digit_confidence:g} withheld")
+        )  # fmt: skip
     if confs:
         doc.ocr_confidence = round(sum(confs) / len(confs), 1)
         if doc.ocr_confidence < config.low_confidence:
