@@ -1,0 +1,42 @@
+[
+  {
+    "id": "U01",
+    "name": "youssef",
+    "real_name": "Youssef Benali"
+  },
+  {
+    "id": "U02",
+    "name": "salma",
+    "real_name": "Salma El Idrissi"
+  },
+  {
+    "id": "U03",
+    "name": "karim",
+    "real_name": "Karim Tazi"
+  },
+  {
+    "id": "U04",
+    "name": "nadia",
+    "real_name": "Nadia Berrada"
+  },
+  {
+    "id": "U05",
+    "name": "mehdi",
+    "real_name": "Mehdi Alaoui"
+  },
+  {
+    "id": "U06",
+    "name": "imane",
+    "real_name": "Imane Chraibi"
+  },
+  {
+    "id": "U07",
+    "name": "omar",
+    "real_name": "Omar Fassi"
+  },
+  {
+    "id": "U08",
+    "name": "leila",
+    "real_name": "Leila Bennani"
+  }
+]

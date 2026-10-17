@@ -1,0 +1,662 @@
+{
+ "description": "Adversarial entity-resolution pairs: same=true must end in one cluster, same=false in two.",
+ "pairs": [
+  {
+   "id": "P01",
+   "category": "generic_name_other_city",
+   "same": false,
+   "a": {
+    "name": "Pharmacie Al Amal",
+    "city": "Rabat"
+   },
+   "b": {
+    "name": "Pharmacie Al Amal",
+    "city": "Fès"
+   }
+  },
+  {
+   "id": "P02",
+   "category": "generic_name_other_city",
+   "same": false,
+   "a": {
+    "name": "Café Central",
+    "city": "Rabat"
+   },
+   "b": {
+    "name": "Café Central",
+    "city": "Tanger"
+   }
+  },
+  {
+   "id": "P03",
+   "category": "generic_name_other_city",
+   "same": false,
+   "a": {
+    "name": "Hôtel Atlas",
+    "city": "Marrakech"
+   },
+   "b": {
+    "name": "Hôtel Atlas",
+    "city": "Agadir"
+   }
+  },
+  {
+   "id": "P04",
+   "category": "generic_name_other_city",
+   "same": false,
+   "a": {
+    "name": "Garage Moderne",
+    "city": "Casablanca"
+   },
+   "b": {
+    "name": "Garage Moderne",
+    "city": "Fès"
+   }
+  },
+  {
+   "id": "P05",
+   "category": "generic_name_other_city",
+   "same": false,
+   "a": {
+    "name": "Librairie Al Andalus",
+    "city": "Tétouan"
+   },
+   "b": {
+    "name": "Librairie Al Andalus",
+    "city": "Oujda"
+   }
+  },
+  {
+   "id": "P06",
+   "category": "generic_name_other_city",
+   "same": false,
+   "a": {
+    "name": "Restaurant Al Fassia",
+    "city": "Fès"
+   },
+   "b": {
+    "name": "Restaurant Al Fassia",
+    "city": "Marrakech"
+   }
+  },
+  {
+   "id": "P07",
+   "category": "business_type_mismatch",
+   "same": false,
+   "a": {
+    "name": "Boulangerie Al Baraka",
+    "city": "Casablanca"
+   },
+   "b": {
+    "name": "Boucherie Al Baraka",
+    "city": "Casablanca"
+   }
+  },
+  {
+   "id": "P08",
+   "category": "business_type_mismatch",
+   "same": false,
+   "a": {
+    "name": "Clinique Al Amal",
+    "city": "Casablanca"
+   },
+   "b": {
+    "name": "École Al Amal",
+    "city": "Casablanca"
+   }
+  },
+  {
+   "id": "P09",
+   "category": "business_type_mismatch",
+   "same": false,
+   "a": {
+    "name": "Transport Nour",
+    "city": "Casablanca"
+   },
+   "b": {
+    "name": "Immobilier Nour",
+    "city": "Casablanca"
+   }
+  },
+  {
+   "id": "P10",
+   "category": "business_type_mismatch",
+   "same": false,
+   "a": {
+    "name": "Café Atlas",
+    "city": "Casablanca"
+   },
+   "b": {
+    "name": "Hôtel Atlas",
+    "city": "Casablanca"
+   }
+  },
+  {
+   "id": "P11",
+   "category": "business_type_mismatch",
+   "same": false,
+   "a": {
+    "name": "Pharmacie Ibn Sina",
+    "city": "Casablanca"
+   },
+   "b": {
+    "name": "Clinique Ibn Sina",
+    "city": "Casablanca"
+   }
+  },
+  {
+   "id": "P12",
+   "category": "business_type_mismatch",
+   "same": false,
+   "a": {
+    "name": "مخبزة البركة",
+    "city": "Casablanca"
+   },
+   "b": {
+    "name": "Boucherie Al Baraka",
+    "city": "Casablanca"
+   }
+  },
+  {
+   "id": "P13",
+   "category": "translation_with_identifier",
+   "same": true,
+   "a": {
+    "name": "Maroc Telecom",
+    "phone": "+212537719000"
+   },
+   "b": {
+    "name": "اتصالات المغرب",
+    "phone": "+212537719000"
+   }
+  },
+  {
+   "id": "P14",
+   "category": "translation_with_identifier",
+   "same": true,
+   "a": {
+    "name": "Banque Populaire",
+    "domain": "gbp.ma"
+   },
+   "b": {
+    "name": "البنك الشعبي",
+    "domain": "gbp.ma"
+   }
+  },
+  {
+   "id": "P15",
+   "category": "translation_with_identifier",
+   "same": true,
+   "a": {
+    "name": "Royal Air Maroc",
+    "phone": "+212522489797"
+   },
+   "b": {
+    "name": "الخطوط الملكية المغربية",
+    "phone": "+212522489797"
+   }
+  },
+  {
+   "id": "P16",
+   "category": "translation_with_identifier",
+   "same": true,
+   "a": {
+    "name": "Assurances Atlas",
+    "phone": "+212522441122"
+   },
+   "b": {
+    "name": "أطلس للتأمين",
+    "phone": "+212522441122"
+   }
+  },
+  {
+   "id": "P17",
+   "category": "translation_with_identifier",
+   "same": true,
+   "a": {
+    "name": "Office National des Chemins de Fer",
+    "domain": "oncf.ma"
+   },
+   "b": {
+    "name": "المكتب الوطني للسكك الحديدية",
+    "domain": "oncf.ma"
+   }
+  },
+  {
+   "id": "P18",
+   "category": "translation_with_identifier",
+   "same": true,
+   "a": {
+    "name": "Nour Énergie",
+    "phone": "+212524880011"
+   },
+   "b": {
+    "name": "نور للطاقة",
+    "phone": "+212524880011"
+   }
+  },
+  {
+   "id": "P19",
+   "category": "transliteration_with_identifier",
+   "same": true,
+   "a": {
+    "name": "Attijariwafa Bank",
+    "domain": "attijariwafabank.com"
+   },
+   "b": {
+    "name": "التجاري وفا بنك",
+    "domain": "attijariwafabank.com"
+   }
+  },
+  {
+   "id": "P20",
+   "category": "transliteration_with_identifier",
+   "same": true,
+   "a": {
+    "name": "Marjane",
+    "phone": "+212522970000"
+   },
+   "b": {
+    "name": "مرجان",
+    "phone": "+212522970000"
+   }
+  },
+  {
+   "id": "P21",
+   "category": "transliteration_with_identifier",
+   "same": true,
+   "a": {
+    "name": "Al Omrane",
+    "domain": "alomrane.ma"
+   },
+   "b": {
+    "name": "العمران",
+    "domain": "alomrane.ma"
+   }
+  },
+  {
+   "id": "P22",
+   "category": "transliteration_with_identifier",
+   "same": true,
+   "a": {
+    "name": "Zitoun Cosmetics",
+    "phone": "+212524331100"
+   },
+   "b": {
+    "name": "زيتون",
+    "phone": "+212524331100"
+   }
+  },
+  {
+   "id": "P23",
+   "category": "branch_with_identifier",
+   "same": true,
+   "a": {
+    "name": "Atlas Logistique",
+    "city": "Casablanca",
+    "domain": "atlaslogistique.ma",
+    "tax_id": "001234567000011"
+   },
+   "b": {
+    "name": "Atlas Logistique",
+    "city": "Tanger",
+    "domain": "atlaslogistique.ma",
+    "tax_id": "001234567000011"
+   }
+  },
+  {
+   "id": "P24",
+   "category": "branch_with_identifier",
+   "same": true,
+   "a": {
+    "name": "Marjana Distribution",
+    "city": "Tanger",
+    "tax_id": "001234567000022"
+   },
+   "b": {
+    "name": "Marjana Distribution",
+    "city": "Rabat",
+    "tax_id": "001234567000022"
+   }
+  },
+  {
+   "id": "P25",
+   "category": "branch_with_identifier",
+   "same": true,
+   "a": {
+    "name": "Kasbah Hospitality Group",
+    "city": "Marrakech",
+    "domain": "kasbahgroup.com"
+   },
+   "b": {
+    "name": "Kasbah Hospitality Group",
+    "city": "Agadir",
+    "domain": "kasbahgroup.com"
+   }
+  },
+  {
+   "id": "P26",
+   "category": "parent_subsidiary",
+   "same": false,
+   "a": {
+    "name": "Atlas Logistique",
+    "tax_id": "001234567000011"
+   },
+   "b": {
+    "name": "Atlas Logistique Maroc",
+    "tax_id": "001234567000033"
+   }
+  },
+  {
+   "id": "P27",
+   "category": "parent_subsidiary",
+   "same": false,
+   "a": {
+    "name": "Sahara Tech",
+    "tax_id": "001234567000044"
+   },
+   "b": {
+    "name": "Sahara Tech Solutions",
+    "tax_id": "001234567000055"
+   }
+  },
+  {
+   "id": "P28",
+   "category": "typo_suffix",
+   "same": true,
+   "a": {
+    "name": "Sté Nour Packaging SARL",
+    "city": "Kénitra"
+   },
+   "b": {
+    "name": "NOUR PACKAGIN S.A.R.L",
+    "city": "Kenitra"
+   }
+  },
+  {
+   "id": "P29",
+   "category": "typo_suffix",
+   "same": true,
+   "a": {
+    "name": "Riad Digital Agency",
+    "domain": "riaddigital.ma"
+   },
+   "b": {
+    "name": "Riad Digital",
+    "domain": "riaddigital.ma"
+   }
+  },
+  {
+   "id": "P30",
+   "category": "typo_suffix",
+   "same": true,
+   "a": {
+    "name": "Chefchaouen Textiles SARL",
+    "city": "Chefchaouen"
+   },
+   "b": {
+    "name": "Chefchaouen Textils",
+    "city": "Chefchaouen"
+   }
+  },
+  {
+   "id": "P31",
+   "category": "typo_suffix",
+   "same": true,
+   "a": {
+    "name": "Fennec Software Ltd"
+   },
+   "b": {
+    "name": "Fennec Software Limited"
+   }
+  },
+  {
+   "id": "P32",
+   "category": "shared_phone_different_company",
+   "same": false,
+   "a": {
+    "name": "Holmarcom Assurances",
+    "phone": "+212522463000",
+    "tax_id": "001234567000066"
+   },
+   "b": {
+    "name": "Crédit du Maroc Leasing",
+    "phone": "+212522463000",
+    "tax_id": "001234567000077"
+   }
+  },
+  {
+   "id": "P33",
+   "category": "shared_phone_different_company",
+   "same": false,
+   "a": {
+    "name": "Atlas Tours",
+    "phone": "+212524432211",
+    "city": "Marrakech"
+   },
+   "b": {
+    "name": "Sahara Tours",
+    "phone": "+212524432211",
+    "city": "Merzouga"
+   }
+  },
+  {
+   "id": "P34",
+   "category": "darija_prefix",
+   "same": true,
+   "a": {
+    "name": "Chrikat Al Amal",
+    "phone": "+212535641200"
+   },
+   "b": {
+    "name": "Al Amal SARL",
+    "phone": "+212535641200"
+   }
+  },
+  {
+   "id": "P35",
+   "category": "darija_prefix",
+   "same": true,
+   "a": {
+    "name": "chrikat dyal Souss Fresh",
+    "city": "Agadir"
+   },
+   "b": {
+    "name": "Souss Fresh SARL",
+    "city": "Agadir"
+   }
+  },
+  {
+   "id": "P36",
+   "category": "acronym_with_identifier",
+   "same": true,
+   "a": {
+    "name": "ONCF",
+    "domain": "oncf.ma"
+   },
+   "b": {
+    "name": "Office National des Chemins de Fer",
+    "domain": "oncf.ma"
+   }
+  },
+  {
+   "id": "P37",
+   "category": "acronym_with_identifier",
+   "same": true,
+   "a": {
+    "name": "TMF",
+    "phone": "+212539334455"
+   },
+   "b": {
+    "name": "Tanger Med Freight Ltd",
+    "phone": "+212539334455"
+   }
+  },
+  {
+   "id": "P38",
+   "category": "lookalike_different_domain",
+   "same": false,
+   "a": {
+    "name": "Atlas Tours",
+    "domain": "atlastours.ma"
+   },
+   "b": {
+    "name": "Atlas Logistique",
+    "domain": "atlaslogistique.ma"
+   }
+  },
+  {
+   "id": "P39",
+   "category": "lookalike_different_domain",
+   "same": false,
+   "a": {
+    "name": "Sahara Tech",
+    "domain": "saharatech.ma"
+   },
+   "b": {
+    "name": "Sahara Tours",
+    "domain": "saharatours.ma"
+   }
+  },
+  {
+   "id": "P40",
+   "category": "lookalike_different_domain",
+   "same": false,
+   "a": {
+    "name": "Nour Énergie",
+    "domain": "nourenergie.ma"
+   },
+   "b": {
+    "name": "Nour Packaging",
+    "domain": "nourpack.ma"
+   }
+  },
+  {
+   "id": "P41",
+   "category": "lookalike_different_domain",
+   "same": false,
+   "a": {
+    "name": "Medina Pharma",
+    "domain": "medinapharma.ma"
+   },
+   "b": {
+    "name": "Medina Paints",
+    "domain": "medinapaints.ma"
+   }
+  },
+  {
+   "id": "P42",
+   "category": "distinctive_name_only",
+   "same": true,
+   "a": {
+    "name": "Zitoun Cosmetics SARL"
+   },
+   "b": {
+    "name": "ZITOUN COSMETICS"
+   }
+  },
+  {
+   "id": "P43",
+   "category": "distinctive_name_only",
+   "same": true,
+   "a": {
+    "name": "Argan d'Or"
+   },
+   "b": {
+    "name": "Argan D'or SARL"
+   }
+  },
+  {
+   "id": "P44",
+   "category": "generic_name_same_city",
+   "same": false,
+   "a": {
+    "name": "Pharmacie Al Amal",
+    "city": "Rabat"
+   },
+   "b": {
+    "name": "Pharmacie Al Amal",
+    "city": "Rabat"
+   },
+   "note": "two pharmacies with the same name can coexist in a city; without an identifier this belongs in the review queue"
+  },
+  {
+   "id": "P45",
+   "category": "generic_name_same_city",
+   "same": false,
+   "a": {
+    "name": "Café de France",
+    "city": "Casablanca"
+   },
+   "b": {
+    "name": "Café de France",
+    "city": "Casablanca"
+   },
+   "note": "same as above"
+  },
+  {
+   "id": "P46",
+   "category": "translation_with_identifier",
+   "same": true,
+   "a": {
+    "name": "Ciments du Maroc",
+    "phone": "+212522851111"
+   },
+   "b": {
+    "name": "إسمنت المغرب",
+    "phone": "+212522851111"
+   }
+  },
+  {
+   "id": "P47",
+   "category": "translation_with_identifier",
+   "same": true,
+   "a": {
+    "name": "Atlas Textiles",
+    "phone": "+212535652222"
+   },
+   "b": {
+    "name": "نسيج أطلس",
+    "phone": "+212535652222"
+   }
+  },
+  {
+   "id": "P48",
+   "category": "shared_phone_different_company",
+   "same": false,
+   "a": {
+    "name": "Nour Transport",
+    "phone": "+212537700000"
+   },
+   "b": {
+    "name": "Nour Immobilier",
+    "phone": "+212537700000"
+   }
+  },
+  {
+   "id": "P49",
+   "category": "generic_name_with_identifier",
+   "same": true,
+   "a": {
+    "name": "Pharmacie Centrale",
+    "phone": "+212522220000",
+    "city": "Casablanca"
+   },
+   "b": {
+    "name": "PHARMACIE CENTRALE",
+    "phone": "+212522220000"
+   }
+  },
+  {
+   "id": "P50",
+   "category": "business_type_mismatch",
+   "same": false,
+   "a": {
+    "name": "Banque Atlas"
+   },
+   "b": {
+    "name": "Assurances Atlas"
+   }
+  }
+ ]
+}
