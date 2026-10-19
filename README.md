@@ -54,7 +54,7 @@ Details: [`docs/ENTITY_RESOLUTION.md`](docs/ENTITY_RESOLUTION.md),
 
 Contracts on **real data** (CUAD: 510 public SEC-filed contracts, lawyer answers; held-out half):
 parties found in 57% at 99% precision, agreement date 66% at 94%, effective date 60% at 95%, end date
-21% at 90%, up from 0% for the template-only reader. Details: [`docs/DOCUMENTS.md`](docs/DOCUMENTS.md).
+28% at 90%, up from 0% for the template-only reader. Details: [`docs/DOCUMENTS.md`](docs/DOCUMENTS.md).
 
 Entity resolution on **real listings** (Fodors–Zagat, held-out half): F1 **0.948** (P 0.902 / R 1.000)
 vs 0.825 for exact names. OCR on **real scanned receipts** (SROIE, 361): dates 59% correct, 2% wrong,

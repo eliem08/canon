@@ -138,3 +138,49 @@ def test_the_template_still_wins_over_the_free_form_reader():
     text = path.read_text(encoding="utf-8")
     rec = parse_contract(text, "c", "x")["record"]
     assert rec.name and not [i for i in rec.issues if i.reason.startswith("conflicting")]
+
+
+HEAD = (
+    'This Agreement is made as of March 3, 2021 (the "Effective Date") by and between Atlas '
+    'Logistics, Inc. ("Atlas"), and Cedar Analytics LLC ("Cedar").\n'
+)
+
+
+@pytest.mark.parametrize(
+    "clause, end",
+    [
+        ("1. Term. The Term shall commence on the date hereof and shall end as of December 31, "
+         "2023.", date(2023, 12, 31)),
+        ("TERM: March 3, 2021 to March 2, 2024", date(2024, 3, 2)),
+        ("1. Term. This Agreement is for a term of two (2) years.", date(2023, 3, 3)),
+        ("1. Term. The Term of this Agreement will commence on the date above and shall continue "
+         "for a term of one (1) year.", date(2022, 3, 3)),
+        ("1. Term. This Agreement shall remain in effect until the end of the current calendar "
+         "year and renew automatically.", date(2021, 12, 31)),
+    ],
+)  # fmt: skip
+def test_more_ways_contracts_state_their_end(clause, end):
+    assert read_terms(HEAD + clause, dayfirst=False).end_date.value == end
+
+
+def test_an_option_to_extend_is_not_the_end_date():
+    clause = (
+        '1. Term. The "Term" shall begin on the date hereof and shall expire December 31, 2023. '
+        "Atlas may elect for the Term to be extended to December 31, 2024."
+    )
+    assert read_terms(HEAD + clause, dayfirst=False).end_date.value == date(2023, 12, 31)
+
+
+def test_a_term_that_starts_later_is_not_counted_from_the_effective_date():
+    clause = (
+        "1. Term. This Agreement is for a term of two (2) years. The start of the Term will be "
+        "the launch of the service."
+    )
+    assert read_terms(HEAD + clause, dayfirst=False).end_date is None
+
+
+def test_french_term_range():
+    start = FR.index("Article 1")
+    end = FR.index("Fait à")
+    text = FR[:start] + "Article 1 - Durée : du 1er février 2024 au 31 janvier 2026.\n" + FR[end:]
+    assert read_terms(text).end_date.value == date(2026, 1, 31)

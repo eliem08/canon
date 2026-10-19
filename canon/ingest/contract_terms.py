@@ -105,9 +105,18 @@ _EFFECTIVE_AS_OF = re.compile(
 _EXPIRES = re.compile(
     r"\b(?:expire|expires|terminate|terminates|end|ends|ending|continue\s+(?:in\s+(?:full\s+)?force"
     r"(?:\s+and\s+effect)?\s+)?until|remain\s+in\s+(?:full\s+)?(?:force|effect)(?:\s+and\s+effect)?"
-    r"\s+until|expirera|prendra\s+fin)\s*(?:on|at\s+midnight\s+on|le)?\s*"
+    r"\s+until|expirera|prendra\s+fin|(?:end|expire)s?\s+as\s+of|extended\s+(?:to|until)|through"
+    r"|until|jusqu.au)\s*(?:on|at\s+midnight\s+on|le)?\s*"
     rf"(?P<d>{_DATE_TEXT})"
-    rf"|(?P<e>{_DATE_TEXT})\s*,?\s*\(\s*(?:the\s+)?{_Q}?(?:Expiration\s+Date|Termination\s+Date)",
+    rf"|(?P<e>{_DATE_TEXT})\s*,?\s*\(\s*(?:the\s+)?{_Q}?(?:Expiration\s+Date|Termination\s+Date)"
+    # "TERM: November 01, 2014 to October 31, 2017", "durée : du 1er janvier 2024 au 31/12/2026"
+    rf"|\b(?:term|dur[ée]e)\s*:\s*(?:from\s+|du\s+)?{_DATE_TEXT}\s+(?:to|through|au|[-–])\s+"
+    rf"(?P<f>{_DATE_TEXT})",
+    re.I,
+)
+_CALENDAR_YEAR_END = re.compile(
+    r"\buntil\s+(?:the\s+)?end\s+of\s+the\s+(?:current|then[- ]current)\s+calendar\s+year"
+    r"|jusqu.(?:à\s+la|au)\s+(?:fin|31\s+d[ée]cembre)\s+de\s+l.ann[ée]e\s+en\s+cours",
     re.I,
 )
 _EN_NUMBERS = (
@@ -132,10 +141,23 @@ _TERM = re.compile(
 # period of 1 year", "à compter de la Date d'effet pour une durée de trois (3) ans"
 _TERM_AFTER_ANCHOR = re.compile(
     r"\b(?:on|from|as\s+of|à\s+compter\s+d[eu]|à\s+partir\s+d[eu])\s+(?:the\s+|la\s+|l')?"
-    r"(?P<anchor>Effective\s+Date|Commencement\s+Date|Date\s+d.effet)\b[^.;]{0,80}?"
-    r"\b(?:for|pour)\s+(?:an?\s+|une\s+)?(?:initial\s+)?(?:period|term|dur[ée]e)\s+(?:of|de)\s+"
+    r"(?P<anchor>Effective\s+Date|Commencement\s+Date|Date\s+d.effet|date\s+(?:of\s+)?"
+    r"(?:this\s+Agreement|hereof|above|(?:its\s+)?execution))\b[^.;]{0,80}?"
+    r"\b(?:for|pour)\s+(?:an?\s+|une\s+)?(?:initial\s+)?(?:(?:period|term|dur[ée]e)\s+(?:of|de)\s+)?"
     r"(?P<n>\d{1,2}|[a-zéè]+)\s*(?:\(\s*(?P<n2>\d{1,2})\s*\))?\s*"
     r"(?P<unit>years?|months?|ans?|ann[ée]es?|mois)\b",
+    re.I,
+)
+# no anchor stated: "This agreement is for a term of ten (10) years." A term runs from the
+# contract's effective date (or, failing that, its date) unless the text says otherwise.
+_TERM_NO_ANCHOR = re.compile(
+    r"\b(?:this\s+agreement|the\s+(?:initial\s+)?term(?:\s+of\s+this\s+agreement)?|le\s+pr[ée]sent"
+    r"\s+contrat)\s+(?:is|shall\s+be|will\s+be|est\s+conclu)\s+(?:for|pour)\s+(?:a|the|une)?\s*"
+    r"(?:initial\s+)?(?:(?:term|period|dur[ée]e)\s+(?:of|de)\s+)?"
+    r"(?P<n>\d{1,2}|[a-zéè]+)\s*(?:\(\s*(?P<n2>\d{1,2})\s*\))?\s*"
+    r"(?P<unit>years?|months?|ans?|ann[ée]es?|mois)\b"
+    r"(?![\s\S]{0,160}?\b(?:from|after|following|commencing|beginning|start\s+of\s+the\s+term"
+    r"|à\s+compter)\b)",
     re.I,
 )
 
@@ -287,14 +309,19 @@ def _agree(candidates: list[Term], name: str, refused: list) -> Term | None:
 
 
 _TERM_CONTEXT = re.compile(
-    r"\b(?:this\s+(?:Agreement|Contract|Amendment)|the\s+Term|Initial\s+Term|term\s+of\s+this"
+    rf"{_Q}Term{_Q}|\b(?:term|dur[ée]e)\s*:"
+    r"|\b(?:this\s+(?:Agreement|Contract|Amendment)|the\s+Term|Initial\s+Term|term\s+of\s+this"
     r"|Term\s+of\s+(?:the\s+)?Agreement|le\s+pr[ée]sent\s+contrat|la\s+dur[ée]e|ce\s+contrat)\b",
     re.I,
 )
 
 
 _DEFINITION = re.compile(
-    rf"{_Q}[A-Z][^\"“”]{{0,40}}{_Q}\s*(?:shall\s+)?means?\b|\b(?:quarter|fiscal)\b"
+    rf"{_Q}[A-Z][^\"“”]{{0,40}}{_Q}\s*(?:shall\s+)?means?\b|\b(?:quarter|fiscal)\b", re.I
+)
+# an option is not the end date: "Flotek may elect for the Term to be extended to December 31, 2024"
+_OPTION = re.compile(
+    r"\b(?:may|elect|option|right\s+to)\b[^.;]{0,80}\bextended(?:\s+(?:to|until))?$", re.I
 )
 
 
@@ -345,25 +372,42 @@ def read_terms(text: str, dayfirst: bool | None = None) -> ContractTerms:
         "contract_start",
         terms.refused,
     )
-    explicit = [t for t in _dates(_EXPIRES, text, dayfirst) if _about_the_term(text, t.start)]
+    explicit = [
+        t
+        for t in _dates(_EXPIRES, text, dayfirst)
+        if _about_the_term(text, t.start)
+        and not _OPTION.search(text[max(0, t.start - 120) : t.start].rstrip())
+    ]
     derived = []
-    for m in [*_TERM.finditer(text), *_TERM_AFTER_ANCHOR.finditer(text)]:
+    for m in [
+        *_TERM.finditer(text),
+        *_TERM_AFTER_ANCHOR.finditer(text),
+        *_TERM_NO_ANCHOR.finditer(text),
+    ]:
         if not _about_the_term(text, m.start(), m.end()):
             continue
         n = m.group("n2") or m.group("n")
         n = int(n) if n.isdigit() else _NUMBER_WORDS.get(n.lower())
-        anchor = m.group("anchor").lower()
-        base = (
-            terms.effective_date
-            if "effective" in anchor or "effet" in anchor or "commencement" in anchor
-            else terms.agreement_date
-        )
+        anchor = (m.groupdict().get("anchor") or "").lower()
+        if not anchor:
+            base = terms.effective_date or terms.agreement_date
+        elif "effective" in anchor or "effet" in anchor or "commencement" in anchor:
+            base = terms.effective_date
+        else:
+            base = terms.agreement_date
         if not n or not base:
             continue
         months = n * 12 if m.group("unit").lower()[0] in "ya" else n
         end = _add_months(base.value, months)
         if end:
             derived.append(Term(end, m.start(), m.end(), ("derived_from_term_length",)))
+    year_end = _CALENDAR_YEAR_END.search(text)
+    start = terms.effective_date or terms.agreement_date
+    if year_end and start and _about_the_term(text, year_end.start(), year_end.end()):
+        derived.append(
+            Term(date(start.value.year, 12, 31), year_end.start(), year_end.end(),
+                 ("derived_from_calendar_year",))
+        )  # fmt: skip
     # a stated end date beats one computed from the term length (which may be off by a day)
     terms.end_date = _agree(explicit or derived, "renewal_date", terms.refused)
     return terms

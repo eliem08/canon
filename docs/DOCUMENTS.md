@@ -42,8 +42,11 @@ French:
 - the agreement date, from the sentence that introduces *this* contract or a "Dated:" title line,
   skipping dates that name another document ("the Supply Agreement dated ...");
 - the effective date, from a defined term (`<date> (the "Effective Date")`) or "effective as of";
-- the end date (`renewal_date`), from "shall expire on <date>" in a clause about the term, or
-  computed from "a term of three (3) years from the Effective Date". A computed date carries a
+- the end date (`renewal_date`), from "shall expire on / end as of / until <date>", a term range
+  ("TERM: <date> to <date>", "durée : du … au …"), or computed from "a term of three (3) years from the
+  Effective Date" (a term with no stated start runs from the effective date; one that starts at a later
+  event is refused) or "until the end of the current calendar year". An *option* to extend is not the
+  end date. A computed date carries a
   `derived_from_term_length` warning, and a stated end date wins over a computed one.
 
 Two readings that disagree are refused (`conflicting_values_in_contract`). Numeric dates like
@@ -61,7 +64,7 @@ against the dev half only. Test half (267 contracts):
 | parties (one listed party found) | 0% | 57% | 99% | 1 |
 | agreement date | 0% | 66% | 94% | 7 |
 | effective date | 2% | 60% | 95% | 5 |
-| end date | 0% | 21% | 90% | 3 |
+| end date | 0% | 28% | 90% | 4 |
 
 Full table (dev and test): [`reports/cuad_report.md`](reports/cuad_report.md). The files are downloaded
 at a pinned revision into `~/.cache/canon` (or `$CANON_CACHE`); no CUAD text is committed.
