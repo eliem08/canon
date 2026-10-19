@@ -30,6 +30,17 @@ export/
   identities.json             callers -> groups (+ optional slack_user_id), from the role spreadsheet
 ```
 
+## Pull the CRM instead of exporting it (optional)
+```bash
+HUBSPOT_TOKEN=... canon pull hubspot --out export/crm/accounts.json \
+  --property contract_value=annual_contract_value --property renewal_date=contract_renewal_date
+SALESFORCE_TOKEN=... SALESFORCE_INSTANCE_URL=https://<org>.my.salesforce.com \
+  canon pull salesforce --out export/crm/accounts.json --property renewal_date=Renewal_Date__c
+```
+Read-only (GET requests only, a token with read scopes). Rows are written under Canon's default column names, so
+no `crm.columns` mapping is needed; custom fields are named with `--property`. Pagination never sends the token to
+another host. This step needs network to the CRM's API; everything after it runs with `--network none`.
+
 ## 0. Intake check (day 1, minutes)
 ```bash
 docker run --rm --network none -v "$PWD/export:/data:ro" -v "$PWD/out:/out" canon check

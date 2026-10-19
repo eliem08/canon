@@ -200,6 +200,28 @@ def cmd_check(args: argparse.Namespace) -> None:
         raise SystemExit(1)
 
 
+def cmd_pull(args: argparse.Namespace) -> None:
+    from canon.ingest.pull import PullError, pull_hubspot, pull_salesforce, write_export
+
+    extra = dict(p.split("=", 1) for p in args.property)
+    try:
+        if args.crm == "hubspot":
+            token = os.environ.get("HUBSPOT_TOKEN")
+            if not token:
+                raise SystemExit("Set HUBSPOT_TOKEN (a private-app token with read scopes)")
+            rows = pull_hubspot(token, extra)
+        else:
+            token = os.environ.get("SALESFORCE_TOKEN")
+            instance = os.environ.get("SALESFORCE_INSTANCE_URL")
+            if not token or not instance:
+                raise SystemExit("Set SALESFORCE_TOKEN and SALESFORCE_INSTANCE_URL")
+            rows = pull_salesforce(token, instance, extra)
+    except PullError as exc:
+        raise SystemExit(f"{args.crm} refused the request: {exc}") from None
+    path = write_export(rows, Path(args.out))
+    print(f"{len(rows)} accounts from {args.crm} -> {path} (read-only; run `canon check` next)")
+
+
 def cmd_token(args: argparse.Namespace) -> None:
     from canon.mcp_server.auth import issue_token, revoke_caller
 
@@ -320,6 +342,17 @@ def main(argv: list[str] | None = None) -> None:
     c.add_argument("--data", default=str(_data_dir()))
     c.add_argument("--out", default=os.environ.get("CANON_OUT_DIR", "out"))
     c.set_defaults(func=cmd_check)
+
+    pl = sub.add_parser("pull", help="read-only pull of CRM accounts via the CRM's API")
+    pl.add_argument("crm", choices=["hubspot", "salesforce"])
+    pl.add_argument("--out", default=str(_data_dir() / "crm" / "accounts.json"))
+    pl.add_argument(
+        "--property",
+        action="append",
+        default=[],
+        help="field=CRM property, e.g. contract_value=annual_contract_value (repeatable)",
+    )
+    pl.set_defaults(func=cmd_pull)
 
     t = sub.add_parser("token", help="issue or revoke HTTP bearer tokens for callers")
     t.add_argument("action", choices=["add", "revoke"])
