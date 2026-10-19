@@ -289,6 +289,7 @@ REASON_HINTS = {
     "ocr_unavailable": "Install tesseract (fra+ara+eng) and rerun.",
     "unreadable_pdf": "The PDF cannot be opened (damaged or encrypted); provide another copy.",
     "unreadable_docx": "The DOCX cannot be opened; provide another copy.",
+    "unreadable_timestamp": "A chat line has an impossible date; check the export's date format.",
     "possible_prompt_injection": "Text that reads like instructions to an AI; check who wrote it.",
 }
 GENERIC_HINT = "Check the value in the source system."

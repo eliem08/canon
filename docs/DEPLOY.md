@@ -22,6 +22,9 @@ export/
   canon.json                  per-client settings: CRM file and column names, ACLs, currency (optional)
   crm/accounts.csv            (or .json / .xlsx; any name if canon.json sets crm.file)
   slack/                      native Slack export: users.json, channels.json, groups.json, <channel>/<day>.json
+  teams/                      Microsoft Teams (Graph): channels.json (id, displayName, membershipType, members),
+                              <channel id>/*.json pages of chatMessage objects
+  whatsapp/                   WhatsApp "Export chat" .txt files (iOS or Android format), one per chat
   contracts/                  PDF / DOCX / scans / .txt, any folder depth
     board/_acl.json           {"acl": ["exec"]}: who may read this folder (default: legal, exec)
   identities.json             callers -> groups (+ optional slack_user_id), from the role spreadsheet

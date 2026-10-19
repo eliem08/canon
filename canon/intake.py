@@ -212,6 +212,24 @@ def _slack_check(slack: Path) -> dict:
     return out
 
 
+def _other_chat_check(root: Path) -> dict:
+    """Teams (Graph export) and WhatsApp (chat .txt exports): what was found."""
+    out = {}
+    teams = root / "teams" / "channels.json"
+    if teams.exists():
+        channels = json.loads(teams.read_text(encoding="utf-8"))
+        private = sum(c.get("membershipType", "standard") != "standard" for c in channels)
+        no_members = sum(
+            c.get("membershipType", "standard") != "standard" and not c.get("members")
+            for c in channels
+        )
+        out["teams"] = {"channels": len(channels), "private": private, "no_members": no_members}
+    wa = root / "whatsapp"
+    if wa.is_dir():
+        out["whatsapp"] = {"chats": sum(1 for p in wa.rglob("*.txt") if p.is_file())}
+    return out
+
+
 def _contracts_check(root: Path) -> dict:
     if not root.is_dir():
         return {"present": False}
@@ -253,6 +271,7 @@ def check_export(root: Path) -> dict:
         )
     report["crm"] = [_crm_check(root, dep, p) for p in paths]
     report["slack"] = _slack_check(root / "slack")
+    report["other_chat"] = _other_chat_check(root)
     report["contracts"] = _contracts_check(root / "contracts")
     report["identities"] = (root / "identities.json").exists()
     report["ok"] = bool(paths) and not any(c["blocking"] for c in report["crm"])
@@ -340,6 +359,26 @@ def render_check(report: dict) -> str:
             + (f" from {s['date_range'][0]} to {s['date_range'][1]}." if s["date_range"] else ".")
         )
         lines += [f"- warning: {w}" for w in s["warnings"]]
+    other = report.get("other_chat", {})
+    if "teams" in other:
+        t = other["teams"]
+        lines += [
+            "",
+            "## Microsoft Teams",
+            "",
+            f"{t['channels']} channels, {t['private']} private.",
+        ]
+        if t["no_members"]:
+            lines.append(
+                f"- warning: {t['no_members']} private channels list no members: nobody will be "
+                "able to read them until the export includes membership"
+            )
+    if "whatsapp" in other:
+        lines += ["", "## WhatsApp", "", f"{other['whatsapp']['chats']} chat exports."]
+        lines.append(
+            "- readable by their participants only, unless canon.json gives them groups "
+            '(`"whatsapp": {"acl": [...]}`)'
+        )
     c = report["contracts"]
     lines += ["", "## Contracts", ""]
     if not c["present"]:

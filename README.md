@@ -1,6 +1,6 @@
 # Canon
 
-Agent-ready data layer. Canon ingests messy company data (CRM, Slack, Drive, PDFs), resolves
+Agent-ready data layer. Canon ingests messy company data (CRM, Slack/Teams/WhatsApp, Drive, PDFs), resolves
 duplicate entities into golden records with lineage, scores facts by freshness and authority,
 and exposes them through a permission-aware MCP server.
 
@@ -80,7 +80,7 @@ read correctly, and unreadable files are listed rather than skipped:
 ## Layout
 
 ```
-canon/ingest       connectors -> SourceRecord (CRM JSON/CSV, Slack, contracts: txt/PDF/DOCX/OCR),
+canon/ingest       connectors -> SourceRecord (CRM JSON/CSV, Slack/Teams/WhatsApp, contracts: txt/PDF/DOCX/OCR),
                    hardened value parsing, message fact extraction
 canon/guard.py     prompt-injection screening of source text
 canon/resolve      normalize, block, score, cluster, golden records, evaluation

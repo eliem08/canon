@@ -22,6 +22,7 @@ import json
 from dataclasses import dataclass, field, fields, replace
 from pathlib import Path
 
+from canon.ingest.chat import WhatsAppConfig
 from canon.ingest.config import IngestConfig
 from canon.ingest.contracts import DEFAULT_CONTRACT_ACL
 from canon.ingest.crm import DEFAULT_CRM_ACL, CRMFieldMap
@@ -38,6 +39,8 @@ class Deployment:
     crm_fields: CRMFieldMap = field(default_factory=CRMFieldMap)
     crm_acl: tuple[str, ...] = DEFAULT_CRM_ACL
     slack: SlackConfig = field(default_factory=SlackConfig)
+    teams: SlackConfig = field(default_factory=SlackConfig)
+    whatsapp: WhatsAppConfig = field(default_factory=WhatsAppConfig)
     contract_acl: tuple[str, ...] = tuple(DEFAULT_CONTRACT_ACL)
 
     def crm_paths(self, root: Path) -> list[Path]:
@@ -61,8 +64,16 @@ def _acl(section: str, value) -> tuple[str, ...]:
     return tuple(value)
 
 
+def _chat_config(section: str, data: dict, base: SlackConfig) -> SlackConfig:
+    _check_keys(section, data, {"acl", "archived_acl", "channel_prefixes"})
+    overrides = {k: _acl(f"{section}.{k}", v) for k, v in data.items() if k != "channel_prefixes"}
+    if "channel_prefixes" in data:
+        overrides["channel_prefixes"] = tuple(data["channel_prefixes"])
+    return replace(base, **overrides)
+
+
 def parse_deployment(data: dict) -> Deployment:
-    _check_keys("the top level", data, {"ingest", "crm", "slack", "contracts"})
+    _check_keys("the top level", data, {"ingest", "crm", "slack", "teams", "whatsapp", "contracts"})
     dep = Deployment()
     ingest = data.get("ingest", {})
     _check_keys("ingest", ingest, {f.name for f in fields(IngestConfig)})
@@ -78,12 +89,20 @@ def parse_deployment(data: dict) -> Deployment:
     if "acl" in crm:
         dep = replace(dep, crm_acl=_acl("crm", crm["acl"]))
 
-    slack = data.get("slack", {})
-    _check_keys("slack", slack, {"acl", "archived_acl", "channel_prefixes"})
-    overrides = {k: _acl(f"slack.{k}", v) for k, v in slack.items() if k != "channel_prefixes"}
-    if "channel_prefixes" in slack:
-        overrides["channel_prefixes"] = tuple(slack["channel_prefixes"])
-    dep = replace(dep, slack=replace(dep.slack, **overrides))
+    dep = replace(dep, slack=_chat_config("slack", data.get("slack", {}), dep.slack))
+    dep = replace(dep, teams=_chat_config("teams", data.get("teams", {}), dep.teams))
+    wa = data.get("whatsapp", {})
+    _check_keys("whatsapp", wa, {"acl", "channel_prefixes"})
+    dep = replace(
+        dep,
+        whatsapp=replace(
+            dep.whatsapp,
+            acl=_acl("whatsapp", wa["acl"]) if "acl" in wa else None,
+            chat=_chat_config(
+                "whatsapp", {k: v for k, v in wa.items() if k != "acl"}, SlackConfig()
+            ),
+        ),
+    )
 
     contracts = data.get("contracts", {})
     _check_keys("contracts", contracts, {"acl"})

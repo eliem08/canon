@@ -57,11 +57,12 @@ def load_slack(
     return records
 
 
-def channel_acl(channel: dict, config: SlackConfig) -> list[str]:
+def channel_acl(channel: dict, config: SlackConfig, platform: str = "slack") -> list[str]:
     """Public channels: the configured groups. Private channels: each member, as
-    `slack-user:<id>` (callers carry that principal via `slack_user_id` in the directory)."""
+    `<platform>-user:<id>` (callers carry that principal via `slack_user_id`, or `chat_ids`
+    for other platforms, in the directory)."""
     if channel.get("is_private"):
-        return sorted(f"slack-user:{m}" for m in channel.get("members", []))
+        return sorted(f"{platform}-user:{m}" for m in channel.get("members", []))
     return list(config.archived_acl if channel.get("is_archived") else config.acl)
 
 
@@ -88,10 +89,13 @@ def channel_to_record(
     locator: str,
     ingest: IngestConfig | None = None,
     llm: TextModel | None = None,
+    platform: str = "slack",
 ) -> SourceRecord:
+    """One record per channel. Other chat platforms (Teams, WhatsApp) are converted to the same
+    channel/message shape and keep source "slack" (= team chat); `platform` names the ids."""
     ingest = ingest or IngestConfig()
     dayfirst = ingest.dayfirst is not False
-    rid = f"slack:{channel['id']}"
+    rid = f"{platform}:{channel['id']}"
     log = IssueLog(rid)
     archived = bool(channel.get("is_archived"))
     purpose = (channel.get("purpose") or {}).get("value") or ""
@@ -127,6 +131,6 @@ def channel_to_record(
         status="archived" if archived else "active",
         updated_at=last,
         facts=facts,
-        acl=channel_acl(channel, config),
+        acl=channel_acl(channel, config, platform),
         issues=log.items,
     )

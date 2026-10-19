@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from canon.guard import injection_rule
+from canon.ingest.chat import load_teams, load_whatsapp
 from canon.ingest.config import IngestConfig
 from canon.ingest.contracts import load_contracts
 from canon.ingest.crm import load_crm
@@ -32,6 +33,10 @@ def load_all(
         records += load_crm(path, fields=dep.crm_fields, acl=dep.crm_acl, config=config)
     if (root / "slack" / "channels.json").exists():
         records += load_slack(root / "slack", config=dep.slack, ingest=config)
+    if (root / "teams" / "channels.json").exists():
+        records += load_teams(root / "teams", config=dep.teams, ingest=config)
+    if (root / "whatsapp").is_dir():
+        records += load_whatsapp(root / "whatsapp", config=dep.whatsapp, ingest=config)
     if (root / "contracts").is_dir():
         records += load_contracts(
             root / "contracts", acl=dep.contract_acl, config=config, unreadable=unreadable

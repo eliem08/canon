@@ -58,10 +58,13 @@ class Caller:
 
 
 def _principals(entry: dict) -> frozenset[str]:
-    """A caller's ACL principals: their groups, plus `slack-user:<id>` for private channels."""
+    """A caller's ACL principals: their groups, plus `<platform>-user:<id>` for private chats
+    (`slack_user_id`, or `chat_ids: {"teams": "<aad id>", "whatsapp": "+2126..."}`)."""
     groups = set(entry.get("groups", []))
     if entry.get("slack_user_id"):
         groups.add(f"slack-user:{entry['slack_user_id']}")
+    for platform, uid in (entry.get("chat_ids") or {}).items():
+        groups.add(f"{platform}-user:{uid}")
     return frozenset(groups)
 
 
