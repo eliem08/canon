@@ -94,27 +94,54 @@ CONCEPT_WEIGHT = ScoringConfig.concept_weight
 
 
 def name_similarity(fa: RecordFeatures, fb: RecordFeatures) -> float:
+    # two initialisms ("J.C.E." / "J.S.E", "OCP" / "OCB"): one letter is a different company
+    if fa.initialism and fb.initialism:
+        return 1.0 if set(fa.names) & set(fb.names) else 0.0
     best = 0.0
     for a in fa.names:
         for b in fb.names:
             best = max(best, _pair_name_similarity(a, b))
-    for a in fa.skeletons:
+    # an initialism's consonant skeleton says nothing ("lp" vs "laon primeurs")
+    tiny = fa.initialism or fb.initialism
+    for a in () if tiny else fa.skeletons:
         for b in fb.skeletons:
             # Short skeletons ("brk" from both "brc" and "baraka") carry little information.
             informative = min(len(a.replace(" ", "")), len(b.replace(" ", ""))) >= 4
             best = max(best, (0.97 if informative else 0.8) * _pair_name_similarity(a, b))
     # translations: same concepts in any order ("Maroc Telecom" ~ "اتصالات المغرب")
-    for a in fa.concepts:
+    for a in () if tiny else fa.concepts:
         for b in fb.concepts:
             if len(a) >= 2 and len(b) >= 2:
                 shared = len(set(a) & set(b)) / max(len(set(a)), len(set(b)))
                 best = max(best, CONCEPT_WEIGHT * shared)
     # acronym against a short single-token name ("khg" vs "Kasbah Hospitality Group")
-    short_a = {n for n in fa.names if " " not in n and 2 <= len(n) <= 4}
-    short_b = {n for n in fb.names if " " not in n and 2 <= len(n) <= 4}
+    short_a = {n for n in fa.names if " " not in n and MIN_ACRONYM <= len(n) <= MAX_ACRONYM}
+    short_b = {n for n in fb.names if " " not in n and MIN_ACRONYM <= len(n) <= MAX_ACRONYM}
     if (short_a & set(fb.acronyms)) or (short_b & set(fa.acronyms)):
         best = max(best, 0.85)
+    # acronym + place or descriptor: "ask soissons" ~ "association sportive karting soissons"
+    if _acronym_with_rest(fa.names, fb.names) or _acronym_with_rest(fb.names, fa.names):
+        best = max(best, 0.85)
     return best
+
+
+MIN_ACRONYM, MAX_ACRONYM = 3, 6  # two letters ("LP") match far too many names
+
+
+def _acronym_with_rest(names_a: tuple[str, ...], names_b: tuple[str, ...]) -> bool:
+    from canon.resolve.normalize import ACRONYM_SKIPPED
+
+    for a in names_a:
+        head, *rest = a.split()
+        if not rest or not MIN_ACRONYM <= len(head) <= MAX_ACRONYM:
+            continue
+        for b in names_b:
+            words = [w for w in b.split() if w not in ACRONYM_SKIPPED]
+            if len(words) <= len(rest) or words[-len(rest) :] != rest:
+                continue
+            if "".join(w[0] for w in words[: -len(rest)]) == head:
+                return True
+    return False
 
 
 def score_pair(fa: RecordFeatures, fb: RecordFeatures, cfg: ScoringConfig) -> PairScore:

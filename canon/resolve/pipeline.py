@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -152,21 +153,35 @@ def review_queue(
     """Pair decisions a person should confirm, most uncertain first."""
     cluster_of = {rid: i for i, members in enumerate(res.clusters) for rid in members}
     lo, hi = config.review_band
+    # records per street address (with a number) and city: two records alone at an address are
+    # worth a person's look even when their names share nothing ("Teen Fashions" / "Les Loustics")
+    at_address: Counter = Counter(
+        (f.address, f.city) for f in res.features.values() if f.address[:1].isdigit() and f.city
+    )
     items = []
     for (a, b), s in res.scores.items():
         if (a, b) in decided:
             continue
+        fa, fb = res.features[a], res.features[b]
         guarded = [g for g in GUARDS if g in s.evidence]
         borderline = lo <= s.probability < hi
         blocked = bool(guarded) and s.name_similarity >= config.review_name_similarity
-        if not (borderline or blocked):
-            continue
         merged = cluster_of[a] == cluster_of[b]
-        why = (
-            f"guard {', '.join(guarded)} kept near-identical names apart"
-            if blocked and not merged
-            else f"match probability {s.probability:.2f} is in the review band"
+        alone = (
+            not merged
+            and fa.address
+            and (fa.address, fa.city) == (fb.address, fb.city)
+            and at_address[(fa.address, fa.city)] == 2
+            and not is_cannot_link(fa, fb)
         )
+        if not (borderline or blocked or alone):
+            continue
+        if blocked and not merged:
+            why = f"guard {', '.join(guarded)} kept near-identical names apart"
+        elif borderline:
+            why = f"match probability {s.probability:.2f} is in the review band"
+        else:
+            why = "the only two records at this street address; names differ, so kept apart"
         items.append(
             ReviewItem(
                 left=a,

@@ -58,7 +58,9 @@ parties found in 57% at 99% precision, agreement date 66% at 94%, effective date
 28% at 90%, up from 0% for the template-only reader. Details: [`docs/DOCUMENTS.md`](docs/DOCUMENTS.md).
 
 Entity resolution on **real listings** (Fodors–Zagat, held-out half): F1 **0.948** (P 0.902 / R 1.000)
-vs 0.825 for exact names. OCR on **real scanned receipts** (SROIE, 361): dates 63% correct, 2% wrong,
+vs 0.825 for exact names. On **real French companies** (SIRENE registry vs shop signs): 29% of shop signs
+linked automatically and 28% sent to a person, precision 0.91. **Arabic ↔ Latin names** (23k real names):
+97.8% of true pairs at similarity 0.85 with 0.10% false matches. OCR on **real scanned receipts** (SROIE, 361): dates 63% correct, 2% wrong,
 the rest withheld (76% / 4% if unsure digits are not withheld). Details: [`docs/ENTITY_RESOLUTION.md`](docs/ENTITY_RESOLUTION.md),
 [`docs/DOCUMENTS.md`](docs/DOCUMENTS.md).
 

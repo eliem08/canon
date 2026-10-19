@@ -1,3 +1,5 @@
+import pytest
+
 from canon.models import SourceRecord
 from canon.resolve.blocking import candidate_pairs
 from canon.resolve.cluster import cluster
@@ -77,3 +79,60 @@ def test_average_linkage_resists_one_weak_bridge():
     # c links strongly to b only; a-c are clearly different -> c stays out
     probs = {("a", "b"): 0.95, ("b", "c"): 0.6, ("a", "c"): 0.05}
     assert cluster(["a", "b", "c"], probs, set()) == [["a", "b"], ["c"]]
+
+
+# ---------------------------------------------------------------- acronyms (French registry cases)
+
+
+@pytest.mark.parametrize(
+    "short, full",
+    [
+        ("A V E C", "Association Vie et Cancer"),  # letter by letter, keeps "et"
+        ("A.E.S.", "Avenir Environnement Services"),
+        ("GEGOS", "Groupe Etudes Gynecologiques Obstetricales Soissons"),  # 5 letters
+        ("ADICE", "Ass Dep Interprof Conseil aux Entreprise"),  # skips "aux"
+        ("ASK Soissons", "Association Sportive de Karting de Soissons"),  # acronym + place
+    ],
+)
+def test_acronyms_match_their_full_names(short, full):
+    from canon.models import SourceRecord
+    from canon.resolve.features import features
+    from canon.resolve.scoring import name_similarity
+
+    fa = features(SourceRecord(record_id="a", source="crm", locator="x", name=short))
+    fb = features(SourceRecord(record_id="b", source="crm", locator="x", name=full))
+    assert name_similarity(fa, fb) >= 0.85
+
+
+@pytest.mark.parametrize("a, b", [("LP", "Laon Primeurs"), ("J.C.E.", "J.S.E")])
+def test_two_letter_acronyms_and_one_letter_differences_do_not_match(a, b):
+    from canon.models import SourceRecord
+    from canon.resolve.features import features
+    from canon.resolve.scoring import name_similarity
+
+    fa = features(SourceRecord(record_id="a", source="crm", locator="x", name=a))
+    fb = features(SourceRecord(record_id="b", source="crm", locator="x", name=b))
+    assert name_similarity(fa, fb) < 0.6
+
+
+def test_two_records_alone_at_an_address_go_to_review_not_merged():
+    from canon.models import SourceRecord
+    from canon.resolve.pipeline import resolve
+
+    recs = [
+        SourceRecord(record_id="r1", source="crm", locator="x", name="SARL F.F.T.",
+                     address="7 Rue de la Banniere", city="Soissons"),
+        SourceRecord(record_id="r2", source="crm", locator="x", name="L'Art Marocain",
+                     address="7 RUE DE LA BANNIERE", city="SOISSONS"),
+        SourceRecord(record_id="r3", source="crm", locator="x", name="Teen Fashions",
+                     address="2 Rue du College", city="Soissons"),
+        SourceRecord(record_id="r4", source="crm", locator="x", name="Les Loustics",
+                     address="2 RUE DU COLLEGE", city="Soissons"),
+        SourceRecord(record_id="r5", source="crm", locator="x", name="Camille Albane",
+                     address="2 Rue du College", city="Soissons"),
+    ]  # fmt: skip
+    res = resolve(recs)
+    assert all(len(c) == 1 for c in res.clusters)  # names share nothing: never merged
+    queued = {frozenset((i.left, i.right)) for i in res.review}
+    assert frozenset(("r1", "r2")) in queued  # alone at their address: a person decides
+    assert not any(p <= {"r3", "r4", "r5"} for p in queued)  # three at one address: no signal

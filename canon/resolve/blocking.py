@@ -27,8 +27,14 @@ def blocking_keys(f: RecordFeatures) -> set[str]:
         keys.add(f"ac:{ac}")
     for name in f.names:
         tokens = name.split()
-        if len(tokens) == 1 and 2 <= len(tokens[0]) <= 4:
-            keys.add(f"ac:{tokens[0]}")  # a bare short token may itself be an acronym
+        if 2 <= len(tokens[0]) <= 6 and (len(tokens) == 1 or len(tokens[0]) <= 4):
+            keys.add(f"ac:{tokens[0]}")  # a short first token may itself be an acronym
+    for name in f.names:  # "association sportive karting soissons": initials before the last word
+        tokens = name.split()
+        if len(tokens) >= 3:
+            keys.add(f"ac:{''.join(t[0] for t in tokens[:-1])}")
+    if f.address[:1].isdigit() and f.city:  # a street number makes an address specific
+        keys.add(f"adr:{f.address}|{f.city}")
     if f.domain:
         keys.add(f"dom:{f.domain}")
     if f.phone:

@@ -102,6 +102,8 @@ def _tokens(name: str, drop_article: bool = False) -> list[str]:
     text = re.sub(r"\b(?:[a-z]\.){1,4}[a-z]?\b\.?", lambda m: m.group(0).replace(".", ""), text)
     text = re.sub(r"[^\w\s]", " ", text)
     text = re.sub(r"_", " ", text)
+    # letter-by-letter acronyms: "A V E C" -> "avec" (3+ single letters in a row)
+    text = re.sub(r"\b(?:[a-z] ){2,}[a-z]\b", lambda m: m.group(0).replace(" ", ""), text)
     for phrase in LEGAL_PHRASES:
         text = re.sub(rf"\b{phrase}\b", " ", text)
     tokens = [t for t in text.split() if t not in LEGAL_TOKENS and t not in STOPWORDS]
@@ -135,18 +137,29 @@ def skeleton(name: str | None) -> str:
 ACRONYM_NOUNS = frozenset({"company", "societe", "group", "groupe", "corp"})
 
 
+# Short words that acronyms usually skip ("Conseil aux Entreprises" -> CE), besides STOPWORDS.
+ACRONYM_SKIPPED = frozenset({"a", "au", "aux", "en", "pour", "sur", "par", "for", "in", "on"})
+
+
 def acronyms(name: str | None) -> set[str]:
-    """Initials of a Latin-script name, with and without company nouns."""
+    """Initials of a Latin-script name, with and without company nouns, and with and without the
+    linking words that some acronyms keep ("Association Vie Et Cancer" -> AVEC)."""
     if not name or has_arabic(name):
         return set()
     out = set()
     core = _tokens(name, drop_article=True)
     if len(core) >= 2:
         out.add("".join(t[0] for t in core))
-    words = [t for t in re.findall(r"\w+", fold(name)) if t not in ARTICLES and t not in STOPWORDS]
-    kept = [t for t in words if t not in LEGAL_TOKENS or t in ACRONYM_NOUNS]
-    if len(kept) >= 2:
-        out.add("".join(t[0] for t in kept))
+    words = [t for t in re.findall(r"\w+", fold(name)) if t not in ARTICLES]
+    for keep_links in (False, True):
+        kept = [
+            t
+            for t in words
+            if (t not in LEGAL_TOKENS or t in ACRONYM_NOUNS)
+            and (keep_links or (t not in STOPWORDS and t not in ACRONYM_SKIPPED))
+        ]
+        if len(kept) >= 2:
+            out.add("".join(t[0] for t in kept))
     return out
 
 
@@ -178,6 +191,15 @@ def strip_legal_suffix(name: str) -> str:
 _STREET_ABBREV = {
     "bd": "boulevard", "blvd": "boulevard", "av": "avenue", "ave": "avenue", "r": "rue",
     "zi": "zone industrielle", "imm": "immeuble", "bldg": "building", "n": "", "no": "",
+    # French postal standard (La Poste): the registry and many CRMs write these forms
+    "sq": "square", "pl": "place", "che": "chemin", "chem": "chemin", "imp": "impasse",
+    "all": "allee", "rte": "route", "qua": "quai", "fg": "faubourg", "fbg": "faubourg",
+    "crs": "cours", "res": "residence", "lot": "lotissement", "za": "zone artisanale",
+    "zac": "zone amenagement concerte", "ham": "hameau", "pas": "passage", "prom": "promenade",
+    "rpt": "rond point", "vla": "villa", "mte": "montee", "sen": "sentier", "pkg": "parking",
+    "ccal": "centre commercial", "cc": "centre commercial", "esp": "esplanade",
+    # repetition index after a street number: 1 bis, 3 ter, 1 T
+    "bis": "", "ter": "", "b": "", "t": "",
 }  # fmt: skip
 
 

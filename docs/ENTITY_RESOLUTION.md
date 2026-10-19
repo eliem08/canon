@@ -135,6 +135,57 @@ What's left on test: 6 false merges out of 61 merged pairs, mostly look-alike na
 addresses with no phone or a shared switchboard. The dataset is US-only and English. It tests the
 matching machinery on real spelling variation, not the French/Arabic lexicon.
 
+## Real data: French companies (SIRENE registry, Soissons)
+`uv run --with pyarrow python scripts/french_er_benchmark.py --split all`
+([`reports/er_french_report.md`](reports/er_french_report.md)). INSEE's SIRENE registry for Soissons
+(Licence Ouverte), 12k establishments. Each active establishment appears twice:
+- as a **registry** record: legal name, full address and SIREN;
+- as a **sales** record: the shop sign, usual name or acronym, the abbreviated address ("1 SQ DU DOCTEUR
+  SALMON") and no tax id.
+
+The answer key is the SIREN. All the text is real; only the pairing into two sources is ours.
+
+| test half: 1,845 records, 1,374 companies | precision | recall | F1 | sales records linked | sent to review |
+|---|---|---|---|---|---|
+| exact normalized name | 0.967 | 0.241 | 0.386 | | |
+| Canon before | 0.896 | 0.279 | 0.426 | 24% | (few) |
+| **Canon now** | **0.907** | **0.290** | **0.439** | **29%** | **28%** |
+
+It is hard because most shop signs share nothing with the legal name ("TEEN FASHIONS" for "LES LOUSTICS"). Canon does not
+merge on an address alone, so those can only reach a person. What changed:
+* **Acronyms the French way:**
+  - letter-by-letter ("A V E C", "A.E.S.");
+  - with or without linking words ("Association Vie **Et** Cancer" = AVEC, "Conseil **aux** Entreprises" = CE);
+  - up to six letters (GEGOS, ADICE);
+  - an acronym followed by a place ("ASK Soissons" = Association Sportive de Karting de Soissons).
+* **Initialisms are held to an exact match:** "J.C.E." ≠ "J.S.E", and "LP" no longer matches "Laon Primeurs".
+  Two-letter acronyms never count.
+* **Address blocking and abbreviations:** blocking includes the street address (with its number). The French postal
+  abbreviations (SQ, PL, CHE, IMP, ALL, RTE, QUA, FG…) are expanded.
+* **Same address, different names:** when two records are the only ones at a street address but share no name, the
+  pair goes to the **review queue** ("the only two records at this street address"), not to an automatic merge.
+
+  On test, 103 shop-sign records that would have been invisible now reach a person, so 57% of them are either linked
+  or put in front of someone.
+
+What is left: 43% of shop signs share neither a name nor a unique address with their company (several businesses
+at one address). Only a client's own identifiers (tax id, phone, e-mail) can link those.
+
+## Real data: Arabic ↔ Latin names
+`uv run python scripts/arabic_names_benchmark.py --split all`
+([`reports/arabic_names_report.md`](reports/arabic_names_report.md)). 23k Arabic names with their English
+transliterations (CC0). Each Arabic name is compared with its own transliteration and with a random other name.
+The resolver never merges on a name alone; this measures the name channel.
+
+| test, 3,000 names | true pairs reaching it | false pairs reaching it |
+|---|---|---|
+| similarity ≥ 0.8 | 99.4% | 0.33% |
+| similarity ≥ 0.85 | 97.8% | 0.10% |
+
+Short single-word names ("جبير" / "Jubayr") stop at 0.8 by design: a three-consonant skeleton ("jbr") is shared by too
+many names to count as strong evidence on its own. The names are historical and personal, not company names.
+Moroccan company names often contain such names ("Boulangerie Ben Ali"), but a client corpus is still the real test.
+
 ## Known gaps
 * Weights are hand-set, not learned. The synthetic generator and the resolver were written by the same
   team, so these numbers are an upper bound. Real data needs a labelled sample and EM/logistic fitting.
