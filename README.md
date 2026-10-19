@@ -45,7 +45,10 @@ Canon beats keyword retrieval by about 40 points. A well-built RAG over the same
 0–5 points of Canon, and none of those differences is significant. Canon's difference is that it never
 reads what the caller may not see, it cites every fact, it gives the model a third of the text, and it
 produces the audit report.
-Details and caveats: [`docs/EVALS.md`](docs/EVALS.md).
+Details and caveats: [`docs/EVALS.md`](docs/EVALS.md). Permission leaks at scale (4,400 answers, 110 callers,
+10 datasets): strong RAG 87%, keyword RAG 70%, **Canon 0%**
+([`docs/reports/permission_report.md`](docs/reports/permission_report.md)). All measured claims in one place:
+[`docs/sales/PROOF.md`](docs/sales/PROOF.md).
 
 Entity resolution on the synthetic set (119 records, 25 customers): **pairwise F1 0.991**
 (P 1.000 / R 0.983), versus 0.696 for exact-name matching; mean F1 0.991 over 50 held-out seeds;

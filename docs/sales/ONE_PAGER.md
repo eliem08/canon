@@ -28,8 +28,9 @@ during processing**, and you receive:
 
 ## What the evidence says so far (synthetic data, 25 customers, 4 open AI models)
 - **The audit finds real problems.** On the synthetic export it listed 62 stale CRM values, all correct, and missed 2 of 64.
-- **No permission leaks.** Asked as a sales rep, an agent built on the raw export read legal-only contract text in
-  **35 of 40** answers. Through Canon: **0 of 40**.
+- **No permission leaks.** Over 4,400 answers for 110 callers on 10 datasets, a retrieval system over the raw export put
+  text the caller may not see in front of the model in **87%** of answers (100% for someone with no access at all).
+  Through Canon: **0%**.
 - **Accuracy:** on par with a well-built retrieval system (97.5% vs 92.5%; the difference is not statistically
   significant), and far above basic keyword search (55–58%).
 - **Every fact is cited** to a contract page and line, a Slack message or a CRM row, with a confidence and the values it
@@ -37,6 +38,9 @@ during processing**, and you receive:
 - **3× less text for the model to read** than the retrieval baseline, which means lower cost per question.
 - **Reads what companies actually have:** CSV/XLSX/JSON CRM exports, Slack exports including private channels, PDF
   contracts including scans (French/Arabic/English OCR), and Word files.
+
+- **Tested on real data too:** 510 public contracts, US and French company registries, 23k Arabic names, 361 scanned
+  receipts. Full numbers and how to rerun them: [`PROOF.md`](PROOF.md).
 
 *We'll measure all of this again on your data. We don't promise an accuracy number before we see it.*
 
