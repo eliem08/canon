@@ -108,10 +108,31 @@ def cmd_serve(args: argparse.Namespace) -> None:
     if not args.http:
         build_server(service, pinned_caller=args.caller).run()
         return
-    if not args.tokens:
-        raise SystemExit("--http requires --tokens (create one with `canon token add`)")
+    if not args.tokens and not args.oidc_issuer:
+        raise SystemExit(
+            "--http requires --tokens (see `canon token add`) and/or --oidc-issuer (SSO)"
+        )
+    oidc = None
+    if args.oidc_issuer:
+        import json as _json
+
+        from canon.mcp_server.auth import OIDCConfig, OIDCVerifier, sso_map
+
+        if not args.oidc_audience:
+            raise SystemExit(
+                "--oidc-issuer needs --oidc-audience (the app id Canon is registered as)"
+            )
+        identities = _json.loads(Path(args.identities).read_text(encoding="utf-8"))
+        config = OIDCConfig(
+            issuer=args.oidc_issuer,
+            audience=args.oidc_audience,
+            jwks_url=args.oidc_jwks_url,
+            claim=args.oidc_claim,
+        )
+        oidc = OIDCVerifier(config, sso_map(identities))
     url = args.public_url or f"http://{args.host}:{args.port}"
-    server = build_server(service, tokens=Path(args.tokens), public_url=url)
+    tokens = Path(args.tokens) if args.tokens else None
+    server = build_server(service, tokens=tokens, public_url=url, oidc=oidc)
     server.run("streamable-http", host=args.host, port=args.port)
 
 
@@ -278,6 +299,10 @@ def main(argv: list[str] | None = None) -> None:
     s.add_argument("--audit-log", default=None, help="append one JSON line per tool call here")
     s.add_argument("--http", action="store_true", help="streamable HTTP with bearer tokens")
     s.add_argument("--tokens", default=None, help="token file (see `canon token add`)")
+    s.add_argument("--oidc-issuer", default=None, help="SSO: the identity provider's issuer URL")
+    s.add_argument("--oidc-audience", default=None, help="SSO: audience Canon's tokens are for")
+    s.add_argument("--oidc-jwks-url", default=None, help="SSO: JWKS URL (default: discovered)")
+    s.add_argument("--oidc-claim", default="email", help="SSO: claim that names the caller")
     s.add_argument("--host", default="127.0.0.1")
     s.add_argument("--port", type=int, default=8765)
     s.add_argument("--public-url", default=None, help="URL clients use (default http://host:port)")

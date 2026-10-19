@@ -8,6 +8,7 @@ dependencies = [
     "mcp>=2.3",
     "pillow>=10",
     "pydantic>=2.7",
+    "pyjwt[crypto]>=2.8",
     "pypdf>=5",
     "rapidfuzz>=3.9",
 ]

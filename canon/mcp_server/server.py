@@ -12,7 +12,7 @@ from mcp.server.auth.middleware.auth_context import get_access_token
 from mcp.server.auth.settings import AuthSettings
 from mcp.server.mcpserver import MCPServer
 
-from .auth import SCOPE, StaticTokenVerifier
+from .auth import SCOPE, ChainVerifier, OIDCVerifier, StaticTokenVerifier
 from .schemas import ConflictList, ContractTerms, CustomerProfile, OwnerAnswer
 from .service import CanonService
 
@@ -30,22 +30,27 @@ def build_server(
     pinned_caller: str | None = None,
     tokens: Path | None = None,
     public_url: str = "http://127.0.0.1:8765",
+    oidc: OIDCVerifier | None = None,
 ) -> MCPServer:
     """Build the MCP server. Identity, strongest first:
 
-    * `tokens` (HTTP): every request needs a bearer token; its subject is the caller;
+    * `tokens` and/or `oidc` (HTTP): every request needs a bearer token (a Canon token, or a JWT
+      from the client's identity provider); the token's subject is the caller;
     * `pinned_caller`: every request runs as that identity (a local stdio server for one person);
     * otherwise the `caller` argument, which the client asserts (trusted deployments only).
     """
     auth = {}
-    if tokens is not None:
+    secured = tokens is not None or oidc is not None
+    if secured:
         auth = {
-            "token_verifier": StaticTokenVerifier(tokens),
+            "token_verifier": ChainVerifier(
+                StaticTokenVerifier(tokens) if tokens is not None else None, oidc
+            ),
             "auth": AuthSettings(
                 issuer_url=public_url,
                 resource_server_url=public_url,
                 required_scopes=[SCOPE],
-                validate_token_resource=False,  # opaque tokens, issued only for this server
+                validate_token_resource=False,  # audience is checked by the verifier itself
             ),
         }
     server = MCPServer("canon", instructions=INSTRUCTIONS, version="0.5.0", **auth)
@@ -54,7 +59,7 @@ def build_server(
         token = get_access_token()
         if token is not None:
             return token.subject or token.client_id
-        if tokens is not None:  # unreachable behind the bearer middleware; fail closed anyway
+        if secured:  # unreachable behind the bearer middleware; fail closed anyway
             return ""
         return pinned_caller if pinned_caller is not None else caller
 

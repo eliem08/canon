@@ -11,6 +11,7 @@ import hashlib
 import hmac
 import json
 import secrets
+from dataclasses import dataclass
 from pathlib import Path
 
 from mcp.server.auth.provider import AccessToken
@@ -60,4 +61,103 @@ class StaticTokenVerifier:
                 return AccessToken(
                     token=token, client_id=caller_id, scopes=[SCOPE], subject=caller_id
                 )
+        return None
+
+
+# ---------------------------------------------------------------- SSO (OpenID Connect)
+
+
+@dataclass(frozen=True)
+class OIDCConfig:
+    """Accept the client's own identity provider tokens (Entra ID, Google, Keycloak, Okta...).
+
+    The token's signature is checked against the provider's published keys (JWKS), and its issuer,
+    audience and expiry are required. `claim` names the person (default `email`); it is mapped to
+    a caller through the identities file (`"sso": "omar@client.ma"` on the caller, or the caller id
+    itself). Anyone not in the identities file is refused."""
+
+    issuer: str
+    audience: str
+    jwks_url: str | None = (
+        None  # default: discovered from <issuer>/.well-known/openid-configuration
+    )
+    claim: str = "email"
+    algorithms: tuple[str, ...] = ("RS256", "PS256", "ES256")
+    leeway_s: int = 30
+
+
+def sso_map(identities: dict) -> dict[str, str]:
+    """Lower-cased SSO value -> caller id, from an identities file's `callers` section."""
+    out = {}
+    for cid, entry in identities.get("callers", {}).items():
+        values = entry.get("sso") or []
+        for v in [values] if isinstance(values, str) else values:
+            out[str(v).lower()] = cid
+        out.setdefault(cid.lower(), cid)
+    return out
+
+
+class OIDCVerifier:
+    """`mcp` TokenVerifier for OpenID Connect access/ID tokens (JWT)."""
+
+    def __init__(self, config: OIDCConfig, callers: dict[str, str], jwk_client=None) -> None:
+        self.config = config
+        self.callers = callers
+        self._jwk_client = jwk_client
+
+    def _client(self):
+        import jwt
+
+        if self._jwk_client is None:
+            url = self.config.jwks_url
+            if url is None:
+                import urllib.request
+
+                discovery = self.config.issuer.rstrip("/") + "/.well-known/openid-configuration"
+                with urllib.request.urlopen(discovery, timeout=10) as r:
+                    url = json.loads(r.read())["jwks_uri"]
+            self._jwk_client = jwt.PyJWKClient(url, cache_keys=True)
+        return self._jwk_client
+
+    def subject(self, token: str) -> str | None:
+        """The caller id this token proves, or None (bad signature, expired, wrong issuer or
+        audience, or a person who is not in the identities file)."""
+        import jwt
+
+        try:
+            key = self._client().get_signing_key_from_jwt(token).key
+            claims = jwt.decode(
+                token,
+                key,
+                algorithms=list(self.config.algorithms),
+                audience=self.config.audience,
+                issuer=self.config.issuer,
+                leeway=self.config.leeway_s,
+                options={"require": ["exp", "iss", "aud"]},
+            )
+        except (jwt.PyJWTError, OSError, KeyError, ValueError):
+            return None
+        value = claims.get(self.config.claim)
+        return self.callers.get(str(value).lower()) if value else None
+
+    async def verify_token(self, token: str) -> AccessToken | None:
+        import asyncio
+
+        caller = await asyncio.to_thread(self.subject, token)
+        if caller is None:
+            return None
+        return AccessToken(token=token, client_id=caller, scopes=[SCOPE], subject=caller)
+
+
+class ChainVerifier:
+    """Static tokens first (service accounts, scripts), then SSO (people)."""
+
+    def __init__(self, *verifiers) -> None:
+        self.verifiers = [v for v in verifiers if v is not None]
+
+    async def verify_token(self, token: str) -> AccessToken | None:
+        for v in self.verifiers:
+            found = await v.verify_token(token)
+            if found is not None:
+                return found
         return None

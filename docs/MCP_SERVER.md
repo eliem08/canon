@@ -100,6 +100,15 @@ The `caller` argument is chosen by the model, so on its own it is **self-asserte
   SHA-256 hashes and is re-read per request, so `canon token revoke --caller <id>` works without a
   restart. Tests run a real HTTP server and check that a sales argument can't widen a legal
   token's view, and that missing, wrong or revoked tokens get 401.
+* **SSO (OpenID Connect):** `canon serve --http --oidc-issuer <issuer URL> --oidc-audience <app id>
+  --identities identities.json`. People sign in with the client's own identity provider (Entra ID,
+  Google Workspace, Keycloak, Okta) and send its JWT as the bearer token. Canon checks the signature
+  against the provider's published keys (JWKS, discovered from the issuer or `--oidc-jwks-url`),
+  and requires the issuer, the audience and an unexpired token. The `--oidc-claim` (default `email`)
+  is mapped to a caller through `"sso": "name@client.ma"` in the identities file. Anyone not listed
+  gets 401, and so do unsigned (`alg: none`) tokens or tokens signed by another key. Static tokens
+  and SSO can run together: tokens for scripts, SSO for people. Tests sign tokens with a test key,
+  serve the JWKS locally, and run a real MCP call whose identity comes from the SSO token.
 
 ### Prompt injection
 
@@ -169,9 +178,10 @@ Restart Claude Desktop, and the four tools appear under the connector.
 
 ## Known gaps
 
-* **Self-asserted identity on stdio:** without `--caller` (stdio) or `--http --tokens`, `caller`
-  is self-asserted. Static tokens are not SSO: no expiry or rotation policy, and no OAuth/OIDC
-  (the SDK supports a full OAuth provider; not wired).
+* **Self-asserted identity on stdio:** without `--caller` (stdio) or HTTP with tokens/SSO, `caller`
+  is self-asserted. Static tokens have no expiry; use SSO for people. Canon verifies SSO tokens but
+  does not run the sign-in flow itself: the client app (or a gateway) obtains the token from the
+  identity provider.
 * **ACLs from exports, not live systems:** private-channel membership is read from the export.
   Someone removed from a channel keeps access until the next export is ingested.
 * **Injection detection is pattern-based.** It reduces risk; it does not remove it.
