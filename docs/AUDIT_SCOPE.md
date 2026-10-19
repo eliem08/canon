@@ -56,7 +56,7 @@ See [`DATA_REQUEST.md`](DATA_REQUEST.md). In short:
 - **Data handling** follows the agreed option (A or B), including deletion at the end, confirmed in writing.
 
 ## Out of scope
-- Live connectors, a production deployment, SSO, or a hosted UI (the review page is a single offline file).
+- A production deployment or a hosted UI (the review page is a single offline file). Available but optional in a pilot: a read-only CRM pull (HubSpot, Salesforce) instead of an export, and SSO for the trial MCP server.
 - Data cleanup in the client's systems (we report it; they fix it).
 - Sources beyond the three agreed types.
 - **Handwritten or badly degraded scans.** Canon reads PDFs (text layer or OCR), DOCX and images, and OCR is measured on real receipts (SROIE: 59% of dates read, 2% wrong, the rest refused) but not yet on French or Arabic scans. Poor scans are listed as unreadable or low-confidence, not guessed.
