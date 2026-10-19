@@ -111,7 +111,8 @@ two-digit years in the 2000s).
 |---|---|---|---|---|---|
 | before (two-digit years refused, no digit mask) | 63% | 3% (12) | 13% | 78% | 84% |
 | + `century: 20` | 76% | 4% (16) | 19% | 78% | 84% |
-| + unsure digits withheld (**default now**) | 59% | **2% (8)** | 39% | 60% | 82% |
+| + unsure digits withheld | 59% | **2% (8)** | 39% | 60% | 82% |
+| + unsure digits re-read alone first (**default now**) | 63% | **2% (8)** | 35% | 62% | 82% |
 | human transcription, parsers only | 98% | 1% (5) | 0% | 99% | 100% |
 
 Rows don't add to 100%: some receipts have no labelled date, or one in a format that is not a date.
@@ -126,6 +127,9 @@ Rows don't add to 100%: some receipts have no labelled date, or one in a format 
   tesseract read at confidence 58–77, so digit words below 80 become `[?]` (`OCRConfig.min_digit_confidence`)
   and the document gets an `unsure_ocr_digits` warning. Dev: wrong dates 5 → 0, correct 50 → 36; test in the
   table above.
+* **Unsure digits are re-read before being withheld:** the word is cropped, enlarged 3x and read alone in single-line
+  mode, and the re-read is kept only if tesseract is at least 85 sure of it. On test it recovers 14 dates and 5 totals
+  without adding a wrong value, at about 3.5x the OCR time (5.5 s per receipt on one thread).
 * **Two-digit years** (`20/03/18`) are on 19% of these receipts. They are read only when the deployment sets
   `ingest.century`.
 * The remaining wrong dates on test come from the first date on the receipt not being the purchase date

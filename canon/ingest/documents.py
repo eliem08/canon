@@ -39,6 +39,10 @@ class OCRConfig:
     # a word with digits read below this confidence is masked as "[?]": a misread 5/6 or 3/8 makes
     # a wrong date or amount that looks right (real receipts: 4 of 4 wrong dates were below 80)
     min_digit_confidence: float = 80.0
+    # before withholding it, re-read such a word alone (cropped, enlarged, single-line mode) and
+    # keep the re-read if tesseract is now at least this sure of it; 0 disables the second pass
+    reread_min_confidence: float = 85.0
+    max_rereads: int = 40  # per page, to bound the cost on very poor scans
     binary: str = "tesseract"
     timeout_s: int = 120
 
@@ -73,35 +77,68 @@ def ocr_image(data: bytes, config: OCRConfig) -> tuple[str, float | None, bool]:
 
     The median filter removes speckle but also erases thin strokes and the dots of Arabic
     letters, so it is used only when the plain pass is unsure, and only if it does better."""
-    text, conf = _tesseract(_png(data), config)
+    text, conf = _tesseract(_png(data), config, _rereader(_png(data), config))
     if config.median_filter and (conf or 0) < config.denoise_below:
-        text2, conf2 = _tesseract(_png(data, config.median_filter), config)
+        png2 = _png(data, config.median_filter)
+        text2, conf2 = _tesseract(png2, config, _rereader(png2, config))
         if (conf2 or 0) > (conf or 0):
             return text2, conf2, True
     return text, conf, False
 
 
-def _tesseract(png: bytes, config: OCRConfig) -> tuple[str, float | None]:
+def _run_tesseract(png: bytes, config: OCRConfig, psm: str) -> list[list[str]]:
+    """TSV word rows (level 5) of one image."""
     with tempfile.TemporaryDirectory() as tmp:
         img = Path(tmp) / "page.png"
         img.write_bytes(png)
         run = subprocess.run(
-            [config.binary, str(img), "stdout", "-l", config.languages, "--psm", "6", "tsv"],
+            [config.binary, str(img), "stdout", "-l", config.languages, "--psm", psm, "tsv"],
             capture_output=True,
             timeout=config.timeout_s,
             check=True,
             # one thread per page: tesseract's OpenMP threads thrash when several run at once
             env={**os.environ, "OMP_THREAD_LIMIT": "1"},
         )
+    rows = [r.split("\t") for r in run.stdout.decode("utf-8", "replace").splitlines()[1:]]
+    return [c for c in rows if len(c) >= 12 and c[0] == "5" and c[11].strip()]
+
+
+def _rereader(png: bytes, config: OCRConfig):
+    """Re-read one word box alone: crop with a margin, enlarge 3x, single-line mode. Returns the
+    new reading only if tesseract is at least `reread_min_confidence` sure of every part of it."""
+    if not config.reread_min_confidence:
+        return None
+    from PIL import Image, ImageOps
+
+    page = Image.open(io.BytesIO(png))
+    budget = [config.max_rereads]
+
+    def reread(left: int, top: int, width: int, height: int) -> str | None:
+        if budget[0] <= 0:
+            return None
+        budget[0] -= 1
+        pad = max(2, height // 4)
+        box = (max(0, left - pad), max(0, top - pad), left + width + pad, top + height + pad)
+        crop = page.crop(box)
+        crop = crop.resize((crop.width * 3, crop.height * 3), Image.Resampling.LANCZOS)
+        buf = io.BytesIO()
+        ImageOps.expand(crop, border=20, fill=255).save(buf, format="PNG")
+        rows = _run_tesseract(buf.getvalue(), config, "7")
+        if not rows or min(float(r[10]) for r in rows) < config.reread_min_confidence:
+            return None
+        return "".join(r[11] for r in rows)
+
+    return reread
+
+
+def _tesseract(png: bytes, config: OCRConfig, reread=None) -> tuple[str, float | None]:
     lines: dict[tuple[str, ...], list[str]] = {}
     confs = []
-    for row in run.stdout.decode("utf-8", "replace").splitlines()[1:]:
-        cols = row.split("\t")
-        if len(cols) < 12 or cols[0] != "5" or not cols[11].strip():
-            continue
+    for cols in _run_tesseract(png, config, "6"):
         word, conf = cols[11], float(cols[10])
         if 0 <= conf < config.min_digit_confidence and any(c.isdigit() for c in word):
-            word = UNSURE
+            better = reread(*map(int, cols[6:10])) if reread else None
+            word = better if better and any(c.isdigit() for c in better) else UNSURE
         lines.setdefault(tuple(cols[1:5]), []).append(word)
         if conf >= 0:
             confs.append(conf)

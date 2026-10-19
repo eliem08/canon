@@ -200,11 +200,16 @@ def main() -> None:
     ap.add_argument("--workers", type=int, default=os.cpu_count() or 1)
     ap.add_argument("--out", default=None)
     ap.add_argument("--min-digit-confidence", type=float, default=None, help="0 = never mask")
+    ap.add_argument("--reread-min-confidence", type=float, default=None, help="0 = no re-read")
     ap.add_argument("--no-century", action="store_true", help="refuse two-digit years")
     args = ap.parse_args()
     global CONFIG, CENTURY
+    overrides = {}
     if args.min_digit_confidence is not None:
-        CONFIG = OCRConfig(languages="eng", min_digit_confidence=args.min_digit_confidence)
+        overrides["min_digit_confidence"] = args.min_digit_confidence
+    if args.reread_min_confidence is not None:
+        overrides["reread_min_confidence"] = args.reread_min_confidence
+    CONFIG = OCRConfig(languages="eng", **overrides)
     if args.no_century:
         CENTURY = None
     if not ocr_available(CONFIG):
