@@ -114,3 +114,18 @@ class OwnerAnswer(_Lookup):
 
 class ConflictList(_Lookup):
     conflicts: list[Answer] = Field(default_factory=list)
+
+
+class Renewal(_Compact):
+    customer: CustomerMatch
+    renews_on: Answer = Field(description="renewal_date, or next_renewal for auto-renewals")
+    cancel_by: Answer | None = Field(
+        default=None, description="Last day to give non-renewal notice, when the contract says"
+    )
+    partial_view: bool = False
+
+
+class RenewalList(_Lookup):
+    renewals: list[Renewal] = Field(
+        default_factory=list, description="Soonest deadline first (cancel_by, else renews_on)"
+    )

@@ -153,11 +153,12 @@ def cmd_audit(args: argparse.Namespace) -> None:
     write_deliverables(out, report, res.review, records, overrides)
     from dataclasses import asdict
 
-    from canon.deliver import write_fix_files
+    from canon.deliver import write_fix_files, write_renewals_csv
     from canon.ingest import load_deployment
 
     crm_columns = asdict(load_deployment(data).crm_fields)
     write_fix_files(out, audit, records, unreadable, crm_columns)
+    write_renewals_csv(out, audit)
     print(report)
     print(
         f"Client files in {out}: audit_report.html (print to PDF), review.html (merges "

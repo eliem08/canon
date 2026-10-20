@@ -135,3 +135,25 @@ def test_every_refusal_code_in_the_parsers_has_a_specific_hint():
     absent = {"empty", "no_amount", "no_date", "no_phone", "unparseable", "llm_value_not_in_source"}
     missing = sorted(c for c in codes - absent if c not in REASON_HINTS)
     assert missing == [], missing
+
+
+def test_renewals_csv_mirrors_the_calendar(tmp_path):
+    import csv
+    from datetime import date
+
+    from canon.audit import Audit, Renewal
+    from canon.deliver import write_renewals_csv
+
+    r = Renewal(
+        entity_id="e1",
+        customer="Atlas",
+        renews_on=date(2026, 12, 1),
+        cancel_by=date(2026, 10, 2),
+        automatic=True,
+        contested=True,
+    )
+    audit = Audit.model_construct(renewals=[r])
+    path = write_renewals_csv(tmp_path, audit)
+    (row,) = csv.DictReader(path.open(encoding="utf-8-sig"))
+    assert row["cancel_by"] == "2026-10-02" and row["automatic"] == "yes"
+    assert "confirm" in row["note"]

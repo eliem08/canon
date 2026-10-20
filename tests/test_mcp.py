@@ -14,7 +14,7 @@ DATA = Path(__file__).resolve().parents[1] / "data" / "synthetic"
 AS_OF = date(2026, 10, 1)
 TRUTH = json.loads((DATA / "ground_truth" / "ground_truth.json").read_text(encoding="utf-8"))
 NAMES = [e["name"] for e in TRUTH["entities"].values()]
-TOOLS = ("get_customer", "find_contract_terms", "who_owns", "list_conflicts")
+TOOLS = ("get_customer", "find_contract_terms", "who_owns", "list_conflicts", "list_renewals")
 
 
 @pytest.fixture(scope="module")
@@ -29,6 +29,8 @@ def service(tmp_path_factory):
 
 
 def call(service, tool, customer, caller):
+    if tool == "list_renewals":  # not about one customer: every renewal the caller may see
+        return service.list_renewals(caller, within_days=3650)
     return getattr(service, tool)(customer, caller)
 
 
@@ -279,3 +281,19 @@ def test_cancel_by_is_the_notice_before_the_coming_renewal():
     assert _cancel_by(facts, _next_renewal(facts, today), today).value == "2026-12-03"
     late = _cancel_by(facts, _next_renewal(facts, date(2027, 1, 1)), date(2027, 1, 1))
     assert "Already passed" in late.explanation
+
+
+def test_list_renewals_respects_permissions(service):
+    admin = service.list_renewals("revops.admin", within_days=365)
+    assert admin.found and admin.renewals
+    days = [(r.cancel_by or r.renews_on).value for r in admin.renewals]
+    assert days == sorted(days)
+    nobody = service.list_renewals("nobody.at.all", within_days=365)
+    assert not nobody.renewals
+    allowed = {
+        e
+        for e in service.clusters
+        if service._visible(e, service.directory.resolve("salma.el.idrissi"))
+    }
+    sales = service.list_renewals("salma.el.idrissi", within_days=365)
+    assert {r.customer.entity_id for r in sales.renewals} <= allowed

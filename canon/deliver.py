@@ -374,3 +374,25 @@ def write_fix_files(out, audit, records: list[SourceRecord], unreadable, crm_col
         rows,
     )
     return [out / "crm_fixes.csv", out / "quarantine.csv"]
+
+
+def write_renewals_csv(out, audit) -> object:
+    """`renewals.csv`: the audit's renewal calendar, soonest notice deadline first."""
+    from pathlib import Path
+
+    path = Path(out) / "renewals.csv"
+    rows = [
+        [
+            r.customer or r.entity_id,
+            r.entity_id,
+            r.renews_on.isoformat(),
+            r.cancel_by.isoformat() if r.cancel_by else "",
+            "yes" if r.automatic else "no",
+            "sources disagree: confirm the date" if r.contested else "",
+            r.record_id or "",
+        ]
+        for r in audit.renewals
+    ]
+    header = ["customer", "entity_id", "renews_on", "cancel_by", "automatic", "note", "source"]
+    _write_csv(path, header, rows)
+    return path

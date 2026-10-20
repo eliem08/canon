@@ -38,6 +38,8 @@ from .schemas import (
     CustomerMatch,
     CustomerProfile,
     OwnerAnswer,
+    Renewal,
+    RenewalList,
     SourceRef,
 )
 
@@ -267,6 +269,10 @@ class CanonService:
     def list_conflicts(self, customer: str, caller_id: str) -> ConflictList:
         return self._serve("list_conflicts", self._list_conflicts, customer, caller_id)
 
+    def list_renewals(self, caller_id: str, within_days: int = 90) -> RenewalList:
+        impl = partial(self._list_renewals, within_days=within_days)
+        return self._serve("list_renewals", impl, f"within {within_days} days", caller_id)
+
     def _serve(self, tool: str, impl, query: str, caller_id: str):
         """Run a tool, withhold injected source text, then write the audit line."""
         response = impl(query, caller_id)
@@ -369,6 +375,34 @@ class CanonService:
             partial_view=self._partial(match.entity_id, visible),
             conflicts=conflicts,
         )
+
+    def _list_renewals(self, _query: str, caller_id: str, within_days: int) -> RenewalList:
+        """Every customer the caller can see whose contract renews within `within_days`. Each
+        one goes through `_find_contract_terms`, so permissions apply before any scoring."""
+        today = self.config.facts.reference_date()
+        horizon = today.toordinal() + max(within_days, 0)
+        out = []
+        for eid in sorted(self.clusters):
+            if not self._visible(eid, self.directory.resolve(caller_id)):
+                continue
+            t = self._find_contract_terms(eid, caller_id)
+            renews = t.terms.get("next_renewal") or t.terms.get("renewal_date")
+            if not t.found or renews is None:
+                continue
+            try:
+                d = date.fromisoformat(str(renews.value))
+            except ValueError:
+                continue
+            if today < d and d.toordinal() <= horizon:
+                out.append(
+                    Renewal(customer=t.customer, renews_on=renews,
+                            cancel_by=t.terms.get("cancel_by"), partial_view=t.partial_view)
+                )  # fmt: skip
+        out.sort(key=lambda r: ((r.cancel_by or r.renews_on).value, r.customer.entity_id))
+        return RenewalList(
+            found=bool(out), renewals=out,
+            message="" if out else f"No renewal visible to this caller in {within_days} days.",
+        )  # fmt: skip
 
     # ------------------------------------------------------------- helpers
     def _facts(self, visible: list[SourceRecord]) -> dict[str, Answer]:

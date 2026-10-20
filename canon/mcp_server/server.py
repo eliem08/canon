@@ -1,4 +1,4 @@
-"""Canon MCP server: four typed, permission-aware tools over resolved customer data.
+"""Canon MCP server: five typed, permission-aware tools over resolved customer data.
 
 Run over stdio:  uv run canon serve --store out/canon.sqlite --identities <file>
 Run over HTTP:   uv run canon serve --http --tokens tokens.json   (bearer token = caller identity)
@@ -13,7 +13,7 @@ from mcp.server.auth.settings import AuthSettings
 from mcp.server.mcpserver import MCPServer
 
 from .auth import SCOPE, ChainVerifier, OIDCVerifier, StaticTokenVerifier
-from .schemas import ConflictList, ContractTerms, CustomerProfile, OwnerAnswer
+from .schemas import ConflictList, ContractTerms, CustomerProfile, OwnerAnswer, RenewalList
 from .service import CanonService
 
 INSTRUCTIONS = """Canon answers questions about customers from resolved, scored company data.
@@ -96,5 +96,13 @@ def build_server(
         """Every field where sources disagree for this customer, lowest confidence first,
         with the chosen value, the alternatives and why the winner was chosen."""
         return service.list_conflicts(customer, who(caller))
+
+    @server.tool()
+    def list_renewals(caller: str, within_days: int = 90) -> RenewalList:
+        """Customers whose contract renews in the next `within_days` days, soonest deadline
+        first: the renewal date (rolled forward for auto-renewing contracts) and, when the
+        contract states a notice period, `cancel_by`, the last day to give notice. Only
+        customers and contracts the caller may see."""
+        return service.list_renewals(who(caller), within_days)
 
     return server

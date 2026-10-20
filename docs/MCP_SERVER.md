@@ -15,6 +15,7 @@ typed, structured output (see `canon/mcp_server/schemas.py`).
 | `find_contract_terms` | `customer`, `caller`, optional `fields` | contract number, annual value, start, renewal date, auto-renewal period and computed `next_renewal` and `cancel_by` (decisions 81–82), signatory, plus the visible contract versions with status |
 | `who_owns` | `customer`, `caller` | internal account owner |
 | `list_conflicts` | `customer`, `caller` | every field where sources disagree, lowest confidence first |
+| `list_renewals` | `caller`, optional `within_days` (default 90) | every customer the caller may see whose contract renews in the window, soonest notice deadline first, with `renews_on` and `cancel_by` answers (each customer goes through `find_contract_terms`, so ACLs apply first) |
 
 Every individual answer is an `Answer`. This is `find_contract_terms("Boulangerie Al Baraka", caller="hind.legal",
 fields=["contract_value"])`, as of 2026-10-01 (`documents` omitted):
@@ -174,7 +175,7 @@ case, tell Claude who it is acting for, e.g. "I am hind.legal".
 }
 ```
 
-Restart Claude Desktop, and the four tools appear under the connector.
+Restart Claude Desktop, and the five tools appear under the connector.
 
 ## Known gaps
 
