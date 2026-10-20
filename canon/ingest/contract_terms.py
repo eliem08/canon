@@ -19,7 +19,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import date, timedelta
 
 from canon.ingest.parsing import Parsed, parse_date
 
@@ -367,6 +367,28 @@ def add_months(d: date, months: int) -> date | None:
         return d.replace(year=d.year + y, month=m + 1)
     except ValueError:  # 29 February, 31st of a short month: no single right answer
         return None
+
+
+def next_renewal(end: date, months: int, today: date) -> date | None:
+    """The first renewal after `today` of a term that ended on `end` and renews every `months`.
+    None while the initial term runs, or when the roll lands on a day that does not exist."""
+    if end > today or months <= 0:
+        return None
+    steps = ((today.year - end.year) * 12 + today.month - end.month) // months
+    nxt = add_months(end, months * steps)
+    while nxt is not None and nxt <= today:
+        steps += 1
+        nxt = add_months(end, months * steps)
+    return nxt
+
+
+def cancel_by(renewal: date, notice: str) -> date | None:
+    """The last day to give notice ("P60D", "P3M") before `renewal`."""
+    m = re.fullmatch(r"P(\d+)([DM])", notice)
+    if not m:
+        return None
+    n = int(m.group(1))
+    return renewal - timedelta(days=n) if m.group(2) == "D" else add_months(renewal, -n)
 
 
 def _agreement_date(head: str, dayfirst: bool | None, pattern: re.Pattern = _DATED) -> Term | None:

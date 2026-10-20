@@ -82,3 +82,26 @@ def test_report_renders_every_section(world):
 def test_audit_never_reads_the_answer_key():
     source = (Path(__file__).resolve().parents[1] / "canon" / "audit.py").read_text("utf-8")
     assert "ground_truth" not in source
+
+
+def test_renewal_calendar_lists_upcoming_renewals_in_order(world):
+    _, audit = world
+    assert "Renewals in the next 180 days" in render_audit(audit)
+    days = [r.cancel_by or r.renews_on for r in audit.renewals]
+    assert days == sorted(days)
+    assert all(AS_OF < r.renews_on <= date(2027, 3, 30) for r in audit.renewals)
+
+
+def test_an_auto_renewing_contract_rolls_into_the_calendar():
+    from canon.audit import _renewals
+    from canon.models import GoldenRecord, ResolvedFact
+
+    def f(field, value):
+        return ResolvedFact(field=field, value=value, confidence=0.9, last_updated=None)
+
+    g = GoldenRecord(entity_id="e1", fields={}, members=["contract:1"],
+                     facts={"renewal_date": f("renewal_date", "2024-12-01"),
+                            "renewal_period_months": f("renewal_period_months", 12),
+                            "renewal_notice": f("renewal_notice", "P60D")})  # fmt: skip
+    (r,) = _renewals([g], AS_OF, 180)
+    assert (r.renews_on, r.cancel_by, r.automatic) == (date(2026, 12, 1), date(2026, 10, 2), True)

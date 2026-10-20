@@ -11,17 +11,16 @@ can see none of its records, so name lookups return nothing for it.
 from __future__ import annotations
 
 import json
-import re
 import sqlite3
 from dataclasses import dataclass, field
-from datetime import date, timedelta
+from datetime import date
 from functools import partial
 from pathlib import Path
 
 from pydantic import BaseModel
 
 from canon.guard import screen
-from canon.ingest.contract_terms import add_months
+from canon.ingest.contract_terms import cancel_by, next_renewal
 from canon.models import Evidence, Fact, ResolvedFact, SourceRecord
 from canon.resolve.blocking import blocking_keys
 from canon.resolve.features import features
@@ -109,19 +108,11 @@ def _next_renewal(facts: dict[str, Answer], today: date) -> Answer | None:
     if not end or not period or end.conflict or period.conflict:
         return None
     try:
-        d, months = date.fromisoformat(str(end.value)), int(period.value)
+        d = next_renewal(date.fromisoformat(str(end.value)), int(period.value), today)
     except (TypeError, ValueError):
         return None
-    if d > today or months <= 0:
+    if d is None:
         return None
-    steps = ((today.year - d.year) * 12 + today.month - d.month) // months
-    nxt = add_months(d, months * steps)
-    while nxt is not None and nxt <= today:
-        steps += 1
-        nxt = add_months(d, months * steps)
-    if nxt is None:  # 29 February, 31st of a short month: no single right answer
-        return None
-    d = nxt
     return Answer(
         field="next_renewal",
         value=d.isoformat(),
@@ -129,8 +120,8 @@ def _next_renewal(facts: dict[str, Answer], today: date) -> Answer | None:
         last_updated=end.last_updated,
         sources=(end.sources + period.sources)[:3],
         explanation=(
-            f"Computed: the term ended {end.value} and renews automatically every {months} "
-            f"month(s); next renewal after {today.isoformat()}."
+            f"Computed: the term ended {end.value} and renews automatically every "
+            f"{period.value} month(s); next renewal after {today.isoformat()}."
         ),
     )
 
@@ -139,19 +130,14 @@ def _cancel_by(facts: dict[str, Answer], renewal: Answer | None, today: date) ->
     """The last day to give non-renewal notice before the coming renewal (the computed next
     renewal, else the stated end date when it is still ahead)."""
     notice, period = facts.get("renewal_notice"), facts.get("renewal_period_months")
-    if renewal is None:
-        renewal = facts.get("renewal_date")
+    renewal = renewal or facts.get("renewal_date")
     if not notice or not period or not renewal or notice.conflict or renewal.conflict:
         return None
-    m = re.fullmatch(r"P(\d+)([DM])", str(notice.value))
     try:
         d = date.fromisoformat(str(renewal.value))
     except ValueError:
         return None
-    if not m or d <= today:
-        return None
-    n = int(m.group(1))
-    by = d - timedelta(days=n) if m.group(2) == "D" else add_months(d, -n)
+    by = cancel_by(d, str(notice.value)) if d > today else None
     if by is None:
         return None
     return Answer(

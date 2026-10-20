@@ -9,10 +9,11 @@ from __future__ import annotations
 
 import math
 from collections import Counter
-from datetime import date
+from datetime import date, timedelta
 
 from pydantic import BaseModel, Field
 
+from canon.ingest.contract_terms import cancel_by, next_renewal
 from canon.models import GoldenRecord, ParseIssue, SourceRecord
 from canon.resolve.normalize import fold
 from canon.resolve.pipeline import Resolution
@@ -54,6 +55,18 @@ class StaleValue(BaseModel):
     stale_value: str | float | int | None = None
 
 
+class Renewal(BaseModel):
+    """A contract renewing soon, with the last day to give notice when the contract states one."""
+
+    entity_id: str
+    customer: str | None
+    renews_on: date
+    cancel_by: date | None = None
+    automatic: bool = False
+    contested: bool = False  # the sources disagree on the date: confirm before acting
+    record_id: str | None = None
+
+
 class CallerView(BaseModel):
     caller: str
     groups: list[str]
@@ -84,6 +97,7 @@ class Audit(BaseModel):
     records_by_acl: dict[str, int]
     injections: int
     findings: list[Finding]
+    renewals: list[Renewal] = Field(default_factory=list)
 
 
 def show_value(value) -> str:
@@ -143,6 +157,38 @@ def _stale_values(golden: list[GoldenRecord], by_id: dict[str, SourceRecord]):
     return stale, slack_only
 
 
+def _renewals(golden: list[GoldenRecord], today: date, horizon_days: int) -> list[Renewal]:
+    out = []
+    for g in golden:
+        end = g.facts.get("renewal_date")
+        period = g.facts.get("renewal_period_months")
+        notice = g.facts.get("renewal_notice")
+        if not end:
+            continue
+        try:
+            d = date.fromisoformat(str(end.value))
+        except ValueError:
+            continue
+        automatic = bool(period and not period.conflict)
+        if d <= today and automatic:
+            d = next_renewal(d, int(period.value), today)
+        if d is None or not today < d <= today + timedelta(days=horizon_days):
+            continue
+        by = cancel_by(d, str(notice.value)) if notice and not notice.conflict else None
+        out.append(
+            Renewal(
+                entity_id=g.entity_id,
+                customer=_name(g),
+                renews_on=d,
+                cancel_by=by,
+                automatic=automatic,
+                contested=end.conflict,
+                record_id=end.sources[0].record_id if end.sources else None,
+            )
+        )
+    return sorted(out, key=lambda r: (r.cancel_by or r.renews_on, r.entity_id))
+
+
 def build_audit(
     records: list[SourceRecord],
     res: Resolution,
@@ -150,6 +196,7 @@ def build_audit(
     unreadable: list[ParseIssue] | None = None,
     as_of: date | None = None,
     low_confidence: float = 0.3,
+    renewal_horizon_days: int = 180,
 ) -> Audit:
     by_id = {r.record_id: r for r in records}
     golden = res.golden
@@ -220,6 +267,7 @@ def build_audit(
         records_by_acl=dict(by_acl),
         injections=injections,
         findings=findings,
+        renewals=_renewals(golden, as_of or date.today(), renewal_horizon_days),
     )
 
 
@@ -467,6 +515,24 @@ def render_audit(a: Audit) -> str:
         "",
         f"Possible prompt injections in source text: **{a.injections}** "
         "(listed in `quarantine.json`).",
+        "",
+        "## 8. Renewals in the next 180 days",
+        "",
+        *(
+            [
+                "| Customer | Renews on | Last day to give notice | Automatic | Source |",
+                "|---|---|---|---|---|",
+                *[
+                    f"| {r.customer or r.entity_id} | {r.renews_on}"
+                    f"{' (sources disagree)' if r.contested else ''} | {r.cancel_by or '—'}"
+                    f"{' (passed)' if r.cancel_by and a.as_of and r.cancel_by < a.as_of else ''} | "
+                    f"{'yes' if r.automatic else 'no'} | `{r.record_id or '—'}` |"
+                    for r in a.renewals
+                ],
+            ]
+            if a.renewals
+            else ["No contract renews in this window."]
+        ),
         "",
         "## Caveats",
         "",
