@@ -12,7 +12,7 @@ typed, structured output (see `canon/mcp_server/schemas.py`).
 | Tool | Arguments | Returns |
 |---|---|---|
 | `get_customer` | `name`, `caller`, optional `fields` | canonical name, aliases, and profile fields: domain, phone, tax id, city, address, owner, contract value, renewal date |
-| `find_contract_terms` | `customer`, `caller`, optional `fields` | contract number, annual value, start, renewal date, signatory, plus the visible contract versions with status |
+| `find_contract_terms` | `customer`, `caller`, optional `fields` | contract number, annual value, start, renewal date, auto-renewal period and computed `next_renewal` (decision 81), signatory, plus the visible contract versions with status |
 | `who_owns` | `customer`, `caller` | internal account owner |
 | `list_conflicts` | `customer`, `caller` | every field where sources disagree, lowest confidence first |
 

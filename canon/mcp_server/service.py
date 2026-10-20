@@ -13,12 +13,14 @@ from __future__ import annotations
 import json
 import sqlite3
 from dataclasses import dataclass, field
+from datetime import date
 from functools import partial
 from pathlib import Path
 
 from pydantic import BaseModel
 
 from canon.guard import screen
+from canon.ingest.contract_terms import add_months
 from canon.models import Evidence, Fact, ResolvedFact, SourceRecord
 from canon.resolve.blocking import blocking_keys
 from canon.resolve.features import features
@@ -44,6 +46,7 @@ CONTRACT_FIELDS = (
     "contract_value",
     "contract_start",
     "renewal_date",
+    "renewal_period_months",
     "signatory",
 )
 IDENTITY_FIELDS = ("domain", "phone", "tax_id", "city")
@@ -94,6 +97,40 @@ class ServiceConfig:
     match_threshold: float = 0.8  # minimum name similarity to accept a lookup
     ambiguity_margin: float = 0.03  # top-2 matches closer than this -> ambiguous
     max_sources: int = 3  # sources listed per answer; the rest are counted in more_sources
+
+
+def _next_renewal(facts: dict[str, Answer], today: date) -> Answer | None:
+    """An auto-renewing contract whose end date has passed: roll it forward by the renewal period
+    to the first date after today. Computed: it cites both facts and keeps the weaker
+    confidence."""
+    end, period = facts.get("renewal_date"), facts.get("renewal_period_months")
+    if not end or not period or end.conflict or period.conflict:
+        return None
+    try:
+        d, months = date.fromisoformat(str(end.value)), int(period.value)
+    except (TypeError, ValueError):
+        return None
+    if d > today or months <= 0:
+        return None
+    steps = ((today.year - d.year) * 12 + today.month - d.month) // months
+    nxt = add_months(d, months * steps)
+    while nxt is not None and nxt <= today:
+        steps += 1
+        nxt = add_months(d, months * steps)
+    if nxt is None:  # 29 February, 31st of a short month: no single right answer
+        return None
+    d = nxt
+    return Answer(
+        field="next_renewal",
+        value=d.isoformat(),
+        confidence=min(end.confidence, period.confidence),
+        last_updated=end.last_updated,
+        sources=(end.sources + period.sources)[:3],
+        explanation=(
+            f"Computed: the term ended {end.value} and renews automatically every {months} "
+            f"month(s); next renewal after {today.isoformat()}."
+        ),
+    )
 
 
 class CanonService:
@@ -256,6 +293,9 @@ class CanonService:
         visible = self._visible(match.entity_id, caller)
         facts = self._facts(visible)
         terms = {f: facts[f] for f in CONTRACT_FIELDS if f in facts and (not fields or f in fields)}
+        nxt = _next_renewal(facts, self.config.facts.reference_date())
+        if nxt and (not fields or "next_renewal" in fields):
+            terms["next_renewal"] = nxt
         documents = [
             _record_ref(r)
             for r in sorted(visible, key=lambda r: r.record_id)

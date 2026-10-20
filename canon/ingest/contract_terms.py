@@ -176,6 +176,7 @@ class ContractTerms:
     agreement_date: Term | None = None
     effective_date: Term | None = None
     end_date: Term | None = None
+    renewal_months: Term | None = None  # auto-renewal period, when the term renews by itself
     refused: list[tuple[str, str, str]] = field(default_factory=list)  # (field, raw, reason)
 
 
@@ -319,6 +320,18 @@ _TERM_CONTEXT = re.compile(
 _DEFINITION = re.compile(
     rf"{_Q}[A-Z][^\"“”]{{0,40}}{_Q}\s*(?:shall\s+)?means?\b|\b(?:quarter|fiscal)\b", re.I
 )
+# auto-renewal: "shall automatically renew for successive one (1) year periods",
+# "se renouvellera par tacite reconduction par périodes d'un an", "reconduit tacitement pour un an"
+_AUTO_RENEW = re.compile(
+    r"\b(?:(?:automatically|auto-)\s*(?:be\s+)?renew(?:ed|s)?|renew(?:ed|s)?\s+automatically"
+    r"|(?:reconduit|renouvel[ée])e?s?\s+tacitement|(?:se\s+renouvellera|renouvel[ée]e?)\s+par\s+"
+    r"tacite\s+reconduction|tacite\s+reconduction)\b[^.;]{0,60}?\b(?:for|by|pour|par)\s+"
+    r"(?:(?:an?|une?|successive|additional|further|consecutive|renewal|p[ée]riodes?|successives?"
+    r"|suppl[ée]mentaires?|nouvelles?|de)\s+)*(?:d['’])?"
+    r"(?P<n>\d{1,2}|[a-zéè]+)?\s*(?:\(\s*(?P<n2>\d{1,2})\s*\))?\s*"
+    r"(?P<unit>years?|months?|ans?|ann[ée]es?|mois)\b",
+    re.I,
+)
 # an option is not the end date: "Flotek may elect for the Term to be extended to December 31, 2024"
 _OPTION = re.compile(
     r"\b(?:may|elect|option|right\s+to)\b[^.;]{0,80}\bextended(?:\s+(?:to|until))?$", re.I
@@ -334,7 +347,7 @@ def _about_the_term(text: str, start: int, end: int | None = None) -> bool:
     return bool(_TERM_CONTEXT.search(clause))
 
 
-def _add_months(d: date, months: int) -> date | None:
+def add_months(d: date, months: int) -> date | None:
     y, m = divmod(d.month - 1 + months, 12)
     try:
         return d.replace(year=d.year + y, month=m + 1)
@@ -398,7 +411,7 @@ def read_terms(text: str, dayfirst: bool | None = None) -> ContractTerms:
         if not n or not base:
             continue
         months = n * 12 if m.group("unit").lower()[0] in "ya" else n
-        end = _add_months(base.value, months)
+        end = add_months(base.value, months)
         if end:
             derived.append(Term(end, m.start(), m.end(), ("derived_from_term_length",)))
     year_end = _CALENDAR_YEAR_END.search(text)
@@ -410,4 +423,15 @@ def read_terms(text: str, dayfirst: bool | None = None) -> ContractTerms:
         )  # fmt: skip
     # a stated end date beats one computed from the term length (which may be off by a day)
     terms.end_date = _agree(explicit or derived, "renewal_date", terms.refused)
+    periods = []
+    for m in _AUTO_RENEW.finditer(text):
+        n = m.group("n2") or m.group("n")
+        if n is None or n.lower() in {"a", "an", "un", "une"}:
+            n = 1
+        else:
+            n = int(n) if n.isdigit() else _NUMBER_WORDS.get(n.lower())
+        if n:
+            months = n * 12 if m.group("unit").lower()[0] in "ya" else n
+            periods.append(Term(months, m.start(), m.end()))
+    terms.renewal_months = _agree(periods, "renewal_period_months", terms.refused)
     return terms

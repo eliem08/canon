@@ -191,6 +191,9 @@ def parse_contract(
     fact("contract_value", value, "value")
     fact("contract_start", start.isoformat() if start else None, "start")
     fact("renewal_date", renewal.isoformat() if renewal else None, "renewal")
+    if terms.renewal_months:
+        generic["renewal_period_months"] = terms.renewal_months
+        fact("renewal_period_months", terms.renewal_months.value, "renewal")
     fact("signatory", _grab(text, "signatory"), "signatory")
     fact("address", address, "address")
     parties = [p.value for p in terms.parties]

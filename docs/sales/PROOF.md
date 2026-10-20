@@ -57,7 +57,7 @@ For an audit, a refused value is a line in the quarantine report. A wrong one is
 
 - **Your data.** French and Arabic contracts, your CRM's quirks, your questions. The first audit measures this.
 - **Accuracy advantage over a good RAG** on real questions. We expect parity plus the permission and citation advantages.
-- **End dates in contracts** are still mostly missed (relative terms like "renews each year" are refused).
+- **End dates in contracts** are still mostly missed on CUAD. Auto-renewal clauses are now read and the next renewal date is computed, but CUAD has no answer key for it yet, so it is not measured.
 
 ## Rerun any of it
 ```bash

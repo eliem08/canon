@@ -184,3 +184,32 @@ def test_french_term_range():
     end = FR.index("Fait à")
     text = FR[:start] + "Article 1 - Durée : du 1er février 2024 au 31 janvier 2026.\n" + FR[end:]
     assert read_terms(text).end_date.value == date(2026, 1, 31)
+
+
+@pytest.mark.parametrize(
+    ("clause", "months"),
+    [
+        ("This Agreement shall automatically renew for successive one (1) year periods.", 12),
+        ("Thereafter the Term renews automatically for additional six (6) month terms.", 6),
+        ("The Term shall be automatically renewed for a year unless either party objects.", 12),
+        ("Le présent contrat est reconduit tacitement par périodes d'un an.", 12),
+        ("Le contrat se renouvellera par tacite reconduction pour deux (2) ans.", 24),
+    ],
+)
+def test_auto_renewal_period(clause, months):
+    assert read_terms(EN + clause).renewal_months.value == months
+
+
+def test_conflicting_renewal_periods_are_refused():
+    text = EN + "It shall automatically renew for one (1) year. Renews automatically for 2 years."
+    terms = read_terms(text)
+    assert terms.renewal_months is None
+    assert any(f == "renewal_period_months" for f, _, _ in terms.refused)
+
+
+def test_renewal_period_is_a_cited_fact():
+    text = EN + "Thereafter it shall automatically renew for successive one (1) year periods.\n"
+    rec = parse_contract(text, "contract:msa", "contracts/msa.txt", config=US)["record"]
+    facts = {f.field: f for f in rec.facts}
+    assert facts["renewal_period_months"].value == 12
+    assert "automatically renew" in facts["renewal_period_months"].quote

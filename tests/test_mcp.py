@@ -240,3 +240,21 @@ def test_example_client_runs_against_the_server(service, capsys):
     out = capsys.readouterr().out
     assert "1426000.0" in out and "restricted for this caller" in out
     assert "intern asks" in out and "No customer found." in out
+
+
+def test_next_renewal_rolls_an_auto_renewing_term_past_today():
+    from datetime import date
+
+    from canon.mcp_server.schemas import Answer
+    from canon.mcp_server.service import _next_renewal
+
+    def a(field, value, conf=0.9):
+        return Answer(field=field, value=value, confidence=conf, sources=[])
+
+    facts = {"renewal_date": a("renewal_date", "2024-03-03"),
+             "renewal_period_months": a("renewal_period_months", 12, 0.8)}  # fmt: skip
+    nxt = _next_renewal(facts, date(2026, 10, 20))
+    assert nxt.value == "2027-03-03" and nxt.confidence == 0.8
+    assert _next_renewal(facts, date(2027, 3, 3)).value == "2028-03-03"
+    assert _next_renewal(facts, date(2024, 1, 1)) is None  # initial term still running
+    assert _next_renewal({"renewal_date": facts["renewal_date"]}, date(2026, 10, 20)) is None
