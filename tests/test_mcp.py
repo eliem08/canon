@@ -258,3 +258,24 @@ def test_next_renewal_rolls_an_auto_renewing_term_past_today():
     assert _next_renewal(facts, date(2027, 3, 3)).value == "2028-03-03"
     assert _next_renewal(facts, date(2024, 1, 1)) is None  # initial term still running
     assert _next_renewal({"renewal_date": facts["renewal_date"]}, date(2026, 10, 20)) is None
+
+
+def test_cancel_by_is_the_notice_before_the_coming_renewal():
+    from datetime import date
+
+    from canon.mcp_server.schemas import Answer
+    from canon.mcp_server.service import _cancel_by, _next_renewal
+
+    def a(field, value):
+        return Answer(field=field, value=value, confidence=0.9, sources=[])
+
+    facts = {"renewal_date": a("renewal_date", "2024-03-03"),
+             "renewal_period_months": a("renewal_period_months", 12),
+             "renewal_notice": a("renewal_notice", "P60D")}  # fmt: skip
+    today = date(2026, 10, 20)
+    cancel = _cancel_by(facts, _next_renewal(facts, today), today)
+    assert cancel.value == "2027-01-02"
+    facts["renewal_notice"] = a("renewal_notice", "P3M")
+    assert _cancel_by(facts, _next_renewal(facts, today), today).value == "2026-12-03"
+    late = _cancel_by(facts, _next_renewal(facts, date(2027, 1, 1)), date(2027, 1, 1))
+    assert "Already passed" in late.explanation

@@ -11,9 +11,10 @@ can see none of its records, so name lookups return nothing for it.
 from __future__ import annotations
 
 import json
+import re
 import sqlite3
 from dataclasses import dataclass, field
-from datetime import date
+from datetime import date, timedelta
 from functools import partial
 from pathlib import Path
 
@@ -47,6 +48,7 @@ CONTRACT_FIELDS = (
     "contract_start",
     "renewal_date",
     "renewal_period_months",
+    "renewal_notice",
     "signatory",
 )
 IDENTITY_FIELDS = ("domain", "phone", "tax_id", "city")
@@ -131,6 +133,39 @@ def _next_renewal(facts: dict[str, Answer], today: date) -> Answer | None:
             f"month(s); next renewal after {today.isoformat()}."
         ),
     )
+
+
+def _cancel_by(facts: dict[str, Answer], renewal: Answer | None, today: date) -> Answer | None:
+    """The last day to give non-renewal notice before the coming renewal (the computed next
+    renewal, else the stated end date when it is still ahead)."""
+    notice, period = facts.get("renewal_notice"), facts.get("renewal_period_months")
+    if renewal is None:
+        renewal = facts.get("renewal_date")
+    if not notice or not period or not renewal or notice.conflict or renewal.conflict:
+        return None
+    m = re.fullmatch(r"P(\d+)([DM])", str(notice.value))
+    try:
+        d = date.fromisoformat(str(renewal.value))
+    except ValueError:
+        return None
+    if not m or d <= today:
+        return None
+    n = int(m.group(1))
+    by = d - timedelta(days=n) if m.group(2) == "D" else add_months(d, -n)
+    if by is None:
+        return None
+    return Answer(
+        field="cancel_by",
+        value=by.isoformat(),
+        confidence=min(notice.confidence, renewal.confidence),
+        last_updated=renewal.last_updated,
+        sources=(renewal.sources + notice.sources)[:3],
+        explanation=(
+            f"Computed: notice of {notice.value} before the renewal on {renewal.value}."
+            + (" Already passed: the contract renews unless the parties agree otherwise."
+               if by < today else "")
+        ),
+    )  # fmt: skip
 
 
 class CanonService:
@@ -296,6 +331,9 @@ class CanonService:
         nxt = _next_renewal(facts, self.config.facts.reference_date())
         if nxt and (not fields or "next_renewal" in fields):
             terms["next_renewal"] = nxt
+        cancel = _cancel_by(facts, nxt, self.config.facts.reference_date())
+        if cancel and (not fields or "cancel_by" in fields):
+            terms["cancel_by"] = cancel
         documents = [
             _record_ref(r)
             for r in sorted(visible, key=lambda r: r.record_id)

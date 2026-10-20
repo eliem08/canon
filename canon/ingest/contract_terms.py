@@ -177,6 +177,7 @@ class ContractTerms:
     effective_date: Term | None = None
     end_date: Term | None = None
     renewal_months: Term | None = None  # auto-renewal period, when the term renews by itself
+    notice: Term | None = None  # non-renewal notice as an ISO 8601 duration ("P60D", "P3M")
     refused: list[tuple[str, str, str]] = field(default_factory=list)  # (field, raw, reason)
 
 
@@ -332,6 +333,19 @@ _AUTO_RENEW = re.compile(
     r"(?P<unit>years?|months?|ans?|ann[ée]es?|mois)\b",
     re.I,
 )
+# non-renewal notice: "unless either party gives at least sixty (60) days' prior written notice",
+# "upon 90 days notice", "notice of non-renewal at least 3 months", "préavis de trois (3) mois"
+_NOTICE = re.compile(
+    r"\b(?:(?:at\s+least|not\s+less\s+than|no\s+less\s+than|minimum\s+of|au\s+moins|moyennant"
+    r"|un|d.un|avec)\s+)?(?:(?P<n>\d{1,3}|[a-zéè]+)\s*(?:\(\s*(?P<n2>\d{1,3})\s*\))?\s*"
+    r"(?P<unit>days?|months?|jours?|mois)['’]?\s+(?:(?:prior|advance|written|préalable|écrit)\s+)*"
+    r"(?:notice|préavis)|(?:notice|préavis)\s+(?:of\s+(?:non-?renewal\s+)?|de\s+)"
+    r"(?:(?:at\s+least|not\s+less\s+than|au\s+moins)\s+)?"
+    r"(?P<m>\d{1,3}|[a-zéè]+)\s*(?:\(\s*(?P<m2>\d{1,3})\s*\))?\s*"
+    r"(?P<unit2>days?|months?|jours?|mois)\b)",
+    re.I,
+)
+_RENEWAL_CONTEXT = re.compile(r"renew|reconduction|reconduit|renouvel", re.I)
 # an option is not the end date: "Flotek may elect for the Term to be extended to December 31, 2024"
 _OPTION = re.compile(
     r"\b(?:may|elect|option|right\s+to)\b[^.;]{0,80}\bextended(?:\s+(?:to|until))?$", re.I
@@ -434,4 +448,17 @@ def read_terms(text: str, dayfirst: bool | None = None) -> ContractTerms:
             months = n * 12 if m.group("unit").lower()[0] in "ya" else n
             periods.append(Term(months, m.start(), m.end()))
     terms.renewal_months = _agree(periods, "renewal_period_months", terms.refused)
+    notices = []
+    for m in _NOTICE.finditer(text):
+        lo = max(text.rfind(". ", 0, m.start()), text.rfind("\n\n", 0, m.start()), 0)
+        hi = text.find(". ", m.end())
+        if not _RENEWAL_CONTEXT.search(text[lo : hi if hi >= 0 else len(text)]):
+            continue  # a notice to cure a breach or to terminate for cause is not about renewal
+        n = m.group("n2") or m.group("n") or m.group("m2") or m.group("m")
+        n = int(n) if n.isdigit() else _NUMBER_WORDS.get(n.lower())
+        unit = (m.group("unit") or m.group("unit2")).lower()
+        if n:
+            notices.append(Term(f"P{n}{'M' if unit.startswith(('mo', 'mois')) else 'D'}",
+                                m.start(), m.end()))  # fmt: skip
+    terms.notice = _agree(notices, "renewal_notice", terms.refused)
     return terms

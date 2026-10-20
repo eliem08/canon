@@ -213,3 +213,23 @@ def test_renewal_period_is_a_cited_fact():
     facts = {f.field: f for f in rec.facts}
     assert facts["renewal_period_months"].value == 12
     assert "automatically renew" in facts["renewal_period_months"].quote
+
+
+@pytest.mark.parametrize(
+    ("clause", "notice"),
+    [
+        ("It shall automatically renew for one (1) year periods unless either party gives at "
+         "least sixty (60) days' prior written notice of non-renewal.", "P60D"),
+        ("Renews automatically for one year. Notice of non-renewal at least 3 months before the "
+         "renewal date is required to stop renewal.", "P3M"),
+        ("Le contrat est reconduit tacitement par périodes d'un an, sauf dénonciation moyennant un "
+         "préavis de trois (3) mois.", "P3M"),
+    ],
+)  # fmt: skip
+def test_renewal_notice(clause, notice):
+    assert read_terms(EN + clause).notice.value == notice
+
+
+def test_a_cure_notice_is_not_a_renewal_notice():
+    text = EN + "Either party may terminate for breach upon thirty (30) days written notice."
+    assert read_terms(text).notice is None
