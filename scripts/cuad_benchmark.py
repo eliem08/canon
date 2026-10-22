@@ -16,6 +16,11 @@ production path, and is compared with the lawyers' normalized answers:
 | Agreement Date   | signature date (record updated_at)  | same day                             |
 | Effective Date   | `contract_start`                    | same day                             |
 | Expiration Date  | `renewal_date`                      | same day                             |
+| Renewal Term     | `renewal_period_months`             | same number of months                |
+| Notice Period... | `renewal_notice`                    | same period (week=7 days, year=12 mo) |
+
+CUAD's renewal term also counts renewals that need an action (options to renew); Canon only reads
+automatic renewal, so those count against its recall, not as wrong answers.
 
 "wrong" counts values Canon gave that differ from the answer, or that it gave where the lawyers
 found none: that is the number that must stay near zero, since refusing is safe and a wrong date
@@ -49,11 +54,14 @@ REPO = "theatticusproject/cuad"
 REVISION = "a3c393f5d103fd0c516374e4fdff676c8176dcb1"
 FILES = ("CUAD_v1/CUAD_v1.json", "CUAD_v1/master_clauses.csv")
 FIELDS = ("party", "agreement_date", "effective_date", "expiration_date")
+PERIODS = ("renewal_period", "renewal_notice")
 GOLD_COLUMN = {
     "party": "Parties-Answer",
     "agreement_date": "Agreement Date-Answer",
     "effective_date": "Effective Date-Answer",
     "expiration_date": "Expiration Date-Answer",
+    "renewal_period": "Renewal Term-Answer",
+    "renewal_notice": "Notice Period To Terminate Renewal- Answer",
 }
 
 
@@ -125,6 +133,24 @@ def same_day(value, gold: tuple[int, int, int]) -> bool:
     return (d.month, d.day, d.year % 100) == gold
 
 
+_PERIOD = re.compile(
+    r"^(?:\d+\s+)?(?:succ?ess?ive\s+)?\(?(\d{1,3})\)?\s*(days?|weeks?|months?|years?)$", re.I
+)
+
+
+def gold_periods(raw: str) -> set[str] | None:
+    """CUAD's "successive 1 year" / "90 days" / "180 days / 6 months" as ISO 8601 durations
+    (P12M, P90D); None when there is nothing to score (empty, "perpetual", dates, prose)."""
+    out = set()
+    for part in re.split(r"\s*[;/]\s*", raw.strip().lower()):
+        m = _PERIOD.match(part.replace("three (3)", "3"))
+        if not m:
+            return None
+        n, unit = int(m[1]), m[2][0]
+        out.add({"d": f"P{n}D", "w": f"P{7 * n}D", "m": f"P{n}M", "y": f"P{12 * n}M"}[unit])
+    return out or None
+
+
 _GROUP = re.compile(r"\b(and|collectively|individually)\b.*\bpart(y|ies)\b", re.I)
 _QUOTED = re.compile(r"\(([^)]*)\)|[\"“”]")
 
@@ -157,12 +183,16 @@ def predict(text: str) -> dict:
         "agreement_date": rec.updated_at.isoformat() if rec.updated_at else None,
         "effective_date": facts.get("contract_start"),
         "expiration_date": facts.get("renewal_date"),
+        "renewal_period": (
+            f"P{facts['renewal_period_months']}M" if "renewal_period_months" in facts else None
+        ),
+        "renewal_notice": facts.get("renewal_notice"),
         "refused": Counter(i.field for i in rec.issues if i.severity == "quarantined"),
     }
 
 
 def score(items: list[dict]) -> dict:
-    out = {f: Counter() for f in FIELDS}
+    out = {f: Counter() for f in FIELDS + PERIODS}
     for item in items:
         got, gold = predict(item["text"]), item["gold"]
         c = out["party"]
@@ -191,6 +221,17 @@ def score(items: list[dict]) -> dict:
                 c["correct"] += 1
             else:
                 c["wrong"] += 1
+        for f in PERIODS:
+            c = out[f]
+            g = gold_periods(gold[f])
+            c["gold"] += g is not None
+            c["answered"] += got[f] is not None
+            if got[f] is None:
+                continue
+            if g is None:
+                c["wrong" if not gold[f] else "unscored"] += 1
+            else:
+                c["correct" if got[f] in g else "wrong"] += 1
     return {f: dict(c) for f, c in out.items()}
 
 
@@ -218,7 +259,7 @@ def render(results: dict[str, dict], counts: dict[str, int]) -> str:
             "| field | with answer | Canon answered | correct | wrong | recall | precision |",
             "|---|---|---|---|---|---|---|",
         ]
-        for f in FIELDS:
+        for f in FIELDS + PERIODS:
             c = res[f]
             lines.append(
                 f"| {f} | {c.get('gold', 0)} | {c.get('answered', 0)} | {c.get('correct', 0)} | "

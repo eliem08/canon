@@ -36,7 +36,7 @@ The gap to strong RAG is **not statistically significant** (p ≥ 0.5), so we do
 
 | What | Real data | Result |
 |---|---|---|
-| Contract terms | 510 SEC-filed contracts (CUAD), lawyer answers | parties 57% found, 99% right; agreement date 66% / 94%; effective date 60% / 95%; end date 28% / 90% |
+| Contract terms | 510 SEC-filed contracts (CUAD), lawyer answers | parties 57% found, 99% right; agreement date 66% / 94%; effective date 60% / 95%; end date 28% / 90%; auto-renewal period 41% found, 0 wrong; notice to stop renewal 37% found, 0 wrong |
 | Duplicate customers, US listings | Fodors–Zagat | F1 0.948 (exact-name matching: 0.825) |
 | Duplicate customers, French companies | INSEE SIRENE registry vs shop signs | 29% linked automatically and 28% sent to a person, 91% precision (exact names: 24% recall) |
 | Arabic ↔ Latin names | 23k real Arabic names with transliterations | 97.8% of true pairs at 0.85 similarity, 0.10% false matches |
@@ -57,7 +57,7 @@ For an audit, a refused value is a line in the quarantine report. A wrong one is
 
 - **Your data.** French and Arabic contracts, your CRM's quirks, your questions. The first audit measures this.
 - **Accuracy advantage over a good RAG** on real questions. We expect parity plus the permission and citation advantages.
-- **End dates in contracts** are still mostly missed on CUAD. Auto-renewal clauses are now read and the next renewal date is computed, but CUAD has no answer key for it yet, so it is not measured.
+- **End dates in contracts** are still mostly missed on CUAD (28%). Renewal periods and notice periods are now measured on CUAD's held-out half (above); the computed next-renewal and cancel-by dates follow from them but are not scored on their own.
 
 ## Rerun any of it
 ```bash

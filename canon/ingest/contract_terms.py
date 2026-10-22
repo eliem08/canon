@@ -124,9 +124,12 @@ _EN_NUMBERS = (
     "sixteen seventeen eighteen nineteen twenty"
 )
 _FR_NUMBERS = "zéro un deux trois quatre cinq six sept huit neuf dix onze douze"
-_NUMBER_WORDS = {w: i for i, w in enumerate(_EN_NUMBERS.split())} | {
-    w: i for i, w in enumerate(_FR_NUMBERS.split())
-}
+_NUMBER_WORDS = (
+    {w: i for i, w in enumerate(_EN_NUMBERS.split())}
+    | {w: i for i, w in enumerate(_FR_NUMBERS.split())}
+    | {"thirty": 30, "forty": 40, "forty-five": 45, "fifty": 50, "sixty": 60, "ninety": 90,
+       "trente": 30, "soixante": 60, "quatre-vingt-dix": 90}
+)  # fmt: skip
 _TERM = re.compile(
     r"\b(?:initial\s+)?(?:term|dur[ée]e)\b[^.;]{0,80}?\b(?:of|for|de)\s+(?:a\s+period\s+of\s+)?"
     r"(?P<n>\d{1,2}|[a-zéè]+)\s*(?:\(\s*(?P<n2>\d{1,2})\s*\))?\s*"
@@ -328,11 +331,19 @@ _AUTO_RENEW = re.compile(
     r"|(?:reconduit|renouvel[ée])e?s?\s+tacitement|(?:se\s+renouvellera|renouvel[ée]e?)\s+par\s+"
     r"tacite\s+reconduction|tacite\s+reconduction)\b[^.;]{0,60}?\b(?:for|by|pour|par)\s+"
     r"(?:(?:an?|une?|successive|additional|further|consecutive|renewal|p[ée]riodes?|successives?"
-    r"|suppl[ée]mentaires?|nouvelles?|de)\s+)*(?:d['’])?"
-    r"(?P<n>\d{1,2}|[a-zéè]+)?\s*(?:\(\s*(?P<n2>\d{1,2})\s*\))?\s*"
+    r"|suppl[ée]mentaires?|nouvelles?|de|(?:renewal\s+)?(?:terms?|periods?)\s+of)\s+)*(?:d['’])?"
+    r"(?P<n>\d{1,2}|[a-zéè]+)?\s*(?:\(\s*(?P<n2>\d{1,2})\s*\))?\s*-?\s*"
     r"(?P<unit>years?|months?|ans?|ann[ée]es?|mois)\b",
     re.I,
 )
+# yearly renewal without a number: "renewed tacitly every year", "automatic annual renewals",
+# "renew ... on a year to year basis, unless either Party notifies the other ..."
+_YEARLY_RENEW = re.compile(
+    r"\b(?:automatic(?:ally)?\s+annual\s+renewals?|renew\w*\b[^.;]{0,80}?\b(?:every\s+year"
+    r"|each\s+year|year[- ]to[- ]year|annually|chaque\s+ann[ée]e))\b",
+    re.I,
+)
+_AUTOMATIC = re.compile(r"automatic|tacit|\bunless\b|sauf", re.I)
 # non-renewal notice: "unless either party gives at least sixty (60) days' prior written notice",
 # "upon 90 days notice", "notice of non-renewal at least 3 months", "préavis de trois (3) mois"
 _NOTICE = re.compile(
@@ -342,10 +353,20 @@ _NOTICE = re.compile(
     r"(?:notice|préavis)|(?:notice|préavis)\s+(?:of\s+(?:non-?renewal\s+)?|de\s+)"
     r"(?:(?:at\s+least|not\s+less\s+than|au\s+moins)\s+)?"
     r"(?P<m>\d{1,3}|[a-zéè]+)\s*(?:\(\s*(?P<m2>\d{1,3})\s*\))?\s*"
-    r"(?P<unit2>days?|months?|jours?|mois)\b)",
+    r"(?P<unit2>days?|months?|jours?|mois)\b"
+    r"|(?P<k>\d{1,3}|[a-zéè]+)\s*(?:\(\s*(?P<k2>\d{1,3})\s*\))?\s*(?P<unit3>days?|months?|jours?|mois)"
+    r"\s+(?:prior|before|in\s+advance|avant)\b)",
     re.I,
 )
-_RENEWAL_CONTEXT = re.compile(r"renew|reconduction|reconduit|renouvel", re.I)
+# a notice counts only beside the auto-renewal clause or when it is plainly about not renewing;
+# insurance policies have their own "notice of cancellation or non-renewal"
+_NOT_RENEWING = re.compile(
+    r"non-?renewal|not\s+to\s+renew|not\s+renew|not\s+be\s+renewed|prior\s+(?:to\s+)?(?:the\s+)?(?:end|expiration|expiry)"
+    r"|before\s+(?:the\s+)?(?:end|expiration|expiry)|ne\s+pas\s+(?:la\s+|le\s+)?renouveler"
+    r"|avant\s+(?:le\s+terme|l.[ée]ch[ée]ance|la\s+fin)|d[ée]nonciation|d[ée]noncer",
+    re.I,
+)
+_INSURANCE = re.compile(r"\binsur|\bpolic(?:y|ies)\b|\bcoverage\b|\bassurance\b", re.I)
 # an option is not the end date: "Flotek may elect for the Term to be extended to December 31, 2024"
 _OPTION = re.compile(
     r"\b(?:may|elect|option|right\s+to)\b[^.;]{0,80}\bextended(?:\s+(?:to|until))?$", re.I
@@ -462,6 +483,9 @@ def read_terms(text: str, dayfirst: bool | None = None) -> ContractTerms:
     periods = []
     for m in _AUTO_RENEW.finditer(text):
         n = m.group("n2") or m.group("n")
+        unit = m.group("unit").lower()
+        if unit in ("an", "ans") and n is None and not re.search(r"\bun\s+an$", m.group(0), re.I):
+            continue  # English "for an additional period", not French "pour un an"
         if n is None or n.lower() in {"a", "an", "un", "une"}:
             n = 1
         else:
@@ -469,16 +493,28 @@ def read_terms(text: str, dayfirst: bool | None = None) -> ContractTerms:
         if n:
             months = n * 12 if m.group("unit").lower()[0] in "ya" else n
             periods.append(Term(months, m.start(), m.end()))
+    for m in _YEARLY_RENEW.finditer(text):
+        lo = max(text.rfind(". ", 0, m.start()), 0)
+        hi = text.find(". ", m.end())
+        if _AUTOMATIC.search(text[lo : hi if hi >= 0 else len(text)]) and not any(
+            p.start <= m.start() < p.end or m.start() <= p.start < m.end() for p in periods
+        ):
+            periods.append(Term(12, m.start(), m.end()))
     terms.renewal_months = _agree(periods, "renewal_period_months", terms.refused)
     notices = []
-    for m in _NOTICE.finditer(text):
+    renewals = [(m.start(), m.end()) for m in _AUTO_RENEW.finditer(text)]
+    renewals += [(m.start(), m.end()) for m in _YEARLY_RENEW.finditer(text)]
+    for m in _NOTICE.finditer(text) if terms.renewal_months else ():
         lo = max(text.rfind(". ", 0, m.start()), text.rfind("\n\n", 0, m.start()), 0)
         hi = text.find(". ", m.end())
-        if not _RENEWAL_CONTEXT.search(text[lo : hi if hi >= 0 else len(text)]):
-            continue  # a notice to cure a breach or to terminate for cause is not about renewal
-        n = m.group("n2") or m.group("n") or m.group("m2") or m.group("m")
+        sentence = text[lo : hi if hi >= 0 else len(text)]
+        beside = any(lo <= a and b <= (hi if hi >= 0 else len(text)) for a, b in renewals)
+        about = _NOT_RENEWING.search(text, m.start(), m.end() + 120)
+        if _INSURANCE.search(sentence) or not (beside or about):
+            continue  # a notice to cure a breach, terminate for cause or cancel insurance
+        n = next(m.group(g) for g in ("n2", "n", "m2", "m", "k2", "k") if m.group(g))
         n = int(n) if n.isdigit() else _NUMBER_WORDS.get(n.lower())
-        unit = (m.group("unit") or m.group("unit2")).lower()
+        unit = (m.group("unit") or m.group("unit2") or m.group("unit3")).lower()
         if n:
             notices.append(Term(f"P{n}{'M' if unit.startswith(('mo', 'mois')) else 'D'}",
                                 m.start(), m.end()))  # fmt: skip

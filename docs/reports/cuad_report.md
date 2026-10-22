@@ -12,6 +12,8 @@ recall = correct / contracts with an answer; precision = correct / values Canon 
 | agreement_date | 193 | 137 | 130 | 4 | 67% | 95% |
 | effective_date | 147 | 89 | 87 | 2 | 59% | 98% |
 | expiration_date | 111 | 37 | 37 | 0 | 33% | 100% |
+| renewal_period | 73 | 31 | 31 | 0 | 42% | 100% |
+| renewal_notice | 51 | 22 | 20 | 2 | 39% | 91% |
 
 ## test (267 contracts)
 
@@ -21,4 +23,6 @@ recall = correct / contracts with an answer; precision = correct / values Canon 
 | agreement_date | 223 | 158 | 148 | 7 | 66% | 94% |
 | effective_date | 176 | 111 | 105 | 5 | 60% | 95% |
 | expiration_date | 130 | 41 | 37 | 4 | 28% | 90% |
+| renewal_period | 71 | 32 | 29 | 0 | 41% | 91% |
+| renewal_notice | 49 | 18 | 18 | 0 | 37% | 100% |
 

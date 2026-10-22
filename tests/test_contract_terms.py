@@ -233,3 +233,47 @@ def test_renewal_notice(clause, notice):
 def test_a_cure_notice_is_not_a_renewal_notice():
     text = EN + "Either party may terminate for breach upon thirty (30) days written notice."
     assert read_terms(text).notice is None
+
+
+@pytest.mark.parametrize(
+    ("clause", "months", "notice"),
+    [
+        ("Following the Initial Term, this Agreement shall automatically renew for successive "
+         "terms of six (6) months unless written notice is given by either Party no later than "
+         "thirty (30) days in advance of the expiration of the Initial Term.", 6, "P30D"),
+        ("Thereafter, this Agreement shall automatically be renewed for successive 1-year terms.",
+         12, None),
+        ("It is established by calendar year and renewed tacitly every year.", 12, None),
+        ("The Term shall renew on a year to year basis, unless either Party notifies the other at "
+         "least 30 days prior to the end of the then current term of its intention not to renew.",
+         12, "P30D"),
+        ("This Agreement shall be automatically renewed for successive three (3) year terms unless "
+         "either Party provides written notice of non-renewal no later than ninety (90) days prior "
+         "the end of the Initial Term.", 36, "P90D"),
+    ],
+)  # fmt: skip
+def test_real_contract_renewal_wordings(clause, months, notice):
+    terms = read_terms(EN + clause)
+    assert terms.renewal_months.value == months
+    assert (terms.notice.value if terms.notice else None) == notice
+
+
+@pytest.mark.parametrize(
+    "clause",
+    [
+        # English "an", not French "an" (year)
+        "This Agreement shall automatically renew for an additional period as agreed.",
+        # insurance notices of cancellation or non-renewal are about the policy
+        "This Agreement renews automatically for one (1) year. Vendor shall have the insurer "
+        "provide at least thirty (30) days' advance written notice of cancellation, non-renewal, "
+        "or reduction in insurance coverage.",
+        # a notice period without any auto-renewal is not a renewal notice
+        "This Agreement may be terminated by either party upon thirty (30) days written notice "
+        "prior to the end of the term.",
+    ],
+)
+def test_no_renewal_notice_from_lookalikes(clause):
+    terms = read_terms(EN + clause)
+    assert terms.notice is None
+    if "an additional period" in clause:
+        assert terms.renewal_months is None
