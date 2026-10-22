@@ -277,3 +277,31 @@ def test_no_renewal_notice_from_lookalikes(clause):
     assert terms.notice is None
     if "an additional period" in clause:
         assert terms.renewal_months is None
+
+
+@pytest.mark.parametrize(
+    ("clause", "end"),
+    [
+        ('1.20. "Term" shall mean the Effective Date through June 15, 2024 and any Renewal Term.',
+         date(2024, 6, 15)),
+        ("Services shall be performed from the Effective Date until December 31, 2024 (the "
+         'initial "Services Term").', date(2024, 12, 31)),
+        ("1. Term. The term of this Agreement shall commence on the Effective Date and conclude on "
+         "October 31, 2025, unless renewed.", date(2025, 10, 31)),
+        ("AGREEMENT PERIOD\n\nEffective Date: January 1, 2021\n\nTermination Date: December 31, "
+         "2023", date(2023, 12, 31)),
+        ("3.1 Cooperation Term. The Cooperation Term of the parties shall be two years from May 1, "
+         "2021 to April 30, 2023.", date(2023, 4, 30)),
+        ("TERM. This agreement shall be for a term of five years from the date of this document.",
+         date(2026, 3, 3)),
+    ],
+)  # fmt: skip
+def test_more_stated_end_dates(clause, end):
+    head = EN.split("1. Term.")[0]  # without the sample's own three-year term
+    assert read_terms(head + clause, dayfirst=False).end_date.value == end
+
+
+def test_a_window_inside_a_clause_is_not_the_term():
+    clause = ("Under this Agreement, during the period commencing on the date hereof and "
+              "concluding on December 1, 2022, the Supplier shall not accrue any fee.")  # fmt: skip
+    assert read_terms(EN.split("1. Term.")[0] + clause).end_date is None

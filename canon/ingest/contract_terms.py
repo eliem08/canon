@@ -106,12 +106,15 @@ _EXPIRES = re.compile(
     r"\b(?:expire|expires|terminate|terminates|end|ends|ending|continue\s+(?:in\s+(?:full\s+)?force"
     r"(?:\s+and\s+effect)?\s+)?until|remain\s+in\s+(?:full\s+)?(?:force|effect)(?:\s+and\s+effect)?"
     r"\s+until|expirera|prendra\s+fin|(?:end|expire)s?\s+as\s+of|extended\s+(?:to|until)|through"
-    r"|until|jusqu.au)\s*(?:on|at\s+midnight\s+on|le)?\s*"
+    r"|until|conclude|concludes|concluding|jusqu.au)\s*(?:on|at\s+midnight\s+on|le)?\s*"
     rf"(?P<d>{_DATE_TEXT})"
     rf"|(?P<e>{_DATE_TEXT})\s*,?\s*\(\s*(?:the\s+)?{_Q}?(?:Expiration\s+Date|Termination\s+Date)"
     # "TERM: November 01, 2014 to October 31, 2017", "durée : du 1er janvier 2024 au 31/12/2026"
     rf"|\b(?:term|dur[ée]e)\s*:\s*(?:from\s+|du\s+)?{_DATE_TEXT}\s+(?:to|through|au|[-–])\s+"
-    rf"(?P<f>{_DATE_TEXT})",
+    rf"(?P<f>{_DATE_TEXT})"
+    # "Termination Date: December 31, 2023"; "two years from May 1, 2013 to April 30, 2015"
+    rf"|\b(?:Termination|Expiration|Expiry|End)\s+Date\s*:\s*(?P<g>{_DATE_TEXT})"
+    rf"|\bfrom\s+{_DATE_TEXT}\s+(?:to|through)\s+(?P<h>{_DATE_TEXT})",
     re.I,
 )
 _CALENDAR_YEAR_END = re.compile(
@@ -136,8 +139,8 @@ _TERM = re.compile(
     r"(?P<unit>years?|months?|ans?|ann[ée]es?|mois)\b[^.;]{0,40}?"
     r"\b(?:from|after|commencing\s+on|beginning\s+on|following|à\s+compter\s+d[eu]|"
     r"à\s+partir\s+d[eu])\s+(?:the\s+|la\s+|l')?"
-    r"(?P<anchor>Effective\s+Date|Commencement\s+Date|date\s+(?:of\s+)?(?:this\s+Agreement|hereof"
-    r"|of\s+execution)|Date\s+d.effet|signature|date\s+de\s+signature)",
+    r"(?P<anchor>Effective\s+Date|Commencement\s+Date|date\s+(?:of\s+)?(?:this\s+(?:Agreement|document)"
+    r"|hereof|of\s+execution)|Date\s+d.effet|signature|date\s+de\s+signature)",
     re.I,
 )
 # the anchor first: "... effective on the Effective Date and shall remain in effect for an initial
@@ -316,11 +319,20 @@ def _agree(candidates: list[Term], name: str, refused: list) -> Term | None:
 _TERM_CONTEXT = re.compile(
     rf"{_Q}Term{_Q}|\b(?:term|dur[ée]e)\s*:"
     r"|\b(?:this\s+(?:Agreement|Contract|Amendment)|the\s+Term|Initial\s+Term|term\s+of\s+this"
-    r"|Term\s+of\s+(?:the\s+)?Agreement|le\s+pr[ée]sent\s+contrat|la\s+dur[ée]e|ce\s+contrat)\b",
+    r"|Term\s+of\s+(?:the\s+)?Agreement|le\s+pr[ée]sent\s+contrat|la\s+dur[ée]e|ce\s+contrat)\b"
+    r"|(?-i:\b[A-Z][a-z]+\s+Term\b)",  # a named term: "Cooperation Term", "Services Term"
     re.I,
 )
 
 
+_END_LABEL = re.compile(r"\b(?:Termination|Expiration|Expiry|End)\s+Date\s*:\s*$", re.I)
+_TERM_DEFINED = re.compile(
+    rf"{_Q}(?:Initial\s+)?(?:Term|Contract\s+Period|Agreement\s+Period){_Q}\s*(?:shall\s+)?means?\b",
+    re.I,
+)
+_TERM_LABEL = re.compile(
+    rf"[^()]{{0,40}}\(\s*(?:each\s+|the\s+)?(?:initial\s+)?{_Q}?[A-Za-z ]{{0,20}}Term{_Q}", re.I
+)
 _DEFINITION = re.compile(
     rf"{_Q}[A-Z][^\"“”]{{0,40}}{_Q}\s*(?:shall\s+)?means?\b|\b(?:quarter|fiscal)\b", re.I
 )
@@ -377,9 +389,15 @@ def _about_the_term(text: str, start: int, end: int | None = None) -> bool:
     """The clause around a date is about this contract's term (not a licence window or a TOC)."""
     sentence_start = max(text.rfind(". ", 0, start), text.rfind("\n\n", 0, start), start - 150)
     clause = text[sentence_start : end or start]
-    if re.search(r"(?:\s\d+){3}", clause) or _DEFINITION.search(clause):
+    if re.search(r"(?:\s\d+){3}", clause):
         return False
-    return bool(_TERM_CONTEXT.search(clause))
+    if _TERM_DEFINED.search(clause):  # "Term" shall mean the Effective Date through ...
+        return True
+    if _DEFINITION.search(clause):
+        return False
+    # the label after the date: "until December 31, 2018 (the initial "Services Term")"
+    after = text[(end or start) : (end or start) + 80]
+    return bool(_TERM_CONTEXT.search(clause) or _TERM_LABEL.match(after))
 
 
 def add_months(d: date, months: int) -> date | None:
@@ -445,8 +463,13 @@ def read_terms(text: str, dayfirst: bool | None = None) -> ContractTerms:
     explicit = [
         t
         for t in _dates(_EXPIRES, text, dayfirst)
-        if _about_the_term(text, t.start)
+        if (
+            _about_the_term(text, t.start)
+            or _END_LABEL.search(text[max(0, t.start - 40) : t.start])
+        )
         and not _OPTION.search(text[max(0, t.start - 120) : t.start].rstrip())
+        # "during the period commencing ... and concluding on ..." is a window, not the term
+        and not re.search(r"\bduring\s+the\s+period\b", text[max(0, t.start - 150) : t.start], re.I)
     ]
     derived = []
     for m in [
