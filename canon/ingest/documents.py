@@ -42,9 +42,6 @@ class OCRConfig:
     # before withholding it, re-read such a word alone (cropped, enlarged, single-line mode) and
     # keep the re-read if tesseract is now at least this sure of it; 0 disables the second pass
     reread_min_confidence: float = 85.0
-    # failing that, accept a word when two independent reads agree exactly (the page read, the 3x
-    # re-read, a 2x and a black-and-white re-read), each at least this sure; 0 disables
-    consensus_min_confidence: float = 0.0
     max_rereads: int = 40  # per page, to bound the cost on very poor scans
     binary: str = "tesseract"
     timeout_s: int = 120
@@ -116,41 +113,20 @@ def _rereader(png: bytes, config: OCRConfig):
     page = Image.open(io.BytesIO(png))
     budget = [config.max_rereads]
 
-    def read(crop, scale: int, bw: bool) -> tuple[str, float] | None:
-        img = crop.resize((crop.width * scale, crop.height * scale), Image.Resampling.LANCZOS)
-        if bw:
-            gray = ImageOps.autocontrast(img.convert("L"))
-            img = gray.point(lambda v: 255 if v > 128 else 0)
-        buf = io.BytesIO()
-        ImageOps.expand(img, border=20, fill=255).save(buf, format="PNG")
-        rows = _run_tesseract(buf.getvalue(), config, "7")
-        if not rows:
-            return None
-        return "".join(r[11] for r in rows), min(float(r[10]) for r in rows)
-
-    def reread(left: int, top: int, width: int, height: int, first=None) -> str | None:
+    def reread(left: int, top: int, width: int, height: int) -> str | None:
         if budget[0] <= 0:
             return None
         budget[0] -= 1
         pad = max(2, height // 4)
         box = (max(0, left - pad), max(0, top - pad), left + width + pad, top + height + pad)
         crop = page.crop(box)
-        main = read(crop, 3, False)
-        if main and main[1] >= config.reread_min_confidence:
-            return main[0]
-        floor = config.consensus_min_confidence
-        if not floor:
+        crop = crop.resize((crop.width * 3, crop.height * 3), Image.Resampling.LANCZOS)
+        buf = io.BytesIO()
+        ImageOps.expand(crop, border=20, fill=255).save(buf, format="PNG")
+        rows = _run_tesseract(buf.getvalue(), config, "7")
+        if not rows or min(float(r[10]) for r in rows) < config.reread_min_confidence:
             return None
-        votes = [r for r in (first, main) if r and r[1] >= floor]
-        if len(votes) == 2 and votes[0][0] == votes[1][0]:
-            return votes[0][0]
-        for scale, bw in ((2, False), (3, True)):
-            other = read(crop, scale, bw)
-            if other and other[1] >= floor:
-                if any(v[0] == other[0] for v in votes):
-                    return other[0]
-                votes.append(other)
-        return None
+        return "".join(r[11] for r in rows)
 
     return reread
 
@@ -161,7 +137,7 @@ def _tesseract(png: bytes, config: OCRConfig, reread=None) -> tuple[str, float |
     for cols in _run_tesseract(png, config, "6"):
         word, conf = cols[11], float(cols[10])
         if 0 <= conf < config.min_digit_confidence and any(c.isdigit() for c in word):
-            better = reread(*map(int, cols[6:10]), first=(word, conf)) if reread else None
+            better = reread(*map(int, cols[6:10])) if reread else None
             word = better if better and any(c.isdigit() for c in better) else UNSURE
         lines.setdefault(tuple(cols[1:5]), []).append(word)
         if conf >= 0:
