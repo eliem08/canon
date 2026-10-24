@@ -188,7 +188,8 @@ document.querySelectorAll("input[type=radio]").forEach(input => {
 count();
 document.getElementById("download").addEventListener("click", () => {
   const out = {must_link: DATA.existing.must_link.slice(),
-               cannot_link: DATA.existing.cannot_link.slice()};
+               cannot_link: DATA.existing.cannot_link.slice(),
+               facts: (DATA.existing.facts || []).slice()};  // confirmed values are kept
   DATA.items.forEach((item, i) => {
     const a = answers["p" + i];
     if (a === "same") out.must_link.push([item.left, item.right]);

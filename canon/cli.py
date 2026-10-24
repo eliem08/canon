@@ -68,11 +68,13 @@ def build_store(data: Path, out: Path, as_of: date | None, overrides: Path | Non
 
     unreadable: list = []
     records = load_all(data, unreadable=unreadable)
+    decisions = Overrides.load(overrides)
+    records += decisions.confirmed_records(records)  # values people confirmed in review
     previous = read_lineage(out / "canon.sqlite")
     res = resolve(
         records,
         ResolverConfig(facts=FactScoringConfig(as_of=as_of)),
-        overrides=Overrides.load(overrides),
+        overrides=decisions,
         previous=previous,
     )
     out.mkdir(parents=True, exist_ok=True)

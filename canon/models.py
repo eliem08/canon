@@ -7,7 +7,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-SourceType = Literal["crm", "slack", "contract", "email"]
+SourceType = Literal["crm", "slack", "contract", "email", "confirmed"]  # confirmed: by a person
 RecordStatus = Literal["active", "archived", "superseded"]
 
 

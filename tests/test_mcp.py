@@ -297,3 +297,40 @@ def test_list_renewals_respects_permissions(service):
     }
     sales = service.list_renewals("salma.el.idrissi", within_days=365)
     assert {r.customer.entity_id for r in sales.renewals} <= allowed
+
+
+def test_a_confirmed_value_wins_is_cited_and_keeps_the_records_permissions(tmp_path):
+    from canon.resolve.pipeline import FactOverride, Overrides
+
+    crm = json.loads((DATA / "crm" / "accounts.json").read_text(encoding="utf-8"))
+    row = next(r for r in crm if r.get("Renewal Date"))
+    record_id = f"crm:{row['Id']}"
+    overrides = tmp_path / "overrides.json"
+    fact = FactOverride(record_id=record_id, field="renewal_date", value="2031-01-15",
+                        by="Account owner", at=AS_OF, note="signed extension")  # fmt: skip
+    overrides.write_text(Overrides(facts=[fact]).model_dump_json(), encoding="utf-8")
+    out = tmp_path / "store"
+    records, _, _ = build_store(DATA, out, AS_OF, overrides)
+    confirmed = next(r for r in records if r.source == "confirmed")
+    anchor = next(r for r in records if r.record_id == record_id)
+    assert confirmed.acl == anchor.acl
+    service = CanonService.from_store(
+        out / "canon.sqlite",
+        CallerDirectory.from_file(DATA / "identities.json"),
+        ServiceConfig(facts=FactScoringConfig(as_of=AS_OF)),
+    )
+    eid = next(e for e, members in service.clusters.items() if record_id in members)
+    answer = service.find_contract_terms(eid, "revops.admin").terms["renewal_date"]
+    assert answer.value == "2031-01-15"
+    assert answer.sources[0].record_id == "confirmed:1"
+    for caller in ("intern", "nobody.at.all"):  # no access to the CRM record: no confirmation
+        assert "confirmed:1" not in json.dumps(
+            service.find_contract_terms(eid, caller).model_dump(mode="json")
+        )
+
+
+def test_a_confirmation_about_a_record_that_left_the_export_is_skipped():
+    from canon.resolve.pipeline import FactOverride, Overrides
+
+    fact = FactOverride(record_id="crm:gone", field="owner", value="X", by="Y", at=AS_OF)
+    assert Overrides(facts=[fact]).confirmed_records([]) == []

@@ -12,11 +12,12 @@ import hashlib
 import json
 from collections import Counter
 from dataclasses import dataclass, field
+from datetime import date
 from pathlib import Path
 
 from pydantic import BaseModel, Field
 
-from canon.models import GoldenRecord, SourceRecord
+from canon.models import Fact, GoldenRecord, SourceRecord
 from canon.resolve.blocking import candidate_pairs
 from canon.resolve.cluster import cluster
 from canon.resolve.features import RecordFeatures, features
@@ -37,11 +38,47 @@ class ResolverConfig:
     review_name_similarity: float = 0.9  # also review near-identical names a guard kept apart
 
 
+class FactOverride(BaseModel):
+    """A value a person confirmed for one record's customer ("the renewal date is 2027-03-01")."""
+
+    record_id: str = Field(description="A record of the customer, e.g. its CRM account")
+    field: str
+    value: str | float | int
+    by: str = Field(description="Who confirmed it")
+    at: date = Field(description="When; the confirmation ages like any other evidence")
+    note: str = ""
+
+
 class Overrides(BaseModel):
     """Decisions made by a person; they win over the model on every run."""
 
     must_link: list[tuple[str, str]] = Field(default_factory=list)
     cannot_link: list[tuple[str, str]] = Field(default_factory=list)
+    facts: list[FactOverride] = Field(default_factory=list)
+
+    def confirmed_records(self, records: list[SourceRecord]) -> list[SourceRecord]:
+        """One `confirmed` record per confirmation, readable by whoever may read the record it
+        is about. Confirmations about unknown records are skipped (the record left the export)."""
+        by_id = {r.record_id: r for r in records}
+        out = []
+        for i, f in enumerate(self.facts):
+            anchor = by_id.get(f.record_id)
+            if anchor is None:
+                continue
+            rid = f"confirmed:{i + 1}"
+            quote = f"Confirmed by {f.by} on {f.at.isoformat()}" + (f": {f.note}" if f.note else "")
+            out.append(
+                SourceRecord(
+                    record_id=rid, source="confirmed", locator="overrides.json",
+                    name=anchor.name, updated_at=f.at, acl=list(anchor.acl),
+                    facts=[Fact(field=f.field, value=f.value, observed_at=f.at, record_id=rid,
+                                source_ref=f"overrides.json#facts[{i}]", quote=quote)],
+                )
+            )  # fmt: skip
+        return out
+
+    def links_for_confirmed(self) -> list[tuple[str, str]]:
+        return [(f"confirmed:{i + 1}", f.record_id) for i, f in enumerate(self.facts)]
 
     @classmethod
     def load(cls, path: Path | None) -> Overrides:
@@ -122,7 +159,8 @@ def resolve(
     scores = {(a, b): score_pair(feats[a], feats[b], config.scoring) for a, b in candidates}
     cannot = {(a, b) for a, b in candidates if is_cannot_link(feats[a], feats[b])}
     probabilities = {pair: s.probability for pair, s in scores.items()}
-    must = {_key(a, b) for a, b in overrides.must_link if a in feats and b in feats}
+    links = [*overrides.must_link, *overrides.links_for_confirmed()]
+    must = {_key(a, b) for a, b in links if a in feats and b in feats}
     never = {_key(a, b) for a, b in overrides.cannot_link if a in feats and b in feats}
     for pair in must:
         probabilities[pair] = 1.0

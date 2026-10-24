@@ -27,7 +27,13 @@ from datetime import date
 
 from canon.models import Evidence, ResolvedFact, ScoredValue, SourceRecord
 
-DEFAULT_AUTHORITY = {"contract": 0.95, "crm": 0.75, "email": 0.6, "slack": 0.45}
+DEFAULT_AUTHORITY = {
+    "confirmed": 1.0,  # a value a named person confirmed (overrides.json); it still ages
+    "contract": 0.95,
+    "crm": 0.75,
+    "email": 0.6,
+    "slack": 0.45,
+}
 DEFAULT_STATUS_FACTOR = {"active": 1.0, "archived": 0.3, "superseded": 0.2}
 DEFAULT_HALF_LIFE_DAYS = {
     "owner": 60,  # account ownership rotates within quarters

@@ -94,6 +94,16 @@ at `export/overrides.json` and rerun with `--overrides /data/overrides.json`: de
 review queue and are applied on every later run. A new `review.html` already contains the earlier answers,
 so the file grows instead of being overwritten.
 
+**Corrections from people.** When an account owner says a value is wrong ("the renewal date is March 1,
+we signed an extension"), add it to `overrides.json` under `facts`:
+```json
+{"facts": [{"record_id": "crm:0015g0000NDR1ZL", "field": "renewal_date", "value": "2027-03-01",
+            "by": "Salma El Idrissi", "at": "2026-10-20", "note": "signed extension"}]}
+```
+It becomes a `confirmed` source (authority 1.0, above contracts), cited as *Confirmed by Salma El Idrissi on
+2026-10-20* and readable by whoever may read the record it names. It ages like any evidence, so a newer
+contract can overtake it later. The review page keeps these entries when it writes a new `overrides.json`.
+
 **The fix files** open in Excel (UTF-8 with BOM, so Arabic names display). `crm_fixes.csv` uses the CRM's own
 record ids and column names (from `canon.json`), so a CRM admin can review it and load it with the CRM's bulk
 update tool; nothing is written to their CRM by Canon. `canon eval` also writes `eval.html` next to `eval.md`.

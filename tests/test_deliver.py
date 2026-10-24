@@ -59,7 +59,7 @@ def test_source_text_is_escaped_in_the_review_page():
 def test_existing_overrides_are_carried_into_the_download():
     existing = Overrides(must_link=[("p", "q")], cannot_link=[("r", "s")])
     data = _embedded(render_review_html([_item()], {}, existing, run="r1"))
-    assert data["existing"] == {"must_link": [["p", "q"]], "cannot_link": [["r", "s"]]}
+    assert data["existing"] == {"must_link": [["p", "q"]], "cannot_link": [["r", "s"]], "facts": []}
 
 
 def test_audit_writes_the_client_files_and_answers_close_the_loop(tmp_path):
@@ -157,3 +157,15 @@ def test_renewals_csv_mirrors_the_calendar(tmp_path):
     (row,) = csv.DictReader(path.open(encoding="utf-8-sig"))
     assert row["cancel_by"] == "2026-10-02" and row["automatic"] == "yes"
     assert "confirm" in row["note"]
+
+
+def test_confirmed_facts_survive_the_review_page_round_trip():
+    from datetime import date
+
+    from canon.resolve.pipeline import FactOverride
+
+    fact = FactOverride(record_id="crm:1", field="renewal_date", value="2027-03-01",
+                        by="Hind (legal)", at=date(2026, 10, 20))  # fmt: skip
+    data = _embedded(render_review_html([_item()], {}, Overrides(facts=[fact]), run="r1"))
+    assert data["existing"]["facts"][0]["value"] == "2027-03-01"
+    assert Overrides.model_validate(data["existing"]).facts == [fact]

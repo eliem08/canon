@@ -24,8 +24,8 @@ from canon.models import FieldValue, GoldenRecord, SourceRecord
 from canon.resolve.normalize import has_arabic, strip_legal_suffix
 from canon.score import FACT_FIELDS, FactScoringConfig, score_entity
 
-SOURCE_PRIORITY = {"contract": 3, "crm": 2, "email": 1, "slack": 0}
-VOTE_WEIGHT = {"contract": 3.0, "crm": 2.0, "email": 1.0, "slack": 1.0}
+SOURCE_PRIORITY = {"confirmed": 4, "contract": 3, "crm": 2, "email": 1, "slack": 0}
+VOTE_WEIGHT = {"confirmed": 4.0, "contract": 3.0, "crm": 2.0, "email": 1.0, "slack": 1.0}
 
 
 def _recency(r: SourceRecord) -> date:
