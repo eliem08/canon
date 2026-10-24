@@ -12,7 +12,7 @@ Dataset: 119 records, 25 true entities, 26 predicted clusters.
 
 ## Blocking
 
-- candidate pairs: 396 of 7021 (reduction ratio 0.944)
+- candidate pairs: 444 of 7021 (reduction ratio 0.937)
 - pair completeness (true pairs kept): 1.000
 
 ## Golden-record field accuracy (survivorship vs. ground truth current values)

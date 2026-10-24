@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import itertools
 import math
+import re
 from dataclasses import dataclass, field
 
 from rapidfuzz import fuzz
@@ -37,6 +38,8 @@ class ScoringConfig:
     tax_disagree: float = -9.0
     address_agree: float = 2.0  # similarity >= address_threshold
     address_disagree: float = -0.5  # companies move; weak evidence
+    # both give a full street address (number + street) and they differ: a stronger signal
+    address_disagree_full: float = -1.0
     address_threshold: float = 0.85
     city_agree: float = 0.5
     city_disagree: float = -2.0
@@ -47,6 +50,9 @@ class ScoringConfig:
     generic_name_no_identifier: float = -4.0  # "Pharmacie Al Amal" x2, nothing else shared
     city_conflict_no_identifier: float = -2.0
     concept_weight: float = 0.95  # bilingual concept-set similarity, see lexicon.py
+
+
+_HOUSE_NUMBER = re.compile(r"\b\d+[a-z]?\b")
 
 
 @dataclass
@@ -162,8 +168,15 @@ def score_pair(fa: RecordFeatures, fb: RecordFeatures, cfg: ScoringConfig) -> Pa
         s.evidence["tax_id"] = cfg.tax_agree if fa.tax_id == fb.tax_id else cfg.tax_disagree
     if fa.address and fb.address:
         sim = fuzz.token_sort_ratio(fa.address, fb.address) / 100
+        # "22 bd jeanne d arc" and "6 bd jeanne d arc" are two addresses on one street
+        na, nb = _HOUSE_NUMBER.findall(fa.address), _HOUSE_NUMBER.findall(fb.address)
+        other_number = bool(na and nb and not set(na) & set(nb))
         s.evidence["address"] = (
-            cfg.address_agree if sim >= cfg.address_threshold else cfg.address_disagree
+            cfg.address_agree
+            if sim >= cfg.address_threshold and not other_number
+            else cfg.address_disagree_full
+            if na and nb
+            else cfg.address_disagree
         )
     if fa.city and fb.city:
         s.evidence["city"] = cfg.city_agree if fa.city == fb.city else cfg.city_disagree

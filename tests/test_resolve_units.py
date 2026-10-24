@@ -136,3 +136,24 @@ def test_two_records_alone_at_an_address_go_to_review_not_merged():
     queued = {frozenset((i.left, i.right)) for i in res.review}
     assert frozenset(("r1", "r2")) in queued  # alone at their address: a person decides
     assert not any(p <= {"r3", "r4", "r5"} for p in queued)  # three at one address: no signal
+
+
+def _addr(name, address):
+    return features(SourceRecord(record_id=name + address, source="crm", locator="x", name=name,
+                                 address=address, city="Soissons"))  # fmt: skip
+
+
+def test_another_house_number_on_the_same_street_is_another_address():
+    s = score_pair(_addr("Pas a Pas", "22 Boulevard Jeanne d'Arc"),
+                   _addr("Pas a Pas", "6 Bd Jeanne d'Arc"), ScoringConfig())  # fmt: skip
+    assert s.evidence["address"] < 0
+    s = score_pair(_addr("Pas a Pas", "22 Boulevard Jeanne d'Arc"),
+                   _addr("Pas a Pas", "22 Bd Jeanne d'Arc"), ScoringConfig())  # fmt: skip
+    assert s.evidence["address"] > 0
+
+
+def test_two_full_addresses_that_differ_count_more_than_a_vague_one():
+    cfg = ScoringConfig()
+    full = score_pair(_addr("SAP", "62 Rue Saint Martin"), _addr("SAP", "35 Bd Jeanne d'Arc"), cfg)
+    vague = score_pair(_addr("SAP", "Rue Saint Martin"), _addr("SAP", "La Gare"), cfg)
+    assert full.evidence["address"] == cfg.address_disagree_full < vague.evidence["address"]
