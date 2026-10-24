@@ -148,6 +148,12 @@ def cmd_audit(args: argparse.Namespace) -> None:
     directory = CallerDirectory.from_file(identities) if identities.exists() else None
     audit = build_audit(records, res, directory, unreadable, as_of)
     report = render_audit(audit)
+    if args.compare:  # week 2: what the client fixed since the previous audit
+        from canon.audit import Audit, compare_audits, render_delta
+
+        previous = Audit.model_validate_json(Path(args.compare).read_text(encoding="utf-8"))
+        delta = render_delta(compare_audits(previous, audit))
+        report = report.replace("\n## 1. ", f"\n{delta}\n## 1. ", 1)
     (out / "audit_report.md").write_text(report, encoding="utf-8")
     (out / "audit.json").write_text(audit.model_dump_json(indent=2), encoding="utf-8")
     write_deliverables(out, report, res.review, records, overrides)
@@ -337,6 +343,7 @@ def main(argv: list[str] | None = None) -> None:
     a.add_argument("--identities", default=None, help="default: <data>/identities.json")
     a.add_argument("--overrides", default=None)
     a.add_argument("--as-of", default=None)
+    a.add_argument("--compare", default=None, help="a previous audit.json: report what changed")
     a.set_defaults(func=cmd_audit)
 
     c = sub.add_parser("check", help="day-1 intake check of a client export (no resolution)")

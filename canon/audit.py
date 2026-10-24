@@ -545,3 +545,69 @@ def render_audit(a: Audit) -> str:
         "section 6.",
     ]
     return "\n".join(lines) + "\n"
+
+
+class AuditDelta(BaseModel):
+    """What changed between two audits of the same client (week 1 vs week 2)."""
+
+    previous_as_of: date | None
+    as_of: date | None
+    findings: list[tuple[str, str, int, int]]  # (key, title, before, after)
+    fixed: list[StaleValue]  # stale CRM values in the previous audit that are gone now
+    new: list[StaleValue]  # stale CRM values that were not there before
+    review_items: tuple[int, int]
+    quarantined: tuple[int, int]
+
+
+def _stale_key(s: StaleValue) -> tuple[str, str]:
+    return (s.stale_record, s.field)  # CRM record ids are stable across runs; entity ids may not be
+
+
+def compare_audits(previous: Audit, current: Audit) -> AuditDelta:
+    titles = {f.key: f.title for f in [*previous.findings, *current.findings]}
+    before = {f.key: f.count for f in previous.findings}
+    after = {f.key: f.count for f in current.findings}
+    rows = [(k, titles[k], before.get(k, 0), after.get(k, 0)) for k in titles]
+    rows.sort(key=lambda r: (r[3] - r[2], r[0]))  # biggest improvement first
+    old = {_stale_key(s): s for s in [*previous.stale_crm, *previous.slack_only_owner_changes]}
+    now = {_stale_key(s): s for s in [*current.stale_crm, *current.slack_only_owner_changes]}
+    return AuditDelta(
+        previous_as_of=previous.as_of,
+        as_of=current.as_of,
+        findings=rows,
+        fixed=[old[k] for k in sorted(old.keys() - now.keys())],
+        new=[now[k] for k in sorted(now.keys() - old.keys())],
+        review_items=(previous.review_items, current.review_items),
+        quarantined=(
+            sum(previous.quarantine_by_reason.values()),
+            sum(current.quarantine_by_reason.values()),
+        ),
+    )
+
+
+def render_delta(d: AuditDelta) -> str:
+    def change(a: int, b: int) -> str:
+        return f"{a} → {b}" + (f" ({b - a:+d})" if a != b else "")
+
+    lines = [
+        f"## Changes since the last audit ({d.previous_as_of or 'earlier run'})",
+        "",
+        "| Finding | Before → now |",
+        "|---|---|",
+        *[f"| {title} | {change(a, b)} |" for _, title, a, b in d.findings],
+        f"| Merges waiting for a person | {change(*d.review_items)} |",
+        f"| Values refused (quarantine) | {change(*d.quarantined)} |",
+        "",
+        f"Stale CRM values fixed since then: **{len(d.fixed)}**; new ones: **{len(d.new)}**.",
+    ]
+    for label, items in (("Fixed", d.fixed), ("New", d.new)):
+        if items:
+            lines += ["", f"{label}:", ""]
+            lines += [
+                f"- {s.customer or s.entity_id}: {FIELD_LABELS.get(s.field, s.field)} "
+                f"`{s.stale}` (record `{s.stale_record}`)"
+                for s in items[:15]
+            ]
+            if len(items) > 15:
+                lines.append(f"- … and {len(items) - 15} more")
+    return "\n".join(lines) + "\n"

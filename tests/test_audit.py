@@ -105,3 +105,29 @@ def test_an_auto_renewing_contract_rolls_into_the_calendar():
                             "renewal_notice": f("renewal_notice", "P60D")})  # fmt: skip
     (r,) = _renewals([g], AS_OF, 180)
     assert (r.renews_on, r.cancel_by, r.automatic) == (date(2026, 12, 1), date(2026, 10, 2), True)
+
+
+def test_week_two_audit_reports_what_the_client_fixed(world, tmp_path):
+    import shutil
+
+    from canon.audit import compare_audits, render_delta
+
+    _, before = world
+    target = next(s for s in before.stale_crm if s.field == "owner")
+    data = tmp_path / "data"
+    shutil.copytree(DATA, data)
+    path = data / "crm" / "accounts.json"
+    rows = json.loads(path.read_text(encoding="utf-8"))
+    for row in rows:  # the client applies one line of crm_fixes.csv
+        if row["Id"] == target.stale_record.removeprefix("crm:"):
+            row["Owner"] = target.current_value
+            row["LastModifiedDate"] = "2026-10-01T09:00:00Z"
+    path.write_text(json.dumps(rows), encoding="utf-8")
+    records = load_all(data)
+    res = resolve(records, ResolverConfig(facts=FactScoringConfig(as_of=AS_OF)))
+    after = build_audit(records, res, None, [], AS_OF)
+    delta = compare_audits(before, after)
+    assert (target.stale_record, "owner") in {(s.stale_record, s.field) for s in delta.fixed}
+    assert not delta.new
+    report = render_delta(delta)
+    assert "Stale CRM values fixed since then: **" in report and target.stale_record in report

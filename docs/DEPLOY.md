@@ -78,7 +78,14 @@ docker run --rm --network none -v "$PWD/export:/data:ro" -v "$PWD/out:/out" cano
 #    out/review.html       (merges to confirm, filled in by the client)
 #    out/crm_fixes.csv     (one row per stale CRM value: CRM record id, column, value now, suggested value)
 #    out/quarantine.csv    (every refused or flagged value, with the reason and what to do about it)
+#    out/renewals.csv      (contracts renewing in the next 180 days, last day to give notice)
 ```
+
+**Week 2: what changed.** After the client applies `crm_fixes.csv` and sends a fresh export, keep last
+week's `audit.json` and rerun with `--compare /out/week1/audit.json`. The report opens with *Changes since
+the last audit*: every finding before → now, and the stale CRM values fixed (and any new ones) by CRM record
+id. Low-confidence counts can rise with nothing changed: evidence loses weight as it ages
+(`docs/FACT_SCORING.md`), so compare audits a week or two apart, not months.
 
 **Day 3: merges to confirm.** Send `review.html` to the account owners. It is one offline file: each card
 shows two records that may be the same customer, and they answer *same / different / not sure*. Answers
