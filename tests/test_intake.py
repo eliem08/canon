@@ -13,6 +13,8 @@ from canon.ingest.deployment import load_deployment, parse_deployment
 from canon.ingest.testdocs import xlsx
 from canon.intake import check_export, render_check, suggest_column, suggested_deployment
 
+MA = {"default_country": "212", "currency": "MAD"}  # these tests use Moroccan data
+
 DATA = Path(__file__).resolve().parents[1] / "data" / "synthetic"
 
 # A HubSpot-style export of the same accounts: other column names, one false friend.
@@ -82,7 +84,9 @@ def test_without_a_deployment_file_an_unnamed_crm_export_is_flagged(hubspot):
 
 
 def test_check_suggests_the_mapping_and_the_suggestion_reproduces_the_default_export(hubspot):
-    (hubspot / "canon.json").write_text(json.dumps({"crm": {"file": "crm/companies.csv"}}))
+    (hubspot / "canon.json").write_text(
+        json.dumps({"crm": {"file": "crm/companies.csv"}, "ingest": MA})
+    )
     report = check_export(hubspot)
     crm = report["crm"][0]
     assert report["ok"] and crm["mapped"] == {"currency": "Currency"}
@@ -106,7 +110,7 @@ def test_check_suggests_the_mapping_and_the_suggestion_reproduces_the_default_ex
     assert "Annual Revenue" in crm["unused_columns"]
     assert crm["fields"]["contract_value"]["filled"] == len(_rows())
     # the suggested file, once a person copies it in, ingests exactly like the default export
-    (hubspot / "canon.json").write_text(json.dumps(suggested_deployment(report)))
+    (hubspot / "canon.json").write_text(json.dumps({**suggested_deployment(report), "ingest": MA}))
     from_hubspot = _crm_view(load_all(hubspot))
     default = _crm_view(load_all(DATA))
     assert from_hubspot.keys() == default.keys()
@@ -159,6 +163,7 @@ def test_refusals_are_counted_per_field(tmp_path):
     rows[0]["Annual Contract Value"] = "1 200 000 EUR"
     rows[1]["ICE"] = "0012#3456"
     _write_csv(tmp_path / "crm" / "accounts.csv", rows, {k: k for k in HUBSPOT})
+    (tmp_path / "canon.json").write_text(json.dumps({"ingest": MA}))
     fields = check_export(tmp_path)["crm"][0]["fields"]
     assert fields["contract_value"]["refused"] == 1 and fields["tax_id"]["refused"] == 1
 
@@ -195,9 +200,10 @@ def test_missing_crm_file_is_an_error(tmp_path):
         load_deployment(tmp_path).crm_paths(tmp_path)
 
 
-def test_synthetic_data_needs_no_deployment_file():
+def test_synthetic_data_needs_only_its_conventions_in_the_deployment_file():
     report = check_export(DATA)
-    assert report["ok"] and not report["deployment_file"]
+    assert report["ok"] and report["deployment_file"]
+    assert json.loads((DATA / "canon.json").read_text(encoding="utf-8")) == {"ingest": MA}
     assert suggested_deployment(report) is None
 
 
@@ -273,6 +279,8 @@ def test_two_digit_years_need_the_century_in_the_deployment_file(tmp_path):
     refused = load_all(tmp_path)
     assert all(not [f for f in r.facts if f.field == "renewal_date"] for r in refused)
     assert all(any(i.reason == "two_digit_year" for i in r.issues) for r in refused)
-    (tmp_path / "canon.json").write_text(json.dumps({"ingest": {"century": 20, "dayfirst": True}}))
+    (tmp_path / "canon.json").write_text(
+        json.dumps({"ingest": {**MA, "century": 20, "dayfirst": True}})
+    )
     read = load_all(tmp_path)
     assert {f.value for r in read for f in r.facts if f.field == "renewal_date"} == {"2027-03-25"}

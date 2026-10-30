@@ -8,10 +8,13 @@ from pathlib import Path
 import pytest
 
 from canon.ingest import load_all
+from canon.ingest.config import IngestConfig
 from canon.ingest.contracts import load_contracts, parse_contract
 from canon.ingest.crm import load_crm
 from canon.ingest.documents import OCRConfig, extract_text, ocr_available
 from canon.ingest.testdocs import cer, docx, find_font, scanned_pdf, text_pdf
+
+MA = IngestConfig(default_country="212", currency="MAD")  # these tests use Moroccan data
 
 DATA = Path(__file__).resolve().parents[1] / "data" / "synthetic"
 CONTRACT = DATA / "contracts" / "CN-2024-107_v2.txt"
@@ -31,7 +34,7 @@ def _facts(record) -> dict:
 
 @pytest.fixture(scope="module")
 def reference():
-    return parse_contract(CONTRACT.read_text(encoding="utf-8"), "c", "x")["record"]
+    return parse_contract(CONTRACT.read_text(encoding="utf-8"), "c", "x", config=MA)["record"]
 
 
 def test_text_pdf_reads_like_the_text_and_cites_pages(tmp_path, reference):
@@ -39,7 +42,7 @@ def test_text_pdf_reads_like_the_text_and_cites_pages(tmp_path, reference):
     pdf.write_bytes(text_pdf(_pages(CONTRACT.read_text(encoding="utf-8"))))
     doc = extract_text(pdf)
     assert doc.method == "pdf" and doc.text.count("\f") == 1
-    rec = parse_contract(doc.text, "c", str(pdf))["record"]
+    rec = parse_contract(doc.text, "c", str(pdf), config=MA)["record"]
     assert _facts(rec) == _facts(reference)
     value = next(f for f in rec.facts if f.field == "contract_value")
     assert value.source_ref == f"{pdf}#p2:L2" and "461 000 MAD" in value.quote
@@ -51,7 +54,7 @@ def test_docx_page_breaks(tmp_path, reference):
     path.write_bytes(docx(_pages(CONTRACT.read_text(encoding="utf-8"))))
     doc = extract_text(path)
     assert doc.method == "docx" and doc.text.count("\f") == 1
-    rec = parse_contract(doc.text, "c", str(path))["record"]
+    rec = parse_contract(doc.text, "c", str(path), config=MA)["record"]
     assert _facts(rec) == _facts(reference) and rec.alt_names == reference.alt_names
 
 
@@ -65,7 +68,7 @@ def test_scanned_pdf_is_ocred(tmp_path, reference):
     latin = [ln for ln in src.split("\n") if ln.strip() and "الطرف" not in ln]
     got = [ln for ln in doc.text.replace("\f", "\n").split("\n") if "الطرف" not in ln]
     assert cer(" ".join(latin), " ".join(got)) < 0.05
-    rec = parse_contract(doc.text, "c", str(pdf))["record"]
+    rec = parse_contract(doc.text, "c", str(pdf), config=MA)["record"]
     facts = _facts(rec)
     for field in ("contract_number", "contract_value", "renewal_date", "contract_start"):
         assert facts[field] == _facts(reference)[field], field
@@ -87,7 +90,7 @@ def test_unreadable_documents_go_to_quarantine(tmp_path):
     (tmp_path / "broken.docx").write_bytes(b"not a zip")
     (tmp_path / "notes.odt").write_bytes(b"ignored: unsupported suffix")
     unreadable: list = []
-    assert load_contracts(tmp_path, unreadable=unreadable) == []
+    assert load_contracts(tmp_path, unreadable=unreadable, config=MA) == []
     assert {i.reason for i in unreadable} == {"unreadable_pdf", "unreadable_docx"}
 
 
@@ -96,7 +99,7 @@ def test_folder_acl_sidecar(tmp_path):
     (tmp_path / "board").mkdir()
     shutil.copy(CONTRACT, tmp_path / "board" / "b.txt")
     (tmp_path / "board" / "_acl.json").write_text(json.dumps({"acl": ["exec"]}))
-    records = {r.record_id: r for r in load_contracts(tmp_path)}
+    records = {r.record_id: r for r in load_contracts(tmp_path, config=MA)}
     assert records["contract:a"].acl == ["legal", "exec"]
     assert records["contract:board/b"].acl == ["exec"]
 
@@ -110,8 +113,8 @@ def test_mixed_formats_resolve_like_text(tmp_path):
             (tmp_path / f"{path.stem}.docx").write_bytes(docx(pages))
         else:
             (tmp_path / f"{path.stem}.pdf").write_bytes(text_pdf(pages))
-    mixed = {r.record_id: _facts(r) for r in load_contracts(tmp_path)}
-    plain = {r.record_id: _facts(r) for r in load_contracts(src)}
+    mixed = {r.record_id: _facts(r) for r in load_contracts(tmp_path, config=MA)}
+    plain = {r.record_id: _facts(r) for r in load_contracts(src, config=MA)}
     assert mixed == plain
 
 
@@ -127,10 +130,12 @@ def _write_csv(path: Path) -> None:
 def test_csv_crm_matches_json(tmp_path):
     _write_csv(tmp_path / "accounts.csv")
     from_csv = {
-        r.record_id: (r.name, r.phone, _facts(r)) for r in load_crm(tmp_path / "accounts.csv")
+        r.record_id: (r.name, r.phone, _facts(r))
+        for r in load_crm(tmp_path / "accounts.csv", config=MA)
     }
     from_json = {
-        r.record_id: (r.name, r.phone, _facts(r)) for r in load_crm(DATA / "crm" / "accounts.json")
+        r.record_id: (r.name, r.phone, _facts(r))
+        for r in load_crm(DATA / "crm" / "accounts.json", config=MA)
     }
     assert from_csv == from_json
 
@@ -138,7 +143,7 @@ def test_csv_crm_matches_json(tmp_path):
 def test_load_all_reads_csv_crm(tmp_path):
     (tmp_path / "crm").mkdir()
     _write_csv(tmp_path / "crm" / "accounts.csv")
-    records = load_all(tmp_path)
+    records = load_all(tmp_path, config=MA)
     assert {r.source for r in records} == {"crm"} and len(records) > 20
 
 
@@ -151,10 +156,12 @@ def test_xlsx_crm_matches_json(tmp_path):
     rows = json.loads((DATA / "crm" / "accounts.json").read_text(encoding="utf-8"))
     path = tmp_path / "accounts.xlsx"
     path.write_bytes(xlsx(rows, DATE_COLUMNS))
-    from_xlsx = {r.record_id: (r.name, r.phone, r.tax_id, _facts(r)) for r in load_crm(path)}
+    from_xlsx = {
+        r.record_id: (r.name, r.phone, r.tax_id, _facts(r)) for r in load_crm(path, config=MA)
+    }
     from_json = {
         r.record_id: (r.name, r.phone, r.tax_id, _facts(r))
-        for r in load_crm(DATA / "crm" / "accounts.json")
+        for r in load_crm(DATA / "crm" / "accounts.json", config=MA)
     }
     assert from_xlsx.keys() == from_json.keys()
     # renewal dates written as ISO in JSON come back from Excel serials unchanged
@@ -188,7 +195,7 @@ def test_xlsx_numeric_tax_id_lost_its_leading_zeros(tmp_path):
     row = {"Id": "X", "Account Name": "Acme", "ICE": 133528873882, "Owner": "A B"}
     path = tmp_path / "accounts.xlsx"
     path.write_bytes(xlsx([row]))
-    rec = load_crm(path)[0]
+    rec = load_crm(path, config=MA)[0]
     assert rec.tax_id in (None, "000133528873882")
 
 

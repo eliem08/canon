@@ -26,7 +26,8 @@ PATTERNS = {
     "party": r"^(?:Le Client|Customer)\s*:\s*(.+)$",
     # OCR may reorder a right-to-left line, so take the whole line and drop the label words
     "party_ar": r"^(.*الطرف.*)$",
-    "tax_id": r"(?:ICE|Tax ID \(ICE\))\s*:?\s*(\d{15})",
+    # Moroccan ICE (15 digits) or US EIN (12-3456789)
+    "tax_id": r"(?:ICE|EIN|Tax ID(?: \((?:ICE|EIN)\))?)\s*:?\s*(\d{15}|\d{2}-\d{7})\b",
     "address": r"^(?:Siège social|Registered office)\s*:\s*(.+)$",
     "contact": r"^Contact\s*:\s*(.+)$",
     # amounts and dates are captured loosely and validated by canon.ingest.parsing

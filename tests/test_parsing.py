@@ -10,6 +10,7 @@ from pathlib import Path
 
 import pytest
 
+from canon.ingest.config import IngestConfig
 from canon.ingest.contracts import parse_contract
 from canon.ingest.crm import CRMFieldMap, crm_row_to_record, load_crm
 from canon.ingest.parsing import (
@@ -21,6 +22,8 @@ from canon.ingest.parsing import (
     parse_identifier,
     parse_phone,
 )
+
+MA = IngestConfig(default_country="212", currency="MAD")  # these tests use Moroccan data
 
 CASES = json.loads(
     (Path(__file__).parent / "fixtures" / "parsing_cases.json").read_text(encoding="utf-8")
@@ -228,6 +231,7 @@ def test_crm_quarantines_instead_of_guessing():
         "crm.json",
         CRMFieldMap(),
         ("sales",),
+        MA,
     )
     facts = {f.field for f in r.facts}
     assert "contract_value" not in facts and "renewal_date" not in facts and r.phone is None
@@ -253,17 +257,19 @@ def test_crm_file_with_mixed_date_conventions_refuses_ambiguous_dates(tmp_path):
     ]
     path = tmp_path / "crm.json"
     path.write_text(json.dumps(rows), encoding="utf-8")
-    records = {r.record_id: r for r in load_crm(path)}
+    records = {r.record_id: r for r in load_crm(path, config=MA)}
     assert [i.reason for i in records["crm:c"].issues] == ["conflicting_date_conventions_in_file"]
     assert not any(f.field == "renewal_date" for f in records["crm:c"].facts)
 
 
 def test_contract_long_form_dates_and_currency_guard():
-    rec = parse_contract(CONTRACT.format(sig="17 mars 2026", amt="1,426,000.00 MAD"), "c:1", "x")[
-        "record"
-    ]
+    rec = parse_contract(
+        CONTRACT.format(sig="17 mars 2026", amt="1,426,000.00 MAD"), "c:1", "x", config=MA
+    )["record"]
     assert rec.updated_at == date(2026, 3, 17)
     assert [f.value for f in rec.facts if f.field == "contract_value"] == [1_426_000]
-    eur = parse_contract(CONTRACT.format(sig="17/03/2026", amt="450 000 EUR"), "c:2", "x")["record"]
+    eur = parse_contract(
+        CONTRACT.format(sig="17/03/2026", amt="450 000 EUR"), "c:2", "x", config=MA
+    )["record"]
     assert not any(f.field == "contract_value" for f in eur.facts)
     assert eur.issues[0].reason == "unexpected_currency:EUR"

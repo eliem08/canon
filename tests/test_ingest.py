@@ -3,9 +3,12 @@ from datetime import date
 from pathlib import Path
 
 from canon.ingest import load_all
+from canon.ingest.config import IngestConfig
 from canon.ingest.contracts import load_contracts, parse_contract
 from canon.ingest.crm import CRMFieldMap, crm_row_to_record
 from canon.ingest.slack import SlackConfig, channel_to_record, humanize_channel
+
+MA = IngestConfig(default_country="212", currency="MAD")  # these tests use Moroccan data
 
 DATA = Path(__file__).resolve().parents[1] / "data" / "synthetic"
 
@@ -25,7 +28,7 @@ def test_crm_row():
         "Renewal Date": "01/03/2027",
         "LastModifiedDate": "2026-07-06T12:00:00Z",
     }
-    r = crm_row_to_record(row, "crm.json", CRMFieldMap(), ("sales",))
+    r = crm_row_to_record(row, "crm.json", CRMFieldMap(), ("sales",), MA)
     assert r.record_id == "crm:001X" and r.domain == "acme.ma" and r.phone == "+212522123456"
     facts = {f.field: f for f in r.facts}
     assert facts["contract_value"].value == 450_000
@@ -43,7 +46,7 @@ def test_slack_channel_extracts_mentions_and_facts():
         {"ts": "1735898400", "text": "renouvellement dyal acme f 01/02/2027"},
         {"ts": "1735984800", "text": "contact chez acme: info@acme.ma, 3ayto l 0661234567"},
     ]
-    r = channel_to_record(channel, messages, {"U1": "Nadia Berrada"}, SlackConfig(), "slack")
+    r = channel_to_record(channel, messages, {"U1": "Nadia Berrada"}, SlackConfig(), "slack", MA)
     assert r.name == "acme log" and r.alt_names == ["Acme Logistique"]
     assert r.status == "archived" and r.domain == "acme.ma" and r.phone == "+212661234567"
     facts = {f.field: f.value for f in r.facts}
@@ -76,7 +79,7 @@ Article 12 - Le présent contrat annule et remplace la version 1 du contrat N° 
 
 
 def test_parse_contract():
-    parsed = parse_contract(CONTRACT, "contract:x", "x.txt")
+    parsed = parse_contract(CONTRACT, "contract:x", "x.txt", config=MA)
     r = parsed["record"]
     assert (parsed["number"], parsed["version"], parsed["supersedes"]) == ("CN-1", 2, 1)
     assert r.name == "Acme SARL" and r.alt_names == ["أكمي ش.م.م"]
@@ -89,7 +92,7 @@ def test_parse_contract():
 def test_older_contract_versions_are_superseded(tmp_path):
     (tmp_path / "a_v2.txt").write_text(CONTRACT, encoding="utf-8")
     (tmp_path / "a_v1.txt").write_text(CONTRACT.replace("Version : 2", "Version : 1"))
-    status = {r.record_id: r.status for r in load_contracts(tmp_path)}
+    status = {r.record_id: r.status for r in load_contracts(tmp_path, config=MA)}
     assert status == {"contract:a_v1": "superseded", "contract:a_v2": "active"}
 
 

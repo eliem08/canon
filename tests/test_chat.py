@@ -11,6 +11,8 @@ from canon.ingest.chat import load_teams, load_whatsapp, parse_whatsapp, teams_t
 from canon.ingest.config import IngestConfig
 from canon.mcp_server.service import _principals
 
+MA = IngestConfig(default_country="212", currency="MAD")  # these tests use Moroccan data
+
 FIX = Path(__file__).parent / "fixtures" / "chat"
 WA = FIX / "WhatsApp Chat with Client Rif Ciments.txt"
 
@@ -68,7 +70,7 @@ def test_whatsapp_day_month_order_is_inferred_from_the_file_or_configured():
 
 def test_whatsapp_record_facts_citations_and_participant_acl(tmp_path):
     shutil.copy(WA, tmp_path / WA.name)
-    (rec,) = load_whatsapp(tmp_path)
+    (rec,) = load_whatsapp(tmp_path, ingest=MA)
     assert rec.record_id.startswith("whatsapp:") and rec.source == "slack"
     assert rec.name == "rif ciments"
     facts = {f.field: f for f in rec.facts}
@@ -91,7 +93,7 @@ def test_teams_html_bodies():
 
 
 def test_teams_records_and_acls(export):
-    recs = {r.name: r for r in load_teams(export / "teams")}
+    recs = {r.name: r for r in load_teams(export / "teams", ingest=MA)}
     standard, private = recs["atlas logistique"], recs["zitoun"]  # "deal-" is a channel prefix
     assert standard.acl == ["sales"] and standard.alt_names == ["Atlas Logistique"]
     assert private.acl == ["teams-user:aad-omar"]
@@ -107,14 +109,14 @@ def test_unsafe_teams_channel_id(export):
     channels[0]["id"] = "../../etc"
     (export / "teams" / "channels.json").write_text(json.dumps(channels))
     with pytest.raises(ValueError, match="unsafe Teams channel id"):
-        load_teams(export / "teams")
+        load_teams(export / "teams", ingest=MA)
 
 
 def test_load_all_reads_both_and_the_deployment_file_can_share_whatsapp(export):
-    sources = {r.record_id.split(":")[0] for r in load_all(export)}
+    sources = {r.record_id.split(":")[0] for r in load_all(export, config=MA)}
     assert sources == {"whatsapp", "teams"}
     (export / "canon.json").write_text(json.dumps({"whatsapp": {"acl": ["sales"]}}))
-    (wa,) = [r for r in load_all(export) if r.record_id.startswith("whatsapp:")]
+    (wa,) = [r for r in load_all(export, config=MA) if r.record_id.startswith("whatsapp:")]
     assert wa.acl == ["sales"]
 
 

@@ -8,7 +8,10 @@ from urllib.parse import parse_qs, urlsplit
 import pytest
 
 from canon.ingest import load_all
+from canon.ingest.config import IngestConfig
 from canon.ingest.pull import PullError, pull_hubspot, pull_salesforce, write_export
+
+MA = IngestConfig(default_country="212", currency="MAD")  # these tests use Moroccan data
 
 TOKEN = "test-token-not-real"
 
@@ -118,7 +121,7 @@ def test_pulled_export_goes_through_the_normal_ingest(tmp_path):
     with HubSpot() as api:
         rows = pull_hubspot(TOKEN, {"contract_value": "annual_contract_value"}, base=api.base)
     write_export(rows, tmp_path / "crm" / "accounts.json")
-    recs = {r.name: r for r in load_all(tmp_path)}
+    recs = {r.name: r for r in load_all(tmp_path, config=MA)}
     atlas = recs["Atlas Logistique"]
     assert atlas.phone == "+212522123456" and atlas.domain == "atlas-logistique.ma"
     facts = {f.field: f.value for f in atlas.facts}

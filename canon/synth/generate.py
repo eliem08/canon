@@ -20,6 +20,7 @@ import shutil
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
+from typing import ClassVar
 
 from canon.synth.seeds import REPS, SEEDS, SIGNATORIES, CustomerSeed
 
@@ -81,6 +82,49 @@ class Truth:
 
 
 class Generator:
+    """The Moroccan profile (French, Darija, Arabic names, MAD). Locale details are class attributes
+    and small hooks so another profile can subclass it (see `canon/synth/west.py`)."""
+
+    SEEDS = SEEDS
+    REPS = REPS
+    SIGNATORIES = SIGNATORIES
+    VENDOR = VENDOR
+    IDENTITIES = IDENTITIES
+    CURRENCY = "MAD"
+    NUMERIC_DATE = "%d/%m/%Y"  # how people in this locale write dates by hand
+    TAX_COLUMN = "ICE"
+    CONTACT_NAMES = ("Hamid", "Samira", "Driss", "Loubna", "Yassine", "Ghita", "Reda", "Asmae")
+    OLD_STREETS = ("Allal Ben Abdellah", "Ibn Batouta", "Al Moutanabbi", "Oued Sebou")
+    # chat wording ({u}: user mention, {m}: customer mention, {v}: amount, {d}: date)
+    MENTIONS = ("{nick}", "{nick_lower}", "chrika dyal {nick_lower}", "{name}")
+    TEMPLATES_OWNER = (
+        "Salam, mn daba <@{u}> howa l'owner dyal {m}",
+        "FYI <@{u}> reprend le compte {m} à partir d'aujourd'hui",
+        "Account owner: <@{u}> ({m})",
+    )
+    TEMPLATES_VALUE = (
+        "Deal signé m3a {m}: {v} par an",
+        "contrat {m} tla3 l {v} 🎉",
+        "Nouveau montant annuel pour {m}: {v}",
+    )
+    TEMPLATES_RENEWAL = (
+        "renouvellement dyal {m} f {d}",
+        "Renewal {m} prévu le {d}",
+        "rappel: date de renouvellement {m} = {d}",
+    )
+    CHATTER = (
+        "chkon 3ndo l'update 3la {m}?",
+        "rappel: meeting m3a {m} ghda 10h",
+        "{m} se plaignent du retard de livraison, 3afak tchouf m3ahom",
+        "wach kayn chi news 3la {m}?",
+        "Envoyé la facture à {m}",
+        "{m} bghaw demo dyal la nouvelle version",
+    )
+    CONTACT_EMAIL_POST = "contact chez {m}: {e}"
+    CONTACT_PHONE_POST = "3ayto l {n} f {p}"
+    CHANNEL_PURPOSE = "Suivi compte {m}"
+    CHANNEL_TOPICS = ("", "Kolchi 3la had chrika hna", "Account channel")
+
     def __init__(self, seed: int = DEFAULT_SEED) -> None:
         self.rng = random.Random(seed)
         self.seed = seed
@@ -158,12 +202,22 @@ class Generator:
             return f"{value / 1000:g}k MAD"
         return str(value)
 
+    # ------------------------------------------------------------------ locale hooks
+    def _new_tax_id(self) -> str:  # ICE: 15 digits
+        return "00" + "".join(self.rng.choices("0123456789", k=13))
+
+    def _new_phone(self, mobile: bool) -> str:  # E.164
+        return ("+2126" if mobile else "+2125") + "".join(self.rng.choices("0123456789", k=8))
+
+    def _old_address(self) -> str:
+        return f"{self.rng.randint(2, 140)} Rue {self.rng.choice(self.OLD_STREETS)}"
+
     # ------------------------------------------------------------------ truth
     def build_truths(self) -> list[Truth]:
         rng = self.rng
         truths = []
-        for idx, seed in enumerate(SEEDS, start=1):
-            owner, previous = rng.sample([name for _, name in REPS], 2)
+        for idx, seed in enumerate(self.SEEDS, start=1):
+            owner, previous = rng.sample([name for _, name in self.REPS], 2)
             v1_signed = self._date_between(date(2023, 1, 10), date(2024, 6, 30))
             v1_start = v1_signed + timedelta(days=rng.randint(5, 30))
             v1_start = v1_start.replace(day=1)
@@ -177,18 +231,15 @@ class Generator:
             moved = rng.random() < 0.2
             old_address = None
             if moved:
-                streets = ["Allal Ben Abdellah", "Ibn Batouta", "Al Moutanabbi", "Oued Sebou"]
-                old_address = f"{rng.randint(2, 140)} Rue {rng.choice(streets)}"
+                old_address = self._old_address()
             truths.append(
                 Truth(
                     entity_id=f"E{idx:02d}",
                     seed=seed,
-                    tax_id=self._unique(lambda: "00" + "".join(rng.choices("0123456789", k=13))),
-                    phone=self._unique(lambda: "+2125" + "".join(rng.choices("0123456789", k=8))),
-                    mobile=self._unique(lambda: "+2126" + "".join(rng.choices("0123456789", k=8))),
-                    contact_first=rng.choice(
-                        ["Hamid", "Samira", "Driss", "Loubna", "Yassine", "Ghita", "Reda", "Asmae"]
-                    ),
+                    tax_id=self._unique(self._new_tax_id),
+                    phone=self._unique(lambda: self._new_phone(mobile=False)),
+                    mobile=self._unique(lambda: self._new_phone(mobile=True)),
+                    contact_first=rng.choice(list(self.CONTACT_NAMES)),
                     address=seed.street,
                     old_address=old_address,
                     owner=owner,
@@ -201,7 +252,7 @@ class Generator:
                     v1_renewal=v1_renewal,
                     v2_signed=v2_signed,
                     v2_renewal=v2_renewal,
-                    signatory=rng.choice(SIGNATORIES),
+                    signatory=rng.choice(self.SIGNATORIES),
                     owner_change_in_slack_only=False,  # decided once channels are known
                     crm_value_stale=rng.random() < 0.3,
                 )
@@ -283,7 +334,7 @@ class Generator:
                     notes.append("free_mail")
                 email = f"{local}@{domain}"
             renewal_str = (
-                renewal.isoformat() if rng.random() < 0.6 else renewal.strftime("%d/%m/%Y")
+                renewal.isoformat() if rng.random() < 0.6 else renewal.strftime(self.NUMERIC_DATE)
             )
             record = {
                 "Id": acc_id,
@@ -293,11 +344,11 @@ class Generator:
                 "Primary Contact Email": email,
                 "Billing Street": address if rng.random() < 0.85 else None,
                 "Billing City": rng.choice([s.city, s.city.upper(), self._strip_accents(s.city)]),
-                "ICE": t.tax_id if rng.random() < (0.5 if primary else 0.25) else None,
+                self.TAX_COLUMN: t.tax_id if rng.random() < (0.5 if primary else 0.25) else None,
                 "Industry": s.industry,
                 "Owner": owner,
                 "Annual Contract Value": value if rng.random() < 0.5 else self._money(value),
-                "Currency": "MAD",
+                "Currency": self.CURRENCY,
                 "Renewal Date": renewal_str,
                 "LastModifiedDate": datetime.combine(
                     modified, datetime.min.time().replace(hour=rng.randint(8, 18))
@@ -339,7 +390,9 @@ class Generator:
                 {"type": "message", "user": user, "text": text, "ts": f"{ts.timestamp():.6f}"}
             )
 
-        mention = rng.choice([nick, nick.lower(), f"chrika dyal {nick.lower()}", s.name])
+        mention = rng.choice(
+            [m.format(nick=nick, nick_lower=nick.lower(), name=s.name) for m in self.MENTIONS]
+        )
         owner_change = None
         if archived:
             start = t.v1_signed - timedelta(days=30)
@@ -353,43 +406,25 @@ class Generator:
             owner = t.owner
             value, renewal = t.v2_value, t.v2_renewal
         author = uid[owner]
-        templates_owner = [
-            "Salam, mn daba <@{u}> howa l'owner dyal {m}",
-            "FYI <@{u}> reprend le compte {m} à partir d'aujourd'hui",
-            "Account owner: <@{u}> ({m})",
-        ]
-        templates_value = [
-            "Deal signé m3a {m}: {v} par an",
-            "contrat {m} tla3 l {v} 🎉",
-            "Nouveau montant annuel pour {m}: {v}",
-        ]
-        templates_renewal = [
-            "renouvellement dyal {m} f {d}",
-            "Renewal {m} prévu le {d}",
-            "rappel: date de renouvellement {m} = {d}",
-        ]
-        chatter = [
-            "chkon 3ndo l'update 3la {m}?",
-            "rappel: meeting m3a {m} ghda 10h",
-            "{m} se plaignent du retard de livraison, 3afak tchouf m3ahom",
-            "wach kayn chi news 3la {m}?",
-            "Envoyé la facture à {m}",
-            "{m} bghaw demo dyal la nouvelle version",
-        ]
+        templates_owner = list(self.TEMPLATES_OWNER)
+        templates_value = list(self.TEMPLATES_VALUE)
+        templates_renewal = list(self.TEMPLATES_RENEWAL)
+        chatter = list(self.CHATTER)
         posts = [
             ("value", rng.choice(templates_value).format(m=mention, v=self._money(value))),
             (
                 "renewal",
-                rng.choice(templates_renewal).format(m=mention, d=renewal.strftime("%d/%m/%Y")),
+                rng.choice(templates_renewal).format(
+                    m=mention, d=renewal.strftime(self.NUMERIC_DATE)
+                ),
             ),
         ]
         if rng.random() < 0.75:
             email = f"{rng.choice(['contact', t.contact_first.lower()])}@{s.domain}"
-            posts.append(("contact", f"contact chez {mention}: {email}"))
+            posts.append(("contact", self.CONTACT_EMAIL_POST.format(m=mention, e=email)))
         if rng.random() < 0.5:
-            posts.append(
-                ("contact", f"3ayto l {t.contact_first} f {self._phone_variant(t.mobile)}")
-            )
+            phone = self._phone_variant(t.mobile)
+            posts.append(("contact", self.CONTACT_PHONE_POST.format(n=t.contact_first, p=phone)))
         posts += [
             ("chatter", rng.choice(chatter).format(m=mention)) for _ in range(rng.randint(1, 3))
         ]
@@ -411,8 +446,8 @@ class Generator:
             "name": name,
             "created": int(datetime.combine(start, datetime.min.time(), tzinfo=UTC).timestamp()),
             "is_archived": archived,
-            "purpose": {"value": f"Suivi compte {mention}"},
-            "topic": {"value": rng.choice(["", "Kolchi 3la had chrika hna", "Account channel"])},
+            "purpose": {"value": self.CHANNEL_PURPOSE.format(m=mention)},
+            "topic": {"value": rng.choice(list(self.CHANNEL_TOPICS))},
             "members": sorted({author, rng.choice(list(users))}),
         }
         rid = f"slack:{cid}"
@@ -450,7 +485,7 @@ class Generator:
                 f"Version: {version}\n"
                 f"Signature date: {signed.strftime(fmt)}\n\n"
                 "BETWEEN\n"
-                f"{VENDOR}, hereinafter the Provider,\n"
+                f"{self.VENDOR}, hereinafter the Provider,\n"
                 "AND\n"
                 f"Customer: {party}\n"
                 f"Tax ID (ICE): {t.tax_id}\n"
@@ -479,7 +514,7 @@ class Generator:
             f"Version : {version}\n"
             f"Date de signature : {signed.strftime(fmt)}\n\n"
             "ENTRE LES SOUSSIGNÉS :\n"
-            f"{VENDOR}, ci-après « le Prestataire »,\n"
+            f"{self.VENDOR}, ci-après « le Prestataire »,\n"
             "ET\n"
             f"Le Client : {party}\n"
             f"{arabic_line}"
@@ -501,7 +536,7 @@ class Generator:
     def generate(self, out_dir: Path) -> dict:
         rng = self.rng
         truths = self.build_truths()
-        users = dict(REPS)
+        users = dict(self.REPS)
         crm: list[dict] = []
         channels: list[dict] = []
         channel_days: dict[str, dict[str, list[dict]]] = {}
@@ -555,7 +590,7 @@ class Generator:
                 "owner": t.owner,
                 "contract_number": t.contract_number,
                 "contract_value": t.v2_value,
-                "currency": "MAD",
+                "currency": self.CURRENCY,
                 "contract_start": t.v2_signed.replace(day=1).isoformat(),
                 "renewal_date": t.v2_renewal.isoformat(),
                 "signatory": t.signatory,
@@ -570,7 +605,7 @@ class Generator:
         _write_json(out_dir / "crm" / "accounts.json", crm)
         _write_json(
             out_dir / "slack" / "users.json",
-            [{"id": u, "name": n.split()[0].lower(), "real_name": n} for u, n in REPS],
+            [{"id": u, "name": n.split()[0].lower(), "real_name": n} for u, n in self.REPS],
         )
         _write_json(out_dir / "slack" / "channels.json", sorted(channels, key=lambda c: c["name"]))
         for name, days in channel_days.items():
@@ -589,7 +624,8 @@ class Generator:
             "record_notes": dict(sorted(self.notes.items())),
         }
         _write_json(out_dir / "ground_truth" / "ground_truth.json", truth)
-        _write_json(out_dir / "identities.json", IDENTITIES)
+        _write_json(out_dir / "identities.json", self.IDENTITIES)
+        self.write_extra(out_dir)
         from canon.evals.questions import build_questions  # eval set derives from the truth
 
         _write_json(
@@ -597,6 +633,12 @@ class Generator:
             [q.model_dump() for q in build_questions(truth)],
         )
         return truth
+
+    # the deployment settings a real client with this data would write (docs/DEPLOY.md)
+    DEPLOYMENT: ClassVar[dict] = {"ingest": {"default_country": "212", "currency": "MAD"}}
+
+    def write_extra(self, out_dir: Path) -> None:
+        _write_json(out_dir / "canon.json", self.DEPLOYMENT)
 
 
 def _write_json(path: Path, data) -> None:
