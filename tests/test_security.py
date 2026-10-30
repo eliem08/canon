@@ -284,3 +284,10 @@ def test_unsafe_slack_channel_names_stop_the_ingest(tmp_path, name):
     (slack / "channels.json").write_text(json.dumps(channels), encoding="utf-8")
     with pytest.raises(ValueError, match="unsafe Slack channel name"):
         load_slack(slack)
+
+
+def test_health_answers_without_a_token_and_reveals_no_customer_data(http_server):
+    _, url, _, _ = http_server
+    r = httpx2.get(f"{url}/health")
+    assert r.status_code == 200
+    assert r.json() == {"status": "ok", "customers_loaded": True}

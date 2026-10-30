@@ -211,6 +211,21 @@ def cmd_pilot(args: argparse.Namespace) -> None:
         print("The intake check found problems: read intake_check.md first.")
 
 
+def cmd_purge(args: argparse.Namespace) -> None:
+    from canon.purge import PurgeError, purge, render_receipt
+
+    try:
+        receipt = purge(Path(args.out), dry_run=not args.yes)
+    except PurgeError as exc:
+        raise SystemExit(f"canon purge: {exc}") from None
+    text = render_receipt(receipt)
+    if args.receipt:
+        Path(args.receipt).write_text(text, encoding="utf-8")
+    print(text)
+    if not args.yes:
+        print(f"Dry run: {len(receipt['files'])} files would be deleted. Add --yes to delete.")
+
+
 def write_deliverables(out: Path, report: str, review, records, overrides: Path | None) -> None:
     """The HTML report and the offline review page the client fills in (see canon/deliver.py)."""
     import hashlib
@@ -393,6 +408,12 @@ def main(argv: list[str] | None = None) -> None:
     pi.add_argument("--as-of", default=None)
     pi.add_argument("--compare", default=None, help="a previous audit.json: report what changed")
     pi.set_defaults(func=cmd_pilot)
+
+    pu = sub.add_parser("purge", help="delete an output folder and print a deletion receipt")
+    pu.add_argument("--out", required=True)
+    pu.add_argument("--yes", action="store_true", help="really delete (default: dry run)")
+    pu.add_argument("--receipt", default=None, help="also write the receipt here (outside --out)")
+    pu.set_defaults(func=cmd_purge)
 
     c = sub.add_parser("check", help="day-1 intake check of a client export (no resolution)")
     c.add_argument("--data", default=str(_data_dir()))

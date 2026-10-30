@@ -55,6 +55,13 @@ def build_server(
         }
     server = MCPServer("canon", instructions=INSTRUCTIONS, version="0.5.0", **auth)
 
+    @server.custom_route("/health", methods=["GET"])
+    async def health(_request):
+        """Liveness for a load balancer or uptime check. No auth and no customer data."""
+        from starlette.responses import JSONResponse
+
+        return JSONResponse({"status": "ok", "customers_loaded": len(service.clusters) > 0})
+
     def who(caller: str) -> str:
         token = get_access_token()
         if token is not None:
