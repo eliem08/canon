@@ -1,0 +1,76 @@
+{
+  "callers": {
+    "youssef.benali": {
+      "name": "Youssef Benali",
+      "groups": [
+        "sales"
+      ]
+    },
+    "salma.el.idrissi": {
+      "name": "Salma El Idrissi",
+      "groups": [
+        "sales"
+      ]
+    },
+    "karim.tazi": {
+      "name": "Karim Tazi",
+      "groups": [
+        "sales"
+      ]
+    },
+    "nadia.berrada": {
+      "name": "Nadia Berrada",
+      "groups": [
+        "sales"
+      ]
+    },
+    "mehdi.alaoui": {
+      "name": "Mehdi Alaoui",
+      "groups": [
+        "sales"
+      ]
+    },
+    "imane.chraibi": {
+      "name": "Imane Chraibi",
+      "groups": [
+        "sales"
+      ]
+    },
+    "omar.fassi": {
+      "name": "Omar Fassi",
+      "groups": [
+        "sales"
+      ]
+    },
+    "leila.bennani": {
+      "name": "Leila Bennani",
+      "groups": [
+        "sales"
+      ]
+    },
+    "hind.legal": {
+      "name": "Hind Amrani (legal counsel)",
+      "groups": [
+        "legal"
+      ]
+    },
+    "ceo": {
+      "name": "Chief Executive Officer",
+      "groups": [
+        "exec"
+      ]
+    },
+    "revops.admin": {
+      "name": "RevOps admin",
+      "groups": [
+        "sales",
+        "legal",
+        "exec"
+      ]
+    },
+    "intern": {
+      "name": "Summer intern",
+      "groups": []
+    }
+  }
+}

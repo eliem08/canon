@@ -1,0 +1,19 @@
+SERVICES AGREEMENT
+Agreement No: CN-2024-268
+Version: 1
+Signature date: 01/06/2024
+
+BETWEEN
+Tadamon Solutions SARL, hereinafter the Provider,
+AND
+Customer: Fennec Software LTD
+Tax ID (ICE): 006697165490708
+Registered office: Casanearshore Park, Shore 7, Casablanca
+Represented by: Adil Sefrioui
+Contact: contact@fennecsoft.io - Tel: +212500042077
+
+Clause 1 - Scope. The Provider supplies data platform services.
+Clause 4 - Fees. The annual fee is 765,000 MAD excluding VAT.
+Clause 5 - Term. Effective date: 01/06/2024. Renewal date: 01/06/2026.
+
+Signed for the Customer: Adil Sefrioui

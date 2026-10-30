@@ -1,0 +1,362 @@
+[
+  {
+    "id": "Q01",
+    "type": "contract_value",
+    "question": "Quel est le montant annuel actuel du contrat de Atlas Logistique ?",
+    "entity_id": "E01",
+    "mention": "Atlas Logistique",
+    "mention_style": "canonical",
+    "expected": 461000
+  },
+  {
+    "id": "Q02",
+    "type": "contract_value",
+    "question": "Quel est le montant annuel actuel du contrat de Sahara Tech Solutions S.A. ?",
+    "entity_id": "E03",
+    "mention": "Sahara Tech Solutions S.A.",
+    "mention_style": "legal",
+    "expected": 1579000
+  },
+  {
+    "id": "Q03",
+    "type": "contract_value",
+    "question": "Ch7al kaykhalsou f l3am daba, نسيج شفشاون?",
+    "entity_id": "E11",
+    "mention": "نسيج شفشاون",
+    "mention_style": "arabic",
+    "expected": 872000
+  },
+  {
+    "id": "Q04",
+    "type": "contract_value",
+    "question": "Quel est le montant annuel actuel du contrat de Rif Cement ?",
+    "entity_id": "E12",
+    "mention": "Rif Cement",
+    "mention_style": "alias",
+    "expected": 1666000
+  },
+  {
+    "id": "Q05",
+    "type": "contract_value",
+    "question": "Quel est le montant annuel actuel du contrat de Tanger Med Freight SARL ?",
+    "entity_id": "E13",
+    "mention": "Tanger Med Freight SARL",
+    "mention_style": "legal",
+    "expected": 1341000
+  },
+  {
+    "id": "Q06",
+    "type": "contract_value",
+    "question": "Quel est le montant annuel actuel du contrat de مدينة فارما ?",
+    "entity_id": "E14",
+    "mention": "مدينة فارما",
+    "mention_style": "arabic",
+    "expected": 600000
+  },
+  {
+    "id": "Q07",
+    "type": "contract_value",
+    "question": "Ch7al kaykhalsou f l3am daba, Bab Rayan Consulting SARL?",
+    "entity_id": "E18",
+    "mention": "Bab Rayan Consulting SARL",
+    "mention_style": "legal",
+    "expected": 487000
+  },
+  {
+    "id": "Q08",
+    "type": "contract_value",
+    "question": "Ch7al kaykhalsou f l3am daba, atlantic fishing company?",
+    "entity_id": "E20",
+    "mention": "atlantic fishing company",
+    "mention_style": "lower",
+    "expected": 1858000
+  },
+  {
+    "id": "Q09",
+    "type": "contract_value",
+    "question": "Ch7al kaykhalsou f l3am daba, Riad Digital Agency?",
+    "entity_id": "E21",
+    "mention": "Riad Digital Agency",
+    "mention_style": "canonical",
+    "expected": 1382000
+  },
+  {
+    "id": "Q10",
+    "type": "contract_value",
+    "question": "Ch7al kaykhalsou f l3am daba, سوس فريش?",
+    "entity_id": "E22",
+    "mention": "سوس فريش",
+    "mention_style": "arabic",
+    "expected": 536000
+  },
+  {
+    "id": "Q11",
+    "type": "renewal_date",
+    "question": "When is the contract renewal date for Atlas Logisitque?",
+    "entity_id": "E01",
+    "mention": "Atlas Logisitque",
+    "mention_style": "typo",
+    "expected": "2027-12-01"
+  },
+  {
+    "id": "Q12",
+    "type": "renewal_date",
+    "question": "Quelle est la date de renouvellement du contrat de Boulangerie Al Baraka ?",
+    "entity_id": "E05",
+    "mention": "Boulangerie Al Baraka",
+    "mention_style": "canonical",
+    "expected": "2028-03-01"
+  },
+  {
+    "id": "Q13",
+    "type": "renewal_date",
+    "question": "Quelle est la date de renouvellement du contrat de Nour Packaging ?",
+    "entity_id": "E08",
+    "mention": "Nour Packaging",
+    "mention_style": "canonical",
+    "expected": "2027-07-01"
+  },
+  {
+    "id": "Q14",
+    "type": "renewal_date",
+    "question": "Quelle est la date de renouvellement du contrat de oasis agro export ?",
+    "entity_id": "E10",
+    "mention": "oasis agro export",
+    "mention_style": "lower",
+    "expected": "2027-06-01"
+  },
+  {
+    "id": "Q15",
+    "type": "renewal_date",
+    "question": "Imta ghadi ytjedded contrat dyal chrikat Medina Pharma?",
+    "entity_id": "E14",
+    "mention": "chrikat Medina Pharma",
+    "mention_style": "darija",
+    "expected": "2027-08-01"
+  },
+  {
+    "id": "Q16",
+    "type": "renewal_date",
+    "question": "When is the contract renewal date for zitoun cosmetics?",
+    "entity_id": "E15",
+    "mention": "zitoun cosmetics",
+    "mention_style": "lower",
+    "expected": "2027-05-01"
+  },
+  {
+    "id": "Q17",
+    "type": "renewal_date",
+    "question": "When is the contract renewal date for Argan d'Or S.A.?",
+    "entity_id": "E17",
+    "mention": "Argan d'Or S.A.",
+    "mention_style": "legal",
+    "expected": "2027-09-01"
+  },
+  {
+    "id": "Q18",
+    "type": "renewal_date",
+    "question": "Imta ghadi ytjedded contrat dyal chrikat Atlantic Fishing Company?",
+    "entity_id": "E20",
+    "mention": "chrikat Atlantic Fishing Company",
+    "mention_style": "darija",
+    "expected": "2027-04-01"
+  },
+  {
+    "id": "Q19",
+    "type": "renewal_date",
+    "question": "Quelle est la date de renouvellement du contrat de سوس فريش ?",
+    "entity_id": "E22",
+    "mention": "سوس فريش",
+    "mention_style": "arabic",
+    "expected": "2027-08-01"
+  },
+  {
+    "id": "Q20",
+    "type": "renewal_date",
+    "question": "When is the contract renewal date for Yasmine Hotels?",
+    "entity_id": "E25",
+    "mention": "Yasmine Hotels",
+    "mention_style": "alias",
+    "expected": "2027-05-01"
+  },
+  {
+    "id": "Q21",
+    "type": "owner",
+    "question": "Chkoun l'owner dyal sahara tours?",
+    "entity_id": "E04",
+    "mention": "sahara tours",
+    "mention_style": "lower",
+    "expected": "Omar Fassi"
+  },
+  {
+    "id": "Q22",
+    "type": "owner",
+    "question": "Chkoun l'owner dyal marjana distribution?",
+    "entity_id": "E06",
+    "mention": "marjana distribution",
+    "mention_style": "lower",
+    "expected": "Imane Chraibi"
+  },
+  {
+    "id": "Q23",
+    "type": "owner",
+    "question": "Who is the account owner for chrikat Dar El Hana Immobilier?",
+    "entity_id": "E09",
+    "mention": "chrikat Dar El Hana Immobilier",
+    "mention_style": "darija",
+    "expected": "Salma El Idrissi"
+  },
+  {
+    "id": "Q24",
+    "type": "owner",
+    "question": "Chkoun l'owner dyal Rif Cement?",
+    "entity_id": "E12",
+    "mention": "Rif Cement",
+    "mention_style": "alias",
+    "expected": "Youssef Benali"
+  },
+  {
+    "id": "Q25",
+    "type": "owner",
+    "question": "Chkoun l'owner dyal Tanger Med Freight S.A.?",
+    "entity_id": "E13",
+    "mention": "Tanger Med Freight S.A.",
+    "mention_style": "legal",
+    "expected": "Nadia Berrada"
+  },
+  {
+    "id": "Q26",
+    "type": "owner",
+    "question": "Qui est le responsable du compte Kasbah Hosptiality Group ?",
+    "entity_id": "E16",
+    "mention": "Kasbah Hosptiality Group",
+    "mention_style": "typo",
+    "expected": "Imane Chraibi"
+  },
+  {
+    "id": "Q27",
+    "type": "owner",
+    "question": "Qui est le responsable du compte argan d'or ?",
+    "entity_id": "E17",
+    "mention": "argan d'or",
+    "mention_style": "lower",
+    "expected": "Nadia Berrada"
+  },
+  {
+    "id": "Q28",
+    "type": "owner",
+    "question": "Who is the account owner for Bab Rayan Consulting?",
+    "entity_id": "E18",
+    "mention": "Bab Rayan Consulting",
+    "mention_style": "canonical",
+    "expected": "Youssef Benali"
+  },
+  {
+    "id": "Q29",
+    "type": "owner",
+    "question": "Qui est le responsable du compte atlantic fishing company ?",
+    "entity_id": "E20",
+    "mention": "atlantic fishing company",
+    "mention_style": "lower",
+    "expected": "Mehdi Alaoui"
+  },
+  {
+    "id": "Q30",
+    "type": "owner",
+    "question": "Chkoun l'owner dyal Al Massira?",
+    "entity_id": "E23",
+    "mention": "Al Massira",
+    "mention_style": "alias",
+    "expected": "Salma El Idrissi"
+  },
+  {
+    "id": "Q31",
+    "type": "phone",
+    "question": "What is the main phone number of Sahara Tech?",
+    "entity_id": "E03",
+    "mention": "Sahara Tech",
+    "mention_style": "alias",
+    "expected": "+212592846751"
+  },
+  {
+    "id": "Q32",
+    "type": "phone",
+    "question": "Quel est le numéro de téléphone de Tanger Med Freight SARL ?",
+    "entity_id": "E13",
+    "mention": "Tanger Med Freight SARL",
+    "mention_style": "legal",
+    "expected": "+212544469797"
+  },
+  {
+    "id": "Q33",
+    "type": "phone",
+    "question": "What is the main phone number of Medina Pharma S.A.?",
+    "entity_id": "E14",
+    "mention": "Medina Pharma S.A.",
+    "mention_style": "legal",
+    "expected": "+212545140939"
+  },
+  {
+    "id": "Q34",
+    "type": "phone",
+    "question": "Quel est le numéro de téléphone de Zitoun Cosmetics ?",
+    "entity_id": "E15",
+    "mention": "Zitoun Cosmetics",
+    "mention_style": "canonical",
+    "expected": "+212579101995"
+  },
+  {
+    "id": "Q35",
+    "type": "phone",
+    "question": "Quel est le numéro de téléphone de AFC ?",
+    "entity_id": "E20",
+    "mention": "AFC",
+    "mention_style": "alias",
+    "expected": "+212524415035"
+  },
+  {
+    "id": "Q36",
+    "type": "address",
+    "question": "Quelle est l'adresse du siège social de Sahara Tours ?",
+    "entity_id": "E04",
+    "mention": "Sahara Tours",
+    "mention_style": "canonical",
+    "expected": "Route de Rissani"
+  },
+  {
+    "id": "Q37",
+    "type": "address",
+    "question": "Quelle est l'adresse du siège social de dar el hana immobilier ?",
+    "entity_id": "E09",
+    "mention": "dar el hana immobilier",
+    "mention_style": "lower",
+    "expected": "21 Avenue Hassan II"
+  },
+  {
+    "id": "Q38",
+    "type": "address",
+    "question": "Quelle est l'adresse du siège social de Oasis Agro Export ?",
+    "entity_id": "E10",
+    "mention": "Oasis Agro Export",
+    "mention_style": "canonical",
+    "expected": "9 Rue de Marrakech"
+  },
+  {
+    "id": "Q39",
+    "type": "address",
+    "question": "Quelle est l'adresse du siège social de Tanger Med Freight ?",
+    "entity_id": "E13",
+    "mention": "Tanger Med Freight",
+    "mention_style": "canonical",
+    "expected": "Tanger Med Port Zone, Building B4"
+  },
+  {
+    "id": "Q40",
+    "type": "address",
+    "question": "What is the registered office address of Yasmine?",
+    "entity_id": "E25",
+    "mention": "Yasmine",
+    "mention_style": "alias",
+    "expected": "Avenue Mohammed VI, Malabata"
+  }
+]

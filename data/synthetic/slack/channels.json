@@ -1,0 +1,305 @@
+[
+  {
+    "id": "C0M4SY6288",
+    "name": "acc-argan-dor",
+    "created": 1757376000,
+    "is_archived": false,
+    "purpose": {
+      "value": "Suivi compte argan dor"
+    },
+    "topic": {
+      "value": "Account channel"
+    },
+    "members": [
+      "U04",
+      "U08"
+    ]
+  },
+  {
+    "id": "C0K57GT61H",
+    "name": "acc-atlaslog",
+    "created": 1764633600,
+    "is_archived": false,
+    "purpose": {
+      "value": "Suivi compte AtlasLog"
+    },
+    "topic": {
+      "value": "Account channel"
+    },
+    "members": [
+      "U03",
+      "U04"
+    ]
+  },
+  {
+    "id": "C0G95VPQ4R",
+    "name": "acc-fennec",
+    "created": 1756512000,
+    "is_archived": false,
+    "purpose": {
+      "value": "Suivi compte Fennec"
+    },
+    "topic": {
+      "value": "Kolchi 3la had chrika hna"
+    },
+    "members": [
+      "U04",
+      "U06"
+    ]
+  },
+  {
+    "id": "C0K57K0ZF0",
+    "name": "acc-tmf",
+    "created": 1778976000,
+    "is_archived": false,
+    "purpose": {
+      "value": "Suivi compte tmf"
+    },
+    "topic": {
+      "value": ""
+    },
+    "members": [
+      "U04",
+      "U08"
+    ]
+  },
+  {
+    "id": "C0AQE7ZRNA",
+    "name": "client-khg",
+    "created": 1771977600,
+    "is_archived": false,
+    "purpose": {
+      "value": "Suivi compte khg"
+    },
+    "topic": {
+      "value": "Kolchi 3la had chrika hna"
+    },
+    "members": [
+      "U06"
+    ]
+  },
+  {
+    "id": "C0Q4KQF31N",
+    "name": "client-medina-pharm",
+    "created": 1753660800,
+    "is_archived": false,
+    "purpose": {
+      "value": "Suivi compte Medina Pharm"
+    },
+    "topic": {
+      "value": ""
+    },
+    "members": [
+      "U06",
+      "U08"
+    ]
+  },
+  {
+    "id": "C0GRA3T02W",
+    "name": "client-oasisagro",
+    "created": 1779062400,
+    "is_archived": false,
+    "purpose": {
+      "value": "Suivi compte oasis agro"
+    },
+    "topic": {
+      "value": "Kolchi 3la had chrika hna"
+    },
+    "members": [
+      "U02",
+      "U03"
+    ]
+  },
+  {
+    "id": "C0RDSJJSDJ",
+    "name": "deal-atlantic-fishing",
+    "created": 1742515200,
+    "is_archived": false,
+    "purpose": {
+      "value": "Suivi compte atlantic fishing"
+    },
+    "topic": {
+      "value": "Account channel"
+    },
+    "members": [
+      "U03",
+      "U05"
+    ]
+  },
+  {
+    "id": "C0Q8FYPBD1",
+    "name": "deal-chaouentex",
+    "created": 1749081600,
+    "is_archived": false,
+    "purpose": {
+      "value": "Suivi compte chaouen tex"
+    },
+    "topic": {
+      "value": "Account channel"
+    },
+    "members": [
+      "U04",
+      "U06"
+    ]
+  },
+  {
+    "id": "C0ZNRV3PXG",
+    "name": "deal-rif-cement",
+    "created": 1739232000,
+    "is_archived": false,
+    "purpose": {
+      "value": "Suivi compte rif cement"
+    },
+    "topic": {
+      "value": "Kolchi 3la had chrika hna"
+    },
+    "members": [
+      "U01",
+      "U05"
+    ]
+  },
+  {
+    "id": "C028SSZ5RD",
+    "name": "deal-sahara-tech-solutions",
+    "created": 1766966400,
+    "is_archived": false,
+    "purpose": {
+      "value": "Suivi compte Sahara Tech Solutions"
+    },
+    "topic": {
+      "value": "Account channel"
+    },
+    "members": [
+      "U03",
+      "U06"
+    ]
+  },
+  {
+    "id": "C0R4KRZT1H",
+    "name": "deal-zitoun",
+    "created": 1746144000,
+    "is_archived": false,
+    "purpose": {
+      "value": "Suivi compte zitoun"
+    },
+    "topic": {
+      "value": "Account channel"
+    },
+    "members": [
+      "U01",
+      "U08"
+    ]
+  },
+  {
+    "id": "C0P1V6TFLJ",
+    "name": "ext-al-massira-transport",
+    "created": 1775520000,
+    "is_archived": false,
+    "purpose": {
+      "value": "Suivi compte al massira"
+    },
+    "topic": {
+      "value": "Account channel"
+    },
+    "members": [
+      "U01",
+      "U02"
+    ]
+  },
+  {
+    "id": "C04C8VQRYN",
+    "name": "old-argan-dor",
+    "created": 1682640000,
+    "is_archived": true,
+    "purpose": {
+      "value": "Suivi compte argan dor"
+    },
+    "topic": {
+      "value": ""
+    },
+    "members": [
+      "U07",
+      "U08"
+    ]
+  },
+  {
+    "id": "C07FPTMEYP",
+    "name": "old-dar-el-hana",
+    "created": 1691366400,
+    "is_archived": true,
+    "purpose": {
+      "value": "Suivi compte Dar El Hana Immobilier"
+    },
+    "topic": {
+      "value": "Kolchi 3la had chrika hna"
+    },
+    "members": [
+      "U03",
+      "U07"
+    ]
+  },
+  {
+    "id": "C0SFHJJF06",
+    "name": "old-khg",
+    "created": 1707523200,
+    "is_archived": true,
+    "purpose": {
+      "value": "Suivi compte khg"
+    },
+    "topic": {
+      "value": ""
+    },
+    "members": [
+      "U01",
+      "U06"
+    ]
+  },
+  {
+    "id": "C01L6YDM40",
+    "name": "old-saharatech",
+    "created": 1702684800,
+    "is_archived": true,
+    "purpose": {
+      "value": "Suivi compte chrika dyal saharatech"
+    },
+    "topic": {
+      "value": "Account channel"
+    },
+    "members": [
+      "U07",
+      "U08"
+    ]
+  },
+  {
+    "id": "C0KFCE7RZT",
+    "name": "old-saharatour",
+    "created": 1702944000,
+    "is_archived": true,
+    "purpose": {
+      "value": "Suivi compte Sahara Tours"
+    },
+    "topic": {
+      "value": "Account channel"
+    },
+    "members": [
+      "U02",
+      "U04"
+    ]
+  },
+  {
+    "id": "C0JN8J0YGW",
+    "name": "old-zitoun",
+    "created": 1680393600,
+    "is_archived": true,
+    "purpose": {
+      "value": "Suivi compte chrika dyal zitoun"
+    },
+    "topic": {
+      "value": ""
+    },
+    "members": [
+      "U06",
+      "U07"
+    ]
+  }
+]

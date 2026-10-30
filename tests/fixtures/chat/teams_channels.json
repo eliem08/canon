@@ -1,0 +1,6 @@
+[
+  {"id": "19:abc@thread.tacv2", "displayName": "Client - Atlas Logistique", "membershipType": "standard",
+   "description": "Suivi compte Atlas Logistique"},
+  {"id": "19:priv@thread.tacv2", "displayName": "Deal Zitoun", "membershipType": "private",
+   "members": [{"userId": "aad-omar", "displayName": "Omar Fassi"}]}
+]

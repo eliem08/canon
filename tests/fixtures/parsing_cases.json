@@ -1,0 +1,844 @@
+{
+ "description": "Adversarial parsing cases. expect=null means the parser must refuse (quarantine), never guess.",
+ "cases": [
+  {
+   "id": "mo01",
+   "kind": "money",
+   "raw": "1,426,000.00",
+   "expect": 1426000
+  },
+  {
+   "id": "mo02",
+   "kind": "money",
+   "raw": "1.426.000,00",
+   "expect": 1426000
+  },
+  {
+   "id": "mo03",
+   "kind": "money",
+   "raw": "1 426 000,00",
+   "expect": 1426000
+  },
+  {
+   "id": "mo04",
+   "kind": "money",
+   "raw": "1 426 000,00",
+   "expect": 1426000
+  },
+  {
+   "id": "mo05",
+   "kind": "money",
+   "raw": "1 426 000",
+   "expect": 1426000
+  },
+  {
+   "id": "mo06",
+   "kind": "money",
+   "raw": "1'426'000.50",
+   "expect": 1426000.5
+  },
+  {
+   "id": "mo07",
+   "kind": "money",
+   "raw": "1426000",
+   "expect": 1426000
+  },
+  {
+   "id": "mo08",
+   "kind": "money",
+   "raw": "1426000.5",
+   "expect": 1426000.5
+  },
+  {
+   "id": "mo09",
+   "kind": "money",
+   "raw": "1426000,5",
+   "expect": 1426000.5
+  },
+  {
+   "id": "mo10",
+   "kind": "money",
+   "raw": "450k MAD",
+   "expect": 450000
+  },
+  {
+   "id": "mo11",
+   "kind": "money",
+   "raw": "450 K DH",
+   "expect": 450000
+  },
+  {
+   "id": "mo12",
+   "kind": "money",
+   "raw": "1.2M MAD",
+   "expect": 1200000
+  },
+  {
+   "id": "mo13",
+   "kind": "money",
+   "raw": "1,2 million de dirhams",
+   "expect": 1200000
+  },
+  {
+   "id": "mo14",
+   "kind": "money",
+   "raw": "2 millions MAD",
+   "expect": 2000000
+  },
+  {
+   "id": "mo15",
+   "kind": "money",
+   "raw": "MAD 1,426,000",
+   "expect": 1426000
+  },
+  {
+   "id": "mo16",
+   "kind": "money",
+   "raw": "1.426.000 DH HT",
+   "expect": 1426000
+  },
+  {
+   "id": "mo17",
+   "kind": "money",
+   "raw": "1.426.000 dirhams TTC",
+   "expect": 1426000
+  },
+  {
+   "id": "mo18",
+   "kind": "money",
+   "raw": "١٬٤٢٦٬٠٠٠ درهم",
+   "expect": 1426000
+  },
+  {
+   "id": "mo19",
+   "kind": "money",
+   "raw": "١٤٢٦٠٠٠",
+   "expect": 1426000
+  },
+  {
+   "id": "mo20",
+   "kind": "money",
+   "raw": "1,5 million",
+   "expect": 1500000
+  },
+  {
+   "id": "mo21",
+   "kind": "money",
+   "raw": "450.000 MAD",
+   "expect": 450000
+  },
+  {
+   "id": "mo22",
+   "kind": "money",
+   "raw": "1,426",
+   "expect": 1426
+  },
+  {
+   "id": "mo23",
+   "kind": "money",
+   "raw": "0,500",
+   "expect": 0.5
+  },
+  {
+   "id": "mo24",
+   "kind": "money",
+   "raw": 745000,
+   "expect": 745000
+  },
+  {
+   "id": "mo25",
+   "kind": "money",
+   "raw": "1.426,000",
+   "expect": null
+  },
+  {
+   "id": "mo26",
+   "kind": "money",
+   "raw": "1.42.000",
+   "expect": null
+  },
+  {
+   "id": "mo27",
+   "kind": "money",
+   "raw": "12,34,567",
+   "expect": null
+  },
+  {
+   "id": "mo28",
+   "kind": "money",
+   "raw": "1234.567",
+   "expect": null
+  },
+  {
+   "id": "mo29",
+   "kind": "money",
+   "raw": "-5000 MAD",
+   "expect": null
+  },
+  {
+   "id": "mo30",
+   "kind": "money",
+   "raw": "(5 000) MAD",
+   "expect": null
+  },
+  {
+   "id": "mo31",
+   "kind": "money",
+   "raw": "450 000 EUR",
+   "expect": null
+  },
+  {
+   "id": "mo32",
+   "kind": "money",
+   "raw": "€ 450 000",
+   "expect": null
+  },
+  {
+   "id": "mo33",
+   "kind": "money",
+   "raw": "450k ou 500k MAD",
+   "expect": null
+  },
+  {
+   "id": "mo34",
+   "kind": "money",
+   "raw": "MAD",
+   "expect": null
+  },
+  {
+   "id": "mo35",
+   "kind": "money",
+   "raw": "",
+   "expect": null
+  },
+  {
+   "id": "mo36",
+   "kind": "money",
+   "raw": "n/a",
+   "expect": null
+  },
+  {
+   "id": "mo37",
+   "kind": "money",
+   "raw": "1e6",
+   "expect": null
+  },
+  {
+   "id": "mo38",
+   "kind": "money",
+   "raw": "9999999999999",
+   "expect": null
+  },
+  {
+   "id": "mo39",
+   "kind": "money",
+   "raw": "1,426,000.00.00",
+   "expect": null
+  },
+  {
+   "id": "mo40",
+   "kind": "money",
+   "raw": "signé en 2028, 2,6 M MAD",
+   "expect": null,
+   "note": "year and amount separated by ', ' are two numbers, not one token"
+  },
+  {
+   "id": "mo41",
+   "kind": "money",
+   "raw": "2,6 M MAD",
+   "expect": 2600000
+  },
+  {
+   "id": "da01",
+   "kind": "date",
+   "raw": "2027-04-01",
+   "expect": "2027-04-01"
+  },
+  {
+   "id": "da02",
+   "kind": "date",
+   "raw": "2027-04-01T12:00:00Z",
+   "expect": "2027-04-01"
+  },
+  {
+   "id": "da03",
+   "kind": "date",
+   "raw": "01/03/2028",
+   "expect": "2028-03-01"
+  },
+  {
+   "id": "da04",
+   "kind": "date",
+   "raw": "17/03/2026",
+   "expect": "2026-03-17"
+  },
+  {
+   "id": "da05",
+   "kind": "date",
+   "raw": "17-03-2026",
+   "expect": "2026-03-17"
+  },
+  {
+   "id": "da06",
+   "kind": "date",
+   "raw": "17.03.2026",
+   "expect": "2026-03-17"
+  },
+  {
+   "id": "da07",
+   "kind": "date",
+   "raw": "17 mars 2026",
+   "expect": "2026-03-17"
+  },
+  {
+   "id": "da08",
+   "kind": "date",
+   "raw": "1er mars 2028",
+   "expect": "2028-03-01"
+  },
+  {
+   "id": "da09",
+   "kind": "date",
+   "raw": "le 17 Mars 2026",
+   "expect": "2026-03-17"
+  },
+  {
+   "id": "da10",
+   "kind": "date",
+   "raw": "March 1, 2028",
+   "expect": "2028-03-01"
+  },
+  {
+   "id": "da11",
+   "kind": "date",
+   "raw": "1st March 2028",
+   "expect": "2028-03-01"
+  },
+  {
+   "id": "da12",
+   "kind": "date",
+   "raw": "1 March 2028",
+   "expect": "2028-03-01"
+  },
+  {
+   "id": "da13",
+   "kind": "date",
+   "raw": "17 مارس 2026",
+   "expect": "2026-03-17"
+  },
+  {
+   "id": "da14",
+   "kind": "date",
+   "raw": "١٧/٠٣/٢٠٢٦",
+   "expect": "2026-03-17"
+  },
+  {
+   "id": "da15",
+   "kind": "date",
+   "raw": "١٧ مارس ٢٠٢٦",
+   "expect": "2026-03-17"
+  },
+  {
+   "id": "da16",
+   "kind": "date",
+   "raw": "15 غشت 2027",
+   "expect": "2027-08-15"
+  },
+  {
+   "id": "da17",
+   "kind": "date",
+   "raw": "3 janv. 2027",
+   "expect": "2027-01-03"
+  },
+  {
+   "id": "da18",
+   "kind": "date",
+   "raw": "03/04/2026",
+   "expect": "2026-03-04",
+   "dayfirst": false
+  },
+  {
+   "id": "da19",
+   "kind": "date",
+   "raw": "03/04/2026",
+   "expect": "2026-04-03",
+   "dayfirst": true
+  },
+  {
+   "id": "da20",
+   "kind": "date",
+   "raw": "25/03/2026",
+   "expect": null,
+   "dayfirst": false
+  },
+  {
+   "id": "da21",
+   "kind": "date",
+   "raw": "31/02/2026",
+   "expect": null
+  },
+  {
+   "id": "da22",
+   "kind": "date",
+   "raw": "17/03/26",
+   "expect": null
+  },
+  {
+   "id": "da23",
+   "kind": "date",
+   "raw": "mars 2028",
+   "expect": null
+  },
+  {
+   "id": "da24",
+   "kind": "date",
+   "raw": "2028",
+   "expect": null
+  },
+  {
+   "id": "da25",
+   "kind": "date",
+   "raw": "00/00/0000",
+   "expect": null
+  },
+  {
+   "id": "da26",
+   "kind": "date",
+   "raw": "17 mars 2026 ou 18 mars 2026",
+   "expect": null
+  },
+  {
+   "id": "da27",
+   "kind": "date",
+   "raw": "1 janvier 1850",
+   "expect": null
+  },
+  {
+   "id": "da28",
+   "kind": "date",
+   "raw": "TBD",
+   "expect": null
+  },
+  {
+   "id": "da29",
+   "kind": "date",
+   "raw": "2026-13-01",
+   "expect": null
+  },
+  {
+   "id": "da30",
+   "kind": "date",
+   "raw": "17/03/2026 et 20/03/2026",
+   "expect": null
+  },
+  {
+   "id": "ph01",
+   "kind": "phone",
+   "raw": "+212522123456",
+   "expect": "+212522123456"
+  },
+  {
+   "id": "ph02",
+   "kind": "phone",
+   "raw": "05 22 12 34 56",
+   "expect": "+212522123456"
+  },
+  {
+   "id": "ph03",
+   "kind": "phone",
+   "raw": "0522-12-34-56",
+   "expect": "+212522123456"
+  },
+  {
+   "id": "ph04",
+   "kind": "phone",
+   "raw": "00212522123456",
+   "expect": "+212522123456"
+  },
+  {
+   "id": "ph05",
+   "kind": "phone",
+   "raw": "+212 (0)5 22 12 34 56",
+   "expect": "+212522123456"
+  },
+  {
+   "id": "ph06",
+   "kind": "phone",
+   "raw": "+212 5.22.12.34.56",
+   "expect": "+212522123456"
+  },
+  {
+   "id": "ph07",
+   "kind": "phone",
+   "raw": "٠٥٢٢١٢٣٤٥٦",
+   "expect": "+212522123456"
+  },
+  {
+   "id": "ph08",
+   "kind": "phone",
+   "raw": "+٢١٢٥٢٢١٢٣٤٥٦",
+   "expect": "+212522123456"
+  },
+  {
+   "id": "ph09",
+   "kind": "phone",
+   "raw": "06 61 23 45 67",
+   "expect": "+212661234567"
+  },
+  {
+   "id": "ph10",
+   "kind": "phone",
+   "raw": "Tél : 0522 12 34 56",
+   "expect": "+212522123456"
+  },
+  {
+   "id": "ph11",
+   "kind": "phone",
+   "raw": "0522123456 poste 12",
+   "expect": "+212522123456"
+  },
+  {
+   "id": "ph12",
+   "kind": "phone",
+   "raw": "0522123456 / 0522123457",
+   "expect": "+212522123456"
+  },
+  {
+   "id": "ph13",
+   "kind": "phone",
+   "raw": "+33 1 42 68 53 00",
+   "expect": "+33142685300"
+  },
+  {
+   "id": "ph14",
+   "kind": "phone",
+   "raw": "+1 (415) 555-2671",
+   "expect": "+14155552671"
+  },
+  {
+   "id": "ph15",
+   "kind": "phone",
+   "raw": "0612345678 ou 0698765432",
+   "expect": "+212612345678"
+  },
+  {
+   "id": "ph16",
+   "kind": "phone",
+   "raw": "120 000 000",
+   "expect": null
+  },
+  {
+   "id": "ph17",
+   "kind": "phone",
+   "raw": "12345678",
+   "expect": null
+  },
+  {
+   "id": "ph18",
+   "kind": "phone",
+   "raw": "0000000000",
+   "expect": null
+  },
+  {
+   "id": "ph19",
+   "kind": "phone",
+   "raw": "+212 12 34",
+   "expect": null
+  },
+  {
+   "id": "ph20",
+   "kind": "phone",
+   "raw": "+212412345678",
+   "expect": null
+  },
+  {
+   "id": "ph21",
+   "kind": "phone",
+   "raw": "0522 12 34",
+   "expect": null
+  },
+  {
+   "id": "ph22",
+   "kind": "phone",
+   "raw": "Fax: 0522123456",
+   "expect": null
+  },
+  {
+   "id": "ph23",
+   "kind": "phone",
+   "raw": "0800-CALLME",
+   "expect": null
+  },
+  {
+   "id": "ph24",
+   "kind": "phone",
+   "raw": "",
+   "expect": null
+  },
+  {
+   "id": "ph25",
+   "kind": "phone",
+   "raw": "call me",
+   "expect": null
+  },
+  {
+   "id": "ph26",
+   "kind": "phone",
+   "raw": "012345678",
+   "expect": null
+  },
+  {
+   "id": "ph27",
+   "kind": "phone",
+   "raw": "+999 123",
+   "expect": null
+  },
+  {
+   "id": "ph28",
+   "kind": "phone",
+   "raw": "0123456789",
+   "expect": null
+  },
+  {
+   "id": "co01",
+   "kind": "contract_amount",
+   "raw": "1 426 000 MAD",
+   "expect": 1426000
+  },
+  {
+   "id": "co02",
+   "kind": "contract_amount",
+   "raw": "1,426,000.00 MAD",
+   "expect": 1426000
+  },
+  {
+   "id": "co03",
+   "kind": "contract_amount",
+   "raw": "1.426.000,00 MAD",
+   "expect": 1426000
+  },
+  {
+   "id": "co04",
+   "kind": "contract_amount",
+   "raw": "1.2 M MAD",
+   "expect": 1200000
+  },
+  {
+   "id": "co05",
+   "kind": "contract_amount",
+   "raw": "1.426,000 MAD",
+   "expect": null
+  },
+  {
+   "id": "co06",
+   "kind": "contract_amount",
+   "raw": "450 000 EUR",
+   "expect": null
+  },
+  {
+   "id": "co01",
+   "kind": "contract_date",
+   "raw": "17/03/2026",
+   "expect": "2026-03-17"
+  },
+  {
+   "id": "co02",
+   "kind": "contract_date",
+   "raw": "17 mars 2026",
+   "expect": "2026-03-17"
+  },
+  {
+   "id": "co03",
+   "kind": "contract_date",
+   "raw": "17/03/26",
+   "expect": null
+  },
+  {
+   "id": "co04",
+   "kind": "contract_date",
+   "raw": "31/02/2026",
+   "expect": null
+  },
+  {
+   "id": "id01",
+   "kind": "identifier",
+   "raw": "000133528873882",
+   "expect": "000133528873882"
+  },
+  {
+   "id": "id02",
+   "kind": "identifier",
+   "raw": 133528873882,
+   "expect": null,
+   "note": "Excel dropped the leading zeros"
+  },
+  {
+   "id": "id03",
+   "kind": "identifier",
+   "raw": "000 133 528 873 882",
+   "expect": "000133528873882"
+  },
+  {
+   "id": "id04",
+   "kind": "identifier",
+   "raw": "001-525-830-000-091",
+   "expect": "001525830000091"
+  },
+  {
+   "id": "id05",
+   "kind": "identifier",
+   "raw": 133528873882.0,
+   "expect": null
+  },
+  {
+   "id": "id06",
+   "kind": "identifier",
+   "raw": "ICE: n/a ?",
+   "expect": null
+  },
+  {
+   "id": "da31",
+   "kind": "date",
+   "raw": "this 8th day of May 2014",
+   "expect": "2014-05-08"
+  },
+  {
+   "id": "da32",
+   "kind": "date",
+   "raw": "the 20t h day of November, 2018",
+   "expect": "2018-11-20"
+  },
+  {
+   "id": "da33",
+   "kind": "date",
+   "raw": "made as of1 August 2019",
+   "expect": "2019-08-01"
+  },
+  {
+   "id": "da34",
+   "kind": "date",
+   "raw": "the 15th day of June, 2015 and the 1st day of July, 2015",
+   "expect": null
+  },
+  {
+   "id": "da35",
+   "kind": "date",
+   "raw": "the 31st day of February, 2015",
+   "expect": null
+  },
+  {
+   "id": "da36",
+   "kind": "date",
+   "raw": "made this 1s t day of October 2008",
+   "expect": "2008-10-01"
+  },
+  {
+   "id": "ph29",
+   "kind": "phone",
+   "raw": "212/260 -6660",
+   "country": "1",
+   "expect": "+12122606660"
+  },
+  {
+   "id": "ph30",
+   "kind": "phone",
+   "raw": "(415) 495-5775",
+   "country": "1",
+   "expect": "+14154955775"
+  },
+  {
+   "id": "ph31",
+   "kind": "phone",
+   "raw": "1-415-495-5775",
+   "country": "1",
+   "expect": "+14154955775"
+  },
+  {
+   "id": "ph32",
+   "kind": "phone",
+   "raw": "415 495 577",
+   "country": "1",
+   "expect": null
+  },
+  {
+   "id": "ph33",
+   "kind": "phone",
+   "raw": "115 495 5775",
+   "country": "1",
+   "expect": null
+  },
+  {
+   "id": "ph34",
+   "kind": "phone",
+   "raw": "212/260 -6660",
+   "expect": null
+  },
+  {
+   "id": "ph35",
+   "kind": "phone",
+   "raw": "0522 12 34 56 / 0661 23 45 67",
+   "expect": "+212522123456"
+  },
+  {
+   "id": "ph36",
+   "kind": "phone",
+   "raw": "912 345 678",
+   "country": "34",
+   "expect": "+34912345678"
+  },
+  {
+   "id": "da37",
+   "kind": "date",
+   "raw": "20/03/18",
+   "expect": null
+  },
+  {
+   "id": "da38",
+   "kind": "date",
+   "raw": "20/03/18",
+   "century": 20,
+   "expect": "2018-03-20"
+  },
+  {
+   "id": "da39",
+   "kind": "date",
+   "raw": "22 MAR 18",
+   "century": 20,
+   "expect": "2018-03-22"
+  },
+  {
+   "id": "da40",
+   "kind": "date",
+   "raw": "27/MAR/2018",
+   "expect": "2018-03-27"
+  },
+  {
+   "id": "da41",
+   "kind": "date",
+   "raw": "23.03.18",
+   "century": 20,
+   "expect": "2018-03-23"
+  },
+  {
+   "id": "da42",
+   "kind": "date",
+   "raw": "31/02/18",
+   "century": 20,
+   "expect": null
+  },
+  {
+   "id": "da43",
+   "kind": "date",
+   "raw": "Tel 03-3362 4137",
+   "century": 20,
+   "expect": null
+  },
+  {
+   "id": "da44",
+   "kind": "date",
+   "raw": "10:30 20/03/18 TABLE 12",
+   "century": 20,
+   "expect": "2018-03-20"
+  }
+ ]
+}

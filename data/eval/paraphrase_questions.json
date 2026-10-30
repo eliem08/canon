@@ -1,0 +1,185 @@
+{
+ "description": "Hand-written questions with the customer named mid-sentence, informal phrasing, EN/FR/Darija. Expected answers are filled from the ground truth by the eval harness.",
+ "questions": [
+  {
+   "id": "P01",
+   "type": "owner",
+   "entity_id": "E01",
+   "question": "Before I call Atlas Logistique tomorrow, who on our side owns that account?"
+  },
+  {
+   "id": "P02",
+   "type": "contract_value",
+   "entity_id": "E03",
+   "question": "How much is Sahara Tech Solutions paying us per year right now?"
+  },
+  {
+   "id": "P03",
+   "type": "renewal_date",
+   "entity_id": "E05",
+   "question": "La boulangerie Al Baraka renouvelle quand exactement ?"
+  },
+  {
+   "id": "P04",
+   "type": "owner",
+   "entity_id": "E06",
+   "question": "Qui s'occupe de Marjana Distribution chez nous en ce moment ?"
+  },
+  {
+   "id": "P05",
+   "type": "phone",
+   "entity_id": "E07",
+   "question": "I need to reach Nour Énergie, what's their main number?"
+  },
+  {
+   "id": "P06",
+   "type": "address",
+   "entity_id": "E08",
+   "question": "Where are Nour Packaging's registered offices located?"
+  },
+  {
+   "id": "P07",
+   "type": "contract_value",
+   "entity_id": "E09",
+   "question": "Dar El Hana Immobilier, c'est combien par an leur contrat ?"
+  },
+  {
+   "id": "P08",
+   "type": "renewal_date",
+   "entity_id": "E10",
+   "question": "Is the Oasis Agro Export contract up for renewal soon, and when?"
+  },
+  {
+   "id": "P09",
+   "type": "owner",
+   "entity_id": "E11",
+   "question": "chkoun li kaytkellef b Chefchaouen Textiles daba?"
+  },
+  {
+   "id": "P10",
+   "type": "contract_value",
+   "entity_id": "E12",
+   "question": "Can you check what Rif Ciment's annual contract is worth?"
+  },
+  {
+   "id": "P11",
+   "type": "renewal_date",
+   "entity_id": "E13",
+   "question": "For Tanger Med Freight, what's the renewal date on the contract?"
+  },
+  {
+   "id": "P12",
+   "type": "phone",
+   "entity_id": "E14",
+   "question": "Donne-moi le téléphone de Medina Pharma stp"
+  },
+  {
+   "id": "P13",
+   "type": "owner",
+   "entity_id": "E15",
+   "question": "Zitoun Cosmetics escalated a complaint - which account owner should I loop in?"
+  },
+  {
+   "id": "P14",
+   "type": "contract_value",
+   "entity_id": "E16",
+   "question": "Kasbah Hospitality Group: annual contract value?"
+  },
+  {
+   "id": "P15",
+   "type": "address",
+   "entity_id": "E17",
+   "question": "On doit envoyer un courrier à Argan d'Or, quelle est l'adresse du siège ?"
+  },
+  {
+   "id": "P16",
+   "type": "renewal_date",
+   "entity_id": "E18",
+   "question": "When does Bab Rayan Consulting's contract renew?"
+  },
+  {
+   "id": "P17",
+   "type": "owner",
+   "entity_id": "E19",
+   "question": "Amal Microfinance wants a meeting; who is the account owner there?"
+  },
+  {
+   "id": "P18",
+   "type": "contract_value",
+   "entity_id": "E20",
+   "question": "What did we sign with Atlantic Fishing Company for, per year?"
+  },
+  {
+   "id": "P19",
+   "type": "phone",
+   "entity_id": "E21",
+   "question": "What number should I dial for Riad Digital Agency?"
+  },
+  {
+   "id": "P20",
+   "type": "renewal_date",
+   "entity_id": "E22",
+   "question": "Souss Fresh - date de renouvellement du contrat ?"
+  },
+  {
+   "id": "P21",
+   "type": "owner",
+   "entity_id": "E23",
+   "question": "Who looks after Al Massira Transport these days?"
+  },
+  {
+   "id": "P22",
+   "type": "contract_value",
+   "entity_id": "E24",
+   "question": "Fennec Software, how much is the contract worth annually?"
+  },
+  {
+   "id": "P23",
+   "type": "address",
+   "entity_id": "E25",
+   "question": "What's the head office address for Yasmine Hôtels?"
+  },
+  {
+   "id": "P24",
+   "type": "owner",
+   "entity_id": "E02",
+   "question": "Is Atlas Tours still handled by the same account owner? Who is it?"
+  },
+  {
+   "id": "P25",
+   "type": "contract_value",
+   "entity_id": "E04",
+   "question": "Sahara Tours ch7al kaykhalsou f l3am?"
+  },
+  {
+   "id": "P26",
+   "type": "renewal_date",
+   "entity_id": "E15",
+   "question": "Quand est-ce que le contrat de Zitoun Cosmetics doit être renouvelé ?"
+  },
+  {
+   "id": "P27",
+   "type": "phone",
+   "entity_id": "E05",
+   "question": "Quel est le numéro de Boulangerie Al Baraka ?"
+  },
+  {
+   "id": "P28",
+   "type": "owner",
+   "entity_id": "E13",
+   "question": "Tanger Med Freight asked for a quote; who's their account owner?"
+  },
+  {
+   "id": "P29",
+   "type": "contract_value",
+   "entity_id": "E17",
+   "question": "Argan d'Or - montant annuel du contrat actuel ?"
+  },
+  {
+   "id": "P30",
+   "type": "renewal_date",
+   "entity_id": "E24",
+   "question": "My manager asked when Fennec Software renews - do you know?"
+  }
+ ]
+}
