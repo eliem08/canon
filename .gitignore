@@ -10,3 +10,4 @@ __pycache__/
 tokens.json
 *.audit.jsonl
 audit*.jsonl
+out_west/

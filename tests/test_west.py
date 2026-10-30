@@ -88,3 +88,14 @@ def test_auto_renewal_and_notice_reach_the_audit_and_the_agent(tmp_path):
     )
     terms = service.find_contract_terms(auto[0].entity_id, "revops.admin").terms
     assert {"renewal_period_months", "renewal_notice", "cancel_by"} <= set(terms)
+
+
+def test_serve_reads_the_identities_of_the_export_it_serves():
+    import argparse
+
+    from canon.cli import identities_path
+
+    args = argparse.Namespace(data=str(WEST), identities=None)
+    assert identities_path(args) == WEST / "identities.json"
+    args.identities = "/elsewhere/identities.json"
+    assert identities_path(args) == Path("/elsewhere/identities.json")

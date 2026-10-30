@@ -99,6 +99,11 @@ def build_store(data: Path, out: Path, as_of: date | None, overrides: Path | Non
     return records, res, unreadable
 
 
+def identities_path(args: argparse.Namespace) -> Path:
+    """The people and groups of *this* export (`--data`), unless `--identities` says otherwise."""
+    return Path(args.identities) if args.identities else Path(args.data) / "identities.json"
+
+
 def cmd_serve(args: argparse.Namespace) -> None:
     from canon.mcp_server import CallerDirectory, CanonService, ServiceConfig, build_server
     from canon.mcp_server.audit import AuditLog
@@ -108,9 +113,10 @@ def cmd_serve(args: argparse.Namespace) -> None:
     store = Path(args.store)
     if args.rebuild or not store.exists():
         build_store(Path(args.data), store.parent, as_of)  # never print: stdout is the MCP channel
+    identities = identities_path(args)
     service = CanonService.from_store(
         store,
-        CallerDirectory.from_file(Path(args.identities)),
+        CallerDirectory.from_file(identities),
         ServiceConfig(facts=FactScoringConfig(as_of=as_of)),
         audit=AuditLog(Path(args.audit_log)) if args.audit_log else None,
     )
@@ -131,7 +137,7 @@ def cmd_serve(args: argparse.Namespace) -> None:
             raise SystemExit(
                 "--oidc-issuer needs --oidc-audience (the app id Canon is registered as)"
             )
-        identities = _json.loads(Path(args.identities).read_text(encoding="utf-8"))
+        identities = _json.loads(identities.read_text(encoding="utf-8"))
         config = OIDCConfig(
             issuer=args.oidc_issuer,
             audience=args.oidc_audience,
@@ -390,7 +396,7 @@ def main(argv: list[str] | None = None) -> None:
     s.add_argument(
         "--store", default=str(Path(os.environ.get("CANON_OUT_DIR", "out")) / "canon.sqlite")
     )
-    s.add_argument("--identities", default=str(_data_dir() / "identities.json"))
+    s.add_argument("--identities", default=None, help="default: <data>/identities.json")
     s.add_argument("--as-of", default=None, help="reference date for freshness (default: today)")
     s.add_argument("--rebuild", action="store_true", help="rebuild the store from --data first")
     s.add_argument(

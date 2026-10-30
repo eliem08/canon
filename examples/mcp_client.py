@@ -2,6 +2,10 @@
 as three different people, showing that answers depend on who is asking.
 
     uv run python examples/mcp_client.py [customer name]
+    uv run python examples/mcp_client.py --west [customer name]   # US demo data
+
+The Moroccan default reads out/canon.sqlite (`canon resolve`); `--west` reads out_west/canon.sqlite
+(`canon pilot --data data/synthetic_west --out out_west`).
 """
 
 from __future__ import annotations
@@ -13,12 +17,19 @@ import anyio
 from mcp import Client, StdioServerParameters
 
 ROOT = Path(__file__).resolve().parents[1]
+WEST = "--west" in sys.argv
+DATA, STORE = ("data/synthetic_west", "out_west") if WEST else ("data/synthetic", "out")
 SERVER = StdioServerParameters(
     command=sys.executable,
-    args=["-m", "canon.cli", "serve", "--as-of", "2026-10-01", "--store", "out/canon.sqlite"],
+    args=["-m", "canon.cli", "serve", "--as-of", "2026-10-01", "--store", f"{STORE}/canon.sqlite",
+          "--data", DATA],
     cwd=ROOT,
+)  # fmt: skip
+CALLERS = (
+    ("revops.admin", "sarah.chen", "dana.legal", "intern")
+    if WEST
+    else ("revops.admin", "salma.el.idrissi", "hind.legal", "intern")
 )
-CALLERS = ("revops.admin", "salma.el.idrissi", "hind.legal", "intern")
 
 
 def fmt(answer: dict | None) -> str:
@@ -60,4 +71,5 @@ async def main(customer: str) -> None:
 
 
 if __name__ == "__main__":
-    anyio.run(main, " ".join(sys.argv[1:]) or "Boulangerie Al Baraka")
+    words = [a for a in sys.argv[1:] if a != "--west"]
+    anyio.run(main, " ".join(words) or ("Harbor Foods" if WEST else "Boulangerie Al Baraka"))
