@@ -1,7 +1,7 @@
 # Demo script (10 minutes, synthetic data)
 
-Every command below was run on 2026-10-16 against the committed synthetic dataset (`aacf1f4`). Run them once before the
-call: `uv sync && uv run canon resolve --as-of 2026-10-01` builds `out/`.
+Commands were run against the committed synthetic dataset (first on 2026-10-16; the `pilot` step on 2026-10-30).
+Run them once before the call: `uv sync && uv run canon pilot --as-of 2026-10-01` builds `out/`.
 
 **Rule for the call:** this is synthetic data built by us. Say so at the start. Never present a number from it as a client
 result.
@@ -21,15 +21,20 @@ value and which owner should an agent give?
 
 ## 2. The audit (3 min): the deliverable
 ```bash
-uv run canon audit --as-of 2026-10-01 | head -40
+uv run canon pilot --as-of 2026-10-01      # ~1 s on the synthetic export; then open out/index.html
 ```
+- Start on **`out/index.html`**: the headline numbers (62 stale CRM values, 19 duplicate accounts, 24 merges to
+  confirm, 3 renewals in 180 days) and a link to every file.
 - Walk the **fix list**: stale contract values, stale renewal dates, stale owners, duplicate CRM accounts. Each item names who
   fixes it.
 - Point at one example and open its source, e.g. *Marjana Distribution: CRM says 830,000, contract says 959,000*.
 - Then **merges to confirm**: "we don't guess on borderline duplicates, we ask you." Open `out/review.html`
   in a browser: two records side by side, *same / different / not sure*, one button to send the answers back.
   (Prebuilt from the synthetic data: `docs/sales/samples/audit_report.html`, `docs/sales/samples/review.html`.)
+- On the same page, **Correct a value**: pick a customer, type the right renewal date and your name; it is signed and
+  wins on the next run until a newer contract says otherwise.
 - Then **quarantine**: "values we can't read safely are listed, never guessed."
+- Then **renewals**: `out/renewals.csv`, the last day to give notice where the contract states it.
 
 ## 3. Same question, different people (3 min): permissions
 ```bash
@@ -53,8 +58,8 @@ Open `docs/reports/eval_summary.md`.
 permission map and the before/after." Send `docs/DATA_REQUEST.md` after the call.
 
 ## If they ask
-- **"Does it work on our data?"** Unknown until we run it. That's the point of the audit. OCR has been tested only on clean
-  synthetic scans.
+- **"Does it work on our data?"** Unknown until we run it. That's the point of the audit. On public real data: 361 scanned
+  receipts (dates 63% read, 2% wrong, the rest withheld) and 267 US contracts (see `docs/sales/PROOF.md`).
 - **"Which AI do you use?"** None during ingestion and resolution. For the before/after test: whichever model you approve,
   including one you host.
 - **"Why not just build RAG?"** You can, and it will be about as accurate. It won't enforce who may see what, cite facts,

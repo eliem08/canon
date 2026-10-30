@@ -1,10 +1,16 @@
 # Canon
 
-Agent-ready data layer. Canon ingests messy company data (CRM, Slack/Teams/WhatsApp, Drive, PDFs), resolves
+Agent-ready data layer. Canon ingests messy company data (CRM exports or a read-only HubSpot/Salesforce pull,
+Slack/Teams/WhatsApp exports, folders of contracts in PDF, Word or scans), resolves
 duplicate entities into golden records with lineage, scores facts by freshness and authority,
 and exposes them through a permission-aware MCP server.
 
-See [`docs/PLAN.md`](docs/PLAN.md) for the architecture and milestones and
+**Start here:** [`BUILD_STATUS.md`](BUILD_STATUS.md) (what works, what doesn't, readiness gates),
+[`docs/product/`](docs/product) (architecture, implementation audit, requirements, roadmap, technical design,
+security review, testing report, deployment, operations runbook, market and buyer research) and
+[`docs/sales/`](docs/sales) (brief, deck outline, demo script, pilot proposal, pricing, objections, outreach).
+
+See [`docs/PLAN.md`](docs/PLAN.md) for the original architecture and milestones and
 [`docs/DECISIONS.md`](docs/DECISIONS.md) for recorded design choices.
 
 Selling it: [`docs/sales/`](docs/sales) (one-pager, 10-minute demo script, outreach email in EN/FR),
@@ -27,6 +33,8 @@ uv run canon eval --seeds 10               # before/after eval (stub model; --mo
 uv run canon pull hubspot --out export/crm/accounts.json   # optional: read-only CRM pull (or salesforce)
 uv run canon check --data export/          # day-1 intake check of a client export (+ suggested canon.json)
 uv run canon audit                         # audit -> report (.md/.html), review.html, crm_fixes.csv, quarantine.csv
+uv run canon pilot --data export/          # the whole engagement: check + audit + out/index.html + out/run.json
+uv run canon purge --out out               # end of engagement: dry run; add --yes to delete (prints a receipt)
 docker build -t canon .                    # client-side image; see docs/DEPLOY.md
 ```
 
