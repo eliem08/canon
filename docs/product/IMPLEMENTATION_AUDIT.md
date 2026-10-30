@@ -11,7 +11,7 @@
 | About 10.3k lines of Python in `canon/`, 25 test files, 1,256 tests passing in 31 s (run on 2026-10-30). | `wc -l`, `uv run pytest -q` | High |
 | CI runs ruff (check and format), pytest with tesseract fra/ara/eng, a Docker build, and an offline `resolve` inside the image. It was green on every pushed commit. | `.github/workflows/ci.yml` | High |
 | Dependencies are few: `mcp`, `pydantic`, `rapidfuzz`, `pypdf`, `pillow`, `pyjwt[crypto]`, plus `anthropic` as an optional extra. Storage is stdlib SQLite. | `pyproject.toml`, `uv.lock` | High |
-| **All customer data is synthetic** (Moroccan-style companies in MAD, French/Arabic). No real client has run it. | `data/synthetic/`, `canon/synth/` | High |
+| **All customer data is synthetic**: the original Moroccan-style dataset (MAD, French/Arabic; the main regression fixture) and, since 2026-10-31, a US dataset for Western demos (`data/synthetic_west`). No real client has run it. | `data/synthetic/`, `data/synthetic_west/`, `canon/synth/` | High |
 | There are no tags, releases or issues. The only PR is #1. | git, GitHub | High |
 
 ## Findings

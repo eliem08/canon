@@ -1,0 +1,7 @@
+﻿customer,entity_id,renews_on,cancel_by,automatic,note,source
+Cedar Insurance Brokers L.L.C.,Ede7c1c956e,2026-12-01,2026-11-01,yes,sources disagree: confirm the date,contract:CN-2023-170_v2
+Bluefin Health INC,Eacdf3bf222,2026-12-01,,no,sources disagree: confirm the date,contract:CN-2023-135_v2
+Tidewater Marine Corp.,Eadd4d540f5,2026-12-01,,no,sources disagree: confirm the date,contract:CN-2023-247_v2
+Northwind Packaging llc,E26ce36f57c,2027-01-01,2026-12-02,yes,sources disagree: confirm the date,contract:CN-2023-128_v2
+Northwind Analytics Incorporated,Ead7c2d9c9f,2027-03-01,2026-12-31,yes,sources disagree: confirm the date,contract:CN-2023-121_v2
+Keystone Construction INC,E8516b53f73,2027-01-01,,no,sources disagree: confirm the date,contract:CN-2024-219_v2

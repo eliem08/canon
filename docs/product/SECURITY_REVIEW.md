@@ -41,4 +41,4 @@ dependency scan and a history secret scan run on that date. No external penetrat
 
 ## No compliance claims
 
-Nothing here certifies compliance with Law 09-08, GDPR or any standard. See `MARKET_RESEARCH.md` for the regulatory notes.
+Nothing here certifies compliance with GDPR, CCPA/CPRA, SOC 2, ISO 27001 or any standard. There is no SOC 2 report. See `MARKET_RESEARCH.md` for the regulatory notes.

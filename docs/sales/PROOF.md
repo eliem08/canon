@@ -6,19 +6,21 @@ yet: we will measure all of this again on yours.*
 
 ## The headline: agents stop reading what people may not see
 
-| | Keyword RAG | Strong RAG | **Canon** |
+| Synthetic US company (`--profile west`), 4,400 answers, 110 callers, 10 datasets | Keyword RAG | Strong RAG | **Canon** |
 |---|---|---|---|
-| Answers whose context held a record the caller may not read (4,400 answers, 110 callers, 10 datasets) | 70% | 87% | **0%** |
+| Answers whose context held a record the caller may not read | 43% | 87% | **0%** |
 | … for a caller with **no access at all** | 100% | 100% | **0%** |
-| … for a sales rep | 65% | 85% | **0%** |
+| … for a sales rep | 24% | 83% | **0%** |
+| Same test on the original (Moroccan, French/Arabic) synthetic data | 70% | 87% | **0%** |
 
-Source: [`reports/permission_report.md`](../reports/permission_report.md). A leak is decided by what is retrieved, not by
+Sources: [`reports/permission_report_west.md`](../reports/permission_report_west.md),
+[`reports/permission_report.md`](../reports/permission_report.md). A leak is decided by what is retrieved, not by
 the model, so this holds for any model. Canon applies permissions before it scores or returns anything. A retrieval
 system over the raw export has no notion of who is asking.
 
 ## Accuracy: on par with a good retrieval system, far above a naive one
 
-| 4 open models, 40 synthetic questions | Keyword RAG | Strong RAG | **Canon** |
+| 4 open models, 40 synthetic questions (original synthetic data; not yet rerun on the US profile) | Keyword RAG | Strong RAG | **Canon** |
 |---|---|---|---|
 | Correct answers | 55–58% | 92.5% | **97.5%** |
 | Context the model reads per answer | 2.0k chars | 3.7k chars | **1.3k chars** (−65%) |
@@ -28,7 +30,9 @@ The gap to strong RAG is **not statistically significant** (p ≥ 0.5), so we do
 
 ## The audit finds what is wrong, and says how to fix it
 
-- **Stale CRM values** found on the synthetic export: 62, all correct; 2 of 64 missed (precision 1.00, recall 0.97).
+- **Stale CRM values** found on the original synthetic export: 62, all correct; 2 of 64 missed (precision 1.00, recall 0.97).
+- **On the synthetic US export**, untuned: duplicate detection F1 1.000 (exact names: 0.675); current owner, contract
+  value and renewal date right for all 25 customers (`tests/test_west.py`).
 - **Delivered as fixes:** `crm_fixes.csv` uses the CRM's own record ids and column names, ready for a bulk update;
   `quarantine.csv` gives every refused value a reason and an action; `review.html` lets account owners confirm duplicates.
 
@@ -38,8 +42,8 @@ The gap to strong RAG is **not statistically significant** (p ≥ 0.5), so we do
 |---|---|---|
 | Contract terms | 510 SEC-filed contracts (CUAD), lawyer answers | parties 57% found, 99% right; agreement date 66% / 94%; effective date 60% / 95%; end date 33% / 91%; auto-renewal period 41% found, 0 wrong; notice to stop renewal 37% found, 0 wrong |
 | Duplicate customers, US listings | Fodors–Zagat | F1 0.948 (exact-name matching: 0.825) |
-| Duplicate customers, French companies | INSEE SIRENE registry vs shop signs | 29% linked automatically and 28% sent to a person, 93% precision (exact names: 24% recall) |
-| Arabic ↔ Latin names | 23k real Arabic names with transliterations | 97.8% of true pairs at 0.85 similarity, 0.10% false matches |
+| Duplicate customers, French companies (EU) | INSEE SIRENE registry vs shop signs | 29% linked automatically and 28% sent to a person, 93% precision (exact names: 24% recall) |
+| Arabic ↔ Latin names (multilingual customer bases) | 23k real Arabic names with transliterations | 97.8% of true pairs at 0.85 similarity, 0.10% false matches |
 | OCR on scans | 361 real scanned receipts (SROIE) | dates 63% right, 2% wrong; the rest withheld rather than guessed |
 
 Sources: [`cuad_report.md`](../reports/cuad_report.md), [`er_real_report.md`](../reports/er_real_report.md),

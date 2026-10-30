@@ -3,6 +3,11 @@
 *Updated 2026-10-30. Every "done" item below was verified by a command run on that date; results are in
 `docs/product/TESTING_REPORT.md`. Nothing has been deployed for a client, and no customer has used the product.*
 
+## Market
+
+US first, then UK and EU (decision 94). Defaults are US conventions (USD, +1); demos use the synthetic US company
+`data/synthetic_west`. The Moroccan dataset remains the regression fixture and proves French/Arabic support.
+
 ## What the product is now
 
 An on-premise tool for a two-week customer-data and AI-readiness engagement:
@@ -29,10 +34,13 @@ An on-premise tool for a two-week customer-data and AI-readiness engagement:
 | Clustering rewritten with a neighbour map: identical output, 47k records in 31 s (was 52 s at 11.8k) | Equivalence check at 3 sizes; `docs/reports/scale_report.md` |
 | Security: pillow 12.3.0 → 13.0.0 and pypdf 6.21.0 → 6.21.4 (15 advisories); `pip-audit` CI job | `pip-audit`: no known vulnerabilities |
 | Product, engineering and sales document set | `docs/product/`, `docs/sales/` |
+| Western pivot: US defaults; US synthetic dataset; English owner-change cues; sales and market docs for US/UK/EU | `tests/test_west.py` (dataset reproducible, F1 1.000, all current values right, no permission leaks); `docs/reports/permission_report_west.md` |
+| Fix: renewal period and notice were dropped by scoring (calendar never showed notice deadlines) | Pipeline-level test in `tests/test_west.py` |
+| Fix: `serve` used the built-in dataset's identities regardless of `--data` | `tests/test_west.py::test_serve_reads_the_identities_of_the_export_it_serves`; demo run |
 
 ## Test results (2026-10-30)
 
-- `uv run pytest -q`: **1263 passed, 1 skipped**. The skipped test is the browser test, which needs Playwright.
+- `uv run pytest -q`: **1270 passed, 1 skipped**. The skipped test is the browser test, which needs Playwright.
 - The browser test with Playwright: **1 passed**.
 - `ruff check` and `ruff format --check`: clean.
 - `pip-audit` on the locked runtime dependencies: no known vulnerabilities.
@@ -47,7 +55,7 @@ An on-premise tool for a two-week customer-data and AI-readiness engagement:
 | Core functionality | **PARTIAL** | Every workflow runs end to end on the synthetic export and public datasets; **never run on a real client export** |
 | Data | **PASS** | SQLite store rebuilt per run; values validated by refusal-based parsers with adversarial fixtures; human decisions persist in `overrides.json` |
 | Frontend | **PARTIAL** | The UI is offline HTML: the dashboard, the report and the review page with forms. It is responsive (checked at 390 px and 1200 px), has a dark mode, and is browser-tested. There is no web app, by design; no formal accessibility audit |
-| Backend | **PASS** | CLI and MCP service covered by 1,263 tests |
+| Backend | **PASS** | CLI and MCP service covered by 1,270 tests |
 | Security | **PARTIAL** | Reviewed; vulnerable dependencies fixed; auth and leak tests pass. Accepted risks are listed in `SECURITY_REVIEW.md`. No external penetration test; single sign-on (OIDC) not tested against a real identity provider |
 | Testing | **PASS** | Unit, integration, MCP API, auth, end-to-end browser and performance tests executed; results documented |
 | Deployment | **PARTIAL** | Image built and run end to end locally (pilot → serve → health → purge); CI builds it on `main`. Not deployed for any client; no published or signed image |
@@ -60,7 +68,7 @@ An on-premise tool for a two-week customer-data and AI-readiness engagement:
 
 1. **A consented real dataset** for a dry run: the founder's own business, a friendly company, or an anonymised export.
 2. **Discovery calls and pricing validation.** Outreach drafts exist; sending them is the founder's decision. Nothing has been sent.
-3. **Legal.** A one-hour review by a Moroccan lawyer of the Law 09-08 position, a data-processing agreement template and the deletion certificate.
+3. **Legal.** A lawyer review of the data-processing agreement (GDPR-ready for EU/UK buyers), the deletion certificate, and standard answers to a security questionnaire (Canon has no SOC 2 report).
 4. **Real API and identity-provider tests.** These need HubSpot/Salesforce developer accounts and a test tenant with the client's identity provider.
 
 ## Pending (engineering, in order)

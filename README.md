@@ -13,7 +13,10 @@ security review, testing report, deployment, operations runbook, market and buye
 See [`docs/PLAN.md`](docs/PLAN.md) for the original architecture and milestones and
 [`docs/DECISIONS.md`](docs/DECISIONS.md) for recorded design choices.
 
-Selling it: [`docs/sales/`](docs/sales) (one-pager, 10-minute demo script, outreach email in EN/FR),
+**Market:** US first, then the UK and EU (decision 94). Demo on the synthetic US company in
+[`data/synthetic_west`](data/synthetic_west); `data/synthetic` (Moroccan, French/Arabic) is the main regression fixture.
+
+Selling it: [`docs/sales/`](docs/sales) (product brief, demo script, pilot proposal, pricing, objections, outreach),
 [`docs/AUDIT_SCOPE.md`](docs/AUDIT_SCOPE.md) (the MCP Readiness Audit, draft) and
 [`docs/DATA_REQUEST.md`](docs/DATA_REQUEST.md) (what to ask a design partner for). Ingestion refuses values it
 cannot read safely and lists them for review: [`docs/PARSING.md`](docs/PARSING.md). Facts in messages are
@@ -24,7 +27,9 @@ extracted by cue/blocker rules, and every fact cites its message, page or row: [
 ```bash
 uv sync
 uv run pytest -q
-uv run canon generate          # (re)build data/synthetic from the seed
+uv run canon generate          # (re)build data/synthetic from the seed (add --profile west --out data/synthetic_west)
+uv run canon pilot --data data/synthetic_west --out out_west   # US demo: open out_west/index.html
+uv run python examples/mcp_client.py --west "Harbor Foods"     # same question, four people
 uv run canon resolve --report  # ingest + entity resolution -> out/ (golden records, SQLite, report)
 uv run canon resolve --report --seeds 20   # also sweep 20 held-out generator seeds
 uv run canon serve                         # MCP server over stdio (see docs/MCP_SERVER.md)

@@ -8,7 +8,7 @@ All results below were produced by commands run on 2026-10-30 in the development
 
 | Command | Result |
 |---|---|
-| `uv run pytest -q` | **1263 passed, 1 skipped** (the browser test skips without Playwright) |
+| `uv run pytest -q` | **1270 passed, 1 skipped** (the browser test skips without Playwright) |
 | `uv run --with playwright pytest -q tests/test_review_browser.py` | **1 passed** in real Chromium |
 | `uv run ruff check . && uv run ruff format --check .` | clean |
 | `uvx --python 3.12 pip-audit==2.9.0 -r <locked runtime deps>` | No known vulnerabilities (after the pillow/pypdf upgrade) |

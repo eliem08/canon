@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Customer data audit</title><style>
+:root { --fg:#1d2433; --muted:#5b6475; --line:#d9dee7; --bg:#ffffff; --head:#f3f5f9;
+        --accent:#2457c5; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg);
+       font: 15px/1.5 -apple-system, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Arabic",
+       sans-serif; }
+main { max-width: 1040px; margin: 0 auto; padding: 32px 16px 64px; }
+h1 { font-size: 26px; margin: 0 0 8px; }
+h3 { font-size: 16px; margin: 20px 0 8px; }
+h2 { font-size: 19px; margin: 36px 0 10px; padding-top: 12px; border-top: 1px solid var(--line); }
+p, li { color: var(--fg); }
+em { color: var(--muted); }
+code { background: var(--head); padding: 1px 4px; border-radius: 3px; font-size: 13px; }
+.table { overflow-x: auto; margin: 8px 0 16px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { border: 1px solid var(--line); padding: 6px 8px; text-align: left; vertical-align: top; }
+th { background: var(--head); font-weight: 600; }
+td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.pair { border: 1px solid var(--line); border-radius: 8px; padding: 14px; margin: 14px 0; }
+.pair.done { border-color: var(--accent); }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 700px) { .cols { grid-template-columns: 1fr; } }
+.rec { background: var(--head); border-radius: 6px; padding: 10px; font-size: 14px;
+       overflow-wrap: anywhere; }
+.rec b { display: block; font-size: 15px; margin-bottom: 4px; }
+.meta { color: var(--muted); font-size: 13px; margin: 8px 0; }
+.choices { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.choices label { border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px;
+                 cursor: pointer; }
+.choices input { margin-right: 6px; }
+.bar { position: sticky; top: 0; background: var(--bg); border-bottom: 1px solid var(--line);
+       padding: 10px 0; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+       z-index: 1; }
+button { font: inherit; padding: 8px 14px; border-radius: 6px; border: 1px solid var(--accent);
+         background: var(--accent); color: #fff; cursor: pointer; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px;
+         margin: 16px 0; }
+.card { border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
+.card .n { font-size: 26px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.card .l { color: var(--muted); font-size: 13px; }
+.files a { color: var(--accent); font-weight: 600; }
+.missing { color: var(--muted); }
+.notice { border-left: 4px solid var(--accent); background: var(--head); padding: 8px 12px;
+          border-radius: 4px; }
+@media (prefers-color-scheme: dark) {
+  :root { --fg:#e6e9ef; --muted:#a3abba; --line:#3a4252; --bg:#161a22; --head:#222836;
+          --accent:#7ea2ff; } }
+.fix { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;
+       align-items: end; }
+.fix label { display: flex; flex-direction: column; font-size: 14px; gap: 4px; }
+.fix input, .fix select { font: inherit; padding: 6px 8px; border: 1px solid var(--line);
+                          border-radius: 6px; background: var(--bg); color: var(--fg); }
+button.secondary { background: transparent; color: var(--accent); padding: 2px 8px;
+                   margin-left: 6px; }
+@media print { .fix, #fixes button, .bar, .choices { display: none; } h2 { break-after: avoid; }
+               tr { break-inside: avoid; } }
+</style></head><body><main><h1>Customer data audit</h1><p class='meta'>As of 2026-10-01 · Canon 0.1.0 · 173 input files · 0.8 s. Processed on this machine; nothing was sent anywhere.</p><div class='cards'><div class="card"><div class="n">113</div><div class="l">source records read</div></div><div class="card"><div class="n">25</div><div class="l">customers after resolution</div></div><div class="card"><div class="n">59</div><div class="l">stale CRM values to fix</div></div><div class="card"><div class="n">16</div><div class="l">customers with duplicate CRM accounts</div></div><div class="card"><div class="n">6</div><div class="l">merges waiting for a person</div></div><div class="card"><div class="n">0</div><div class="l">values refused (not guessed)</div></div><div class="card"><div class="n">6</div><div class="l">renewals in the next 180 days</div></div></div><h2>Files for you</h2><div class='table'><table class='files'><tr><th>File</th><th>What it is</th></tr><tr><td><a href="audit_report.html">Audit report</a></td><td>The full report. Open in a browser, print to PDF.</td></tr><tr><td><a href="crm_fixes.csv">CRM fixes</a></td><td>One row per stale CRM value, in the CRM&#x27;s own ids and columns.</td></tr><tr><td><a href="review.html">Merges to confirm</a></td><td>Send to account owners; they answer same / different.</td></tr><tr><td><a href="renewals.csv">Renewal calendar</a></td><td>Contracts renewing in 180 days, last day to give notice.</td></tr><tr><td><a href="quarantine.csv">Values refused</a></td><td>Every value Canon would not guess, with what to do.</td></tr><tr><td><a href="intake_check.md">Intake check</a></td><td>What was found in the export before resolution.</td></tr><tr><td><a href="audit.json">Audit data</a></td><td>Keep it: next week&#x27;s run compares against it (--compare).</td></tr><tr><td><a href="run.json">Run record</a></td><td>Versions, settings and input hashes of this run.</td></tr></table></div><h2>Biggest findings</h2><div class='table'><table><tr><th>Finding</th><th>Count</th><th>Who fixes it</th></tr><tr><td>CRM contract value disagrees with a more reliable or more recent source</td><td class='num'>20</td><td>Sales ops / CRM admin</td></tr><tr><td>CRM renewal date disagrees with a more reliable or more recent source</td><td class='num'>20</td><td>Sales ops / CRM admin</td></tr><tr><td>CRM account owner disagrees with a more reliable or more recent source</td><td class='num'>13</td><td>Sales ops / CRM admin</td></tr><tr><td>Customers with more than one active CRM account</td><td class='num'>16</td><td>CRM admin (merge accounts)</td></tr><tr><td>Facts Canon could only answer with low confidence (sources disagree)</td><td class='num'>17</td><td>Sales ops (confirm the current value once)</td></tr><tr><td>Account owner changed in Slack but not in the CRM</td><td class='num'>5</td><td>Account owners / sales ops</td></tr><tr><td>Borderline duplicate decisions a person should confirm</td><td class='num'>6</td><td>Account owners (answer in overrides.json)</td></tr><tr><td>CRM address disagrees with a more reliable or more recent source</td><td class='num'>1</td><td>Sales ops / CRM admin</td></tr></table></div><h2>Next renewals</h2><div class='table'><table><tr><th>Customer</th><th>Renews on</th><th>Last day to give notice</th><th>Automatic</th></tr><tr><td>Cedar Insurance Brokers L.L.C.</td><td>2026-12-01</td><td>2026-11-01</td><td>yes · sources disagree</td></tr><tr><td>Bluefin Health INC</td><td>2026-12-01</td><td>—</td><td>no · sources disagree</td></tr><tr><td>Tidewater Marine Corp.</td><td>2026-12-01</td><td>—</td><td>no · sources disagree</td></tr><tr><td>Northwind Packaging llc</td><td>2027-01-01</td><td>2026-12-02</td><td>yes · sources disagree</td></tr><tr><td>Northwind Analytics Incorporated</td><td>2027-03-01</td><td>2026-12-31</td><td>yes · sources disagree</td></tr><tr><td>Keystone Construction INC</td><td>2027-01-01</td><td>—</td><td>no · sources disagree</td></tr></table></div><h2>Next steps</h2><ol><li>Load <code>crm_fixes.csv</code> with your CRM's bulk update after review.</li><li>Send <code>review.html</code> to account owners; put the downloaded <code>overrides.json</code> next to the export.</li><li>Next week, rerun with <code>--compare</code> on this <code>audit.json</code> to see what changed.</li></ol></main></body></html>

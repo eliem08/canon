@@ -22,7 +22,7 @@ The MCP server is a **trial option**, not the core offer. All of this exists in 
 |---|---|---|---|---|---|---|
 | **P0** | Merge PR #1 to `main` and tag `v0.2.0` | Shipping from an unmerged branch isn't credible | `main` holds all the work, CI green, tag exists | — | S | Low |
 | **P0** | Real-data dry run on a **consented** real or anonymised dataset (founder's own CRM, a friendly company, or a public CRM-like dataset) | Every pilot number so far is synthetic | Intake, audit and review run end to end; issues logged and fixed | Data access | M | **High** |
-| **P0** | Data-handling pack: DPA template, deletion certificate, CNDP position memo (reviewed by a Moroccan lawyer) | The gatekeeper will ask | Documents exist; the lawyer has signed off on the position | Lawyer | M | Medium |
+| **P0** | Data-handling pack: DPA template (GDPR-ready), deletion certificate, answers to a standard security questionnaire (e.g. SIG Lite / CAIQ), reviewed by a lawyer | The gatekeeper will ask | Documents exist; the lawyer has signed off on the position | Lawyer | M | Medium |
 | **P0** | Pilot pricing and contract one-pager validated in 5 discovery calls | No price has been tested | ≥3 of 5 prospects accept the price range as plausible | Outreach | S | High |
 | **P1** | `canon pilot`: one command running check, audit and an index page | Fewer operator errors on site | One command produces a deliverables folder with an index | — | S | Low |
 | **P1** | Dynamics 365 CSV/XLSX column preset, plus HubSpot/Salesforce pull tested against a free developer account | Real APIs are unverified | Pull from a sandbox succeeds and the CSV round-trips | Sandbox accounts | M | Medium |

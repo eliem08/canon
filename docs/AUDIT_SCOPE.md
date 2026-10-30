@@ -59,12 +59,12 @@ See [`DATA_REQUEST.md`](DATA_REQUEST.md). In short:
 - A production deployment or a hosted UI (the review page is a single offline file). Available but optional in a pilot: a read-only CRM pull (HubSpot, Salesforce) instead of an export, and SSO for the trial MCP server.
 - Data cleanup in the client's systems (we report it; they fix it).
 - Sources beyond the three agreed types.
-- **Handwritten or badly degraded scans.** Canon reads PDFs (text layer or OCR), DOCX and images, and OCR is measured on real receipts (SROIE: 59% of dates read, 2% wrong, the rest refused) but not yet on French or Arabic scans. Poor scans are listed as unreadable or low-confidence, not guessed.
+- **Handwritten or badly degraded scans.** Canon reads PDFs (text layer or OCR), DOCX and images, and OCR is measured on real receipts (SROIE: 63% of dates read, 2% wrong, the rest refused) but not yet on contract scans in any language. Poor scans are listed as unreadable or low-confidence, not guessed.
 
 ## Pricing [FOUNDER DECISION]
-The goal says $5–15k. One way to split it, for discussion only:
-- **Core: about $5–7k.** CRM + one chat source + ≤ 100 text-based contracts, 30 questions.
-- **Extended: about $10–15k.** Adds scanned and Arabic contracts (OCR built; accuracy on real scans to be measured on day 1), a second chat source, 50+ questions, and the 2-week MCP trial.
+Hypotheses for US/EU buyers are in `docs/sales/PRICING_AND_PACKAGING.md` (design partner $15–25k, standard
+$35–50k, recurring $2–5k/month). They replace the earlier $5–15k goal, which was set for a lower-cost market;
+validate with prospects before quoting.
 
 ## Guardrail against the consulting trap
 - **Per-client allowance:** connector field mappings and an `IngestConfig` (country, currency, date order).

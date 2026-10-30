@@ -18,8 +18,8 @@ generate them.
 
 ## 2. Things to confirm before sending
 - [ ] Which CRM, chat tool and document store are actually used day to day?
-- [ ] Date format and currency conventions in the exports (e.g. `25/03/2026`, MAD vs EUR). Mixed conventions are fine; we detect them.
-- [ ] Languages present (French / Arabic / Darija / English), and whether any contracts are scanned.
+- [ ] Date format and currency conventions in the exports (e.g. `03/25/2026` vs `25/03/2026`, USD vs EUR vs GBP). Mixed conventions are fine; we detect them.
+- [ ] Languages present (English, and any others such as French, German, Spanish or Arabic), and whether any contracts are scanned.
 - [ ] A technical contact for 2–3 hours over the two weeks.
 
 ## 3. Data handling we commit to (proposed, for counsel review)
