@@ -64,7 +64,14 @@ button { font: inherit; padding: 8px 14px; border-radius: 6px; border: 1px solid
 @media (prefers-color-scheme: dark) {
   :root { --fg:#e6e9ef; --muted:#a3abba; --line:#3a4252; --bg:#161a22; --head:#222836;
           --accent:#7ea2ff; } }
-@media print { .bar, .choices { display: none; } h2 { break-after: avoid; }
+.fix { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;
+       align-items: end; }
+.fix label { display: flex; flex-direction: column; font-size: 14px; gap: 4px; }
+.fix input, .fix select { font: inherit; padding: 6px 8px; border: 1px solid var(--line);
+                          border-radius: 6px; background: var(--bg); color: var(--fg); }
+button.secondary { background: transparent; color: var(--accent); padding: 2px 8px;
+                   margin-left: 6px; }
+@media print { .fix, #fixes button, .bar, .choices { display: none; } h2 { break-after: avoid; }
                tr { break-inside: avoid; } }
 """
 
@@ -177,7 +184,7 @@ def _script_json(data) -> str:
     return text.replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
 
 
-_REVIEW_JS = """
+_REVIEW_JS = r"""
 <script>
 const DATA = JSON.parse(document.getElementById("data").textContent);
 const KEY = "canon-review-" + DATA.run;
@@ -198,10 +205,51 @@ document.querySelectorAll("input[type=radio]").forEach(input => {
   });
 });
 count();
+// corrections: values a person states are right (become `facts` in overrides.json)
+const FKEY = KEY + "-facts";
+let fixes = [];
+try { fixes = JSON.parse(localStorage.getItem(FKEY) || "[]"); } catch (e) {}
+function saveFixes() { try { localStorage.setItem(FKEY, JSON.stringify(fixes)); } catch (e) {} }
+function showFixes() {
+  const list = document.getElementById("fixes");
+  list.replaceChildren();
+  fixes.forEach((f, i) => {
+    const li = document.createElement("li");
+    li.textContent = f.record_id + " · " + f.field + " = " + f.value +
+                     " (by " + f.by + ", " + f.at + ") ";
+    const rm = document.createElement("button");
+    rm.type = "button"; rm.textContent = "Remove"; rm.className = "secondary";
+    rm.addEventListener("click", () => { fixes.splice(i, 1); saveFixes(); showFixes(); });
+    li.appendChild(rm); list.appendChild(li);
+  });
+}
+function check(field, value) {
+  if (!value) return "Enter the correct value.";
+  if (field.endsWith("_date") && !/^\d{4}-\d{2}-\d{2}$/.test(value))
+    return "Write the date as YYYY-MM-DD.";
+  if (field === "contract_value" && !/^\d+(\.\d+)?$/.test(value))
+    return "Write the amount as digits only (e.g. 385000).";
+  return "";
+}
+document.getElementById("fix-form").addEventListener("submit", ev => {
+  ev.preventDefault();
+  const form = ev.target, msg = document.getElementById("fix-msg");
+  const f = {record_id: form.record.value, field: form.field.value,
+             value: form.value.value.trim(), by: form.by.value.trim(),
+             at: new Date().toISOString().slice(0, 10), note: form.note.value.trim()};
+  const err = !f.record_id ? "Choose the record." : check(f.field, f.value) ||
+              (!f.by ? "Enter your name: corrections are signed." : "");
+  msg.textContent = err || "Added. It is included when you download overrides.json.";
+  msg.setAttribute("role", err ? "alert" : "status");
+  if (err) return;
+  if (f.field === "contract_value") f.value = Number(f.value);
+  fixes.push(f); saveFixes(); showFixes(); form.value.value = ""; form.note.value = "";
+});
+showFixes();
 document.getElementById("download").addEventListener("click", () => {
   const out = {must_link: DATA.existing.must_link.slice(),
                cannot_link: DATA.existing.cannot_link.slice(),
-               facts: (DATA.existing.facts || []).slice()};  // confirmed values are kept
+               facts: (DATA.existing.facts || []).concat(fixes)};  // earlier + new corrections
   DATA.items.forEach((item, i) => {
     const a = answers["p" + i];
     if (a === "same") out.must_link.push([item.left, item.right]);
@@ -220,7 +268,9 @@ def render_review_html(
     records: dict[str, SourceRecord],
     existing: Overrides | None = None,
     run: str = "",
+    correctable: list[tuple[str, str]] | None = None,
 ) -> str:
+    """`correctable`: (record_id, label) of the records a person may correct a value on."""
     existing = existing or Overrides()
     blocks = []
     for i, item in enumerate(items):
@@ -262,9 +312,46 @@ def render_review_html(
         '<div class="bar"><button id="download" type="button">Download overrides.json</button>'
         '<span id="count"></span></div>'
         + ("".join(blocks) or "<p>No borderline matches in this run.</p>")
+        + _correction_form(correctable or [])
         + f'<script type="application/json" id="data">{_script_json(data)}</script>'
     )
     return _page("Confirm customer matches", body, _REVIEW_JS)
+
+
+CORRECTABLE_FIELDS = (
+    ("renewal_date", "Renewal date"),
+    ("contract_value", "Contract value"),
+    ("owner", "Account owner"),
+    ("contract_start", "Contract start"),
+    ("signatory", "Signatory"),
+    ("address", "Address"),
+)
+
+
+def _correction_form(records: list[tuple[str, str]]) -> str:
+    opts = "".join(
+        f'<option value="{html.escape(rid)}">{html.escape(label)} ({html.escape(rid)})</option>'
+        for rid, label in records
+    )
+    fields = "".join(
+        f'<option value="{k}">{html.escape(v)}</option>' for k, v in CORRECTABLE_FIELDS
+    )
+    return (
+        "<h2>Correct a value</h2>"
+        "<p>If you know a value is wrong (a signed extension, a new owner), state the right one. "
+        "It is signed with your name and today's date, and outranks the other sources until a "
+        "newer document says otherwise.</p>"
+        '<form id="fix-form" class="fix" novalidate>'
+        '<label>Customer record <select name="record" required><option value="">Choose…'
+        f"</option>{opts}</select></label>"
+        f'<label>Field <select name="field">{fields}</select></label>'
+        '<label>Correct value <input name="value" autocomplete="off" '
+        'placeholder="2027-03-01 or 385000"></label>'
+        '<label>Your name <input name="by" autocomplete="name"></label>'
+        '<label>Note (optional) <input name="note" autocomplete="off"></label>'
+        '<button type="submit">Add correction</button></form>'
+        '<p id="fix-msg" class="meta" aria-live="polite"></p><ul id="fixes"></ul>'
+    )
 
 
 # ---------------------------------------------------------------- fix files (CSV)

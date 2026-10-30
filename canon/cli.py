@@ -234,10 +234,16 @@ def write_deliverables(out: Path, report: str, review, records, overrides: Path 
     from canon.resolve.pipeline import Overrides
 
     by_id = {r.record_id: r for r in records}
+    # corrections are pinned to a CRM account: the record people know and the fix files name
+    correctable = sorted(
+        ((r.record_id, r.name or r.record_id) for r in records if r.source == "crm"),
+        key=lambda x: x[1].lower(),
+    )
     run = hashlib.sha1("".join(f"{i.left}{i.right}" for i in review).encode()).hexdigest()[:12]
     (out / "audit_report.html").write_text(render_audit_html(report), encoding="utf-8")
     (out / "review.html").write_text(
-        render_review_html(review, by_id, Overrides.load(overrides), run), encoding="utf-8"
+        render_review_html(review, by_id, Overrides.load(overrides), run, correctable),
+        encoding="utf-8",
     )
 
 
