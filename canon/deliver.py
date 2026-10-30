@@ -52,6 +52,18 @@ td.num { text-align: right; font-variant-numeric: tabular-nums; }
        z-index: 1; }
 button { font: inherit; padding: 8px 14px; border-radius: 6px; border: 1px solid var(--accent);
          background: var(--accent); color: #fff; cursor: pointer; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px;
+         margin: 16px 0; }
+.card { border: 1px solid var(--line); border-radius: 8px; padding: 12px; }
+.card .n { font-size: 26px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.card .l { color: var(--muted); font-size: 13px; }
+.files a { color: var(--accent); font-weight: 600; }
+.missing { color: var(--muted); }
+.notice { border-left: 4px solid var(--accent); background: var(--head); padding: 8px 12px;
+          border-radius: 4px; }
+@media (prefers-color-scheme: dark) {
+  :root { --fg:#e6e9ef; --muted:#a3abba; --line:#3a4252; --bg:#161a22; --head:#222836;
+          --accent:#7ea2ff; } }
 @media print { .bar, .choices { display: none; } h2 { break-after: avoid; }
                tr { break-inside: avoid; } }
 """

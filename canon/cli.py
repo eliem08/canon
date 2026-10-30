@@ -138,40 +138,77 @@ def cmd_serve(args: argparse.Namespace) -> None:
     server.run("streamable-http", host=args.host, port=args.port)
 
 
-def cmd_audit(args: argparse.Namespace) -> None:
+def run_audit(
+    data: Path,
+    out: Path,
+    as_of: date | None = None,
+    overrides: Path | None = None,
+    identities: Path | None = None,
+    compare: Path | None = None,
+):
+    """Ingest, resolve and audit; write every deliverable to `out`. Returns (audit, report)."""
+    from dataclasses import asdict
+
     from canon.audit import build_audit, render_audit
+    from canon.deliver import write_fix_files, write_renewals_csv
+    from canon.ingest import load_deployment
     from canon.mcp_server import CallerDirectory
 
-    data, out = Path(args.data), Path(args.out)
-    as_of = date.fromisoformat(args.as_of) if args.as_of else None
-    overrides = Path(args.overrides) if args.overrides else None
     records, res, unreadable = build_store(data, out, as_of, overrides)
-    identities = Path(args.identities) if args.identities else data / "identities.json"
+    identities = identities or data / "identities.json"
     directory = CallerDirectory.from_file(identities) if identities.exists() else None
     audit = build_audit(records, res, directory, unreadable, as_of)
     report = render_audit(audit)
-    if args.compare:  # week 2: what the client fixed since the previous audit
+    if compare:  # week 2: what the client fixed since the previous audit
         from canon.audit import Audit, compare_audits, render_delta
 
-        previous = Audit.model_validate_json(Path(args.compare).read_text(encoding="utf-8"))
+        previous = Audit.model_validate_json(Path(compare).read_text(encoding="utf-8"))
         delta = render_delta(compare_audits(previous, audit))
         report = report.replace("\n## 1. ", f"\n{delta}\n## 1. ", 1)
     (out / "audit_report.md").write_text(report, encoding="utf-8")
     (out / "audit.json").write_text(audit.model_dump_json(indent=2), encoding="utf-8")
     write_deliverables(out, report, res.review, records, overrides)
-    from dataclasses import asdict
-
-    from canon.deliver import write_fix_files, write_renewals_csv
-    from canon.ingest import load_deployment
-
-    crm_columns = asdict(load_deployment(data).crm_fields)
-    write_fix_files(out, audit, records, unreadable, crm_columns)
+    write_fix_files(out, audit, records, unreadable, asdict(load_deployment(data).crm_fields))
     write_renewals_csv(out, audit)
+    return audit, report
+
+
+def cmd_audit(args: argparse.Namespace) -> None:
+    _, report = run_audit(
+        Path(args.data),
+        Path(args.out),
+        date.fromisoformat(args.as_of) if args.as_of else None,
+        Path(args.overrides) if args.overrides else None,
+        Path(args.identities) if args.identities else None,
+        Path(args.compare) if args.compare else None,
+    )
     print(report)
     print(
-        f"Client files in {out}: audit_report.html (print to PDF), review.html (merges "
+        f"Client files in {args.out}: audit_report.html (print to PDF), review.html (merges "
         "to confirm), crm_fixes.csv (CRM bulk update), quarantine.csv (values to check)"
     )
+
+
+def cmd_pilot(args: argparse.Namespace) -> None:
+    from canon.pilot import run_pilot
+
+    out = Path(args.out)
+    audit, manifest, intake_ok = run_pilot(
+        Path(args.data),
+        out,
+        date.fromisoformat(args.as_of) if args.as_of else None,
+        Path(args.overrides) if args.overrides else None,
+        Path(args.identities) if args.identities else None,
+        Path(args.compare) if args.compare else None,
+    )
+    stale = len(audit.stale_crm) + len(audit.slack_only_owner_changes)
+    print(
+        f"Done in {manifest['seconds']} s: {audit.entities} customers, {stale} stale CRM values, "
+        f"{audit.review_items} merges to confirm, {len(audit.renewals)} renewals in 180 days."
+    )
+    print(f"Open {out / 'index.html'} in a browser.")
+    if not intake_ok:
+        print("The intake check found problems: read intake_check.md first.")
 
 
 def write_deliverables(out: Path, report: str, review, records, overrides: Path | None) -> None:
@@ -347,6 +384,15 @@ def main(argv: list[str] | None = None) -> None:
     a.add_argument("--as-of", default=None)
     a.add_argument("--compare", default=None, help="a previous audit.json: report what changed")
     a.set_defaults(func=cmd_audit)
+
+    pi = sub.add_parser("pilot", help="the whole engagement: check, audit, dashboard (index.html)")
+    pi.add_argument("--data", default=str(_data_dir()))
+    pi.add_argument("--out", default=os.environ.get("CANON_OUT_DIR", "out"))
+    pi.add_argument("--identities", default=None, help="default: <data>/identities.json")
+    pi.add_argument("--overrides", default=None)
+    pi.add_argument("--as-of", default=None)
+    pi.add_argument("--compare", default=None, help="a previous audit.json: report what changed")
+    pi.set_defaults(func=cmd_pilot)
 
     c = sub.add_parser("check", help="day-1 intake check of a client export (no resolution)")
     c.add_argument("--data", default=str(_data_dir()))
