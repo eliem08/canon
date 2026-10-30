@@ -27,6 +27,9 @@ docker run --rm -v "$PWD/out:/out" canon purge --out /out              # dry run
 docker run --rm -v "$PWD/out:/out" -v "$PWD:/receipt" canon purge --out /out --yes --receipt /receipt/deletion.json
 ```
 
+If Docker Hub rate-limits the base image, build from a mirror of the same image:
+`docker build --build-arg BASE_IMAGE=public.ecr.aws/ubuntu/ubuntu:24.04 -t canon .` (verified 2026-10-30).
+
 ## Configuration
 
 Environment variables: see `.env.example`. Per-client settings: `<export>/canon.json` (`docs/DEPLOY.md`).

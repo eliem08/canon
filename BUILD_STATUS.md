@@ -36,6 +36,8 @@ An on-premise tool for a two-week customer-data and AI-readiness engagement:
 - The browser test with Playwright: **1 passed**.
 - `ruff check` and `ruff format --check`: clean.
 - `pip-audit` on the locked runtime dependencies: no known vulnerabilities.
+- Docker image built locally and exercised. With networking off, `pilot` produced 14 files. `serve --http` answered `/health` with 200 and refused a request without a token with 401. `purge --yes` deleted 15 files and wrote a receipt.
+- **CI has not run on these commits.** The workflow triggers on pushes to `main` and on pull requests only, and this branch has neither yet.
 
 ## Readiness gates
 
@@ -48,7 +50,7 @@ An on-premise tool for a two-week customer-data and AI-readiness engagement:
 | Backend | **PASS** | CLI and MCP service covered by 1,263 tests |
 | Security | **PARTIAL** | Reviewed; vulnerable dependencies fixed; auth and leak tests pass. Accepted risks are listed in `SECURITY_REVIEW.md`. No external penetration test; single sign-on (OIDC) not tested against a real identity provider |
 | Testing | **PASS** | Unit, integration, MCP API, auth, end-to-end browser and performance tests executed; results documented |
-| Deployment | **PARTIAL** | CI builds the Docker image and runs it offline. Not deployed anywhere; no published or signed image |
+| Deployment | **PARTIAL** | Image built and run end to end locally (pilot → serve → health → purge); CI builds it on `main`. Not deployed for any client; no published or signed image |
 | Operations | **PARTIAL** | Runbook, `/health`, audit log, run record, purge receipt. No metrics or alerting (unnecessary for an operator-run pilot) |
 | Documentation | **PASS** | Install, user, operator and developer docs: `README.md`, `docs/DEPLOY.md`, `docs/product/*` |
 | Commercial | **PARTIAL** | Positioning, pricing hypotheses, pilot proposal and outreach are written. **No price has been tested with a buyer** |

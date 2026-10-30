@@ -13,6 +13,8 @@ All results below were produced by commands run on 2026-10-30 in the development
 | `uv run ruff check . && uv run ruff format --check .` | clean |
 | `uvx --python 3.12 pip-audit==2.9.0 -r <locked runtime deps>` | No known vulnerabilities (after the pillow/pypdf upgrade) |
 
+| Docker image (built from this Dockerfile, base `public.ecr.aws/ubuntu/ubuntu:24.04` because Docker Hub rate-limited the pull) | `pilot` with `--network none`: 14 output files; `serve --http`: `GET /health` 200, `POST /mcp` without token 401; `purge --yes`: 15 files deleted, receipt written |
+
 CI runs the suite with tesseract (fra/ara/eng), the browser job, the dependency audit, and a Docker build that runs
 `resolve` with `--network none`.
 
