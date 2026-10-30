@@ -1,0 +1,19 @@
+MASTER SUBSCRIPTION AGREEMENT
+Agreement No: CN-2023-254
+Version: 1
+Signature date: November 23, 2023
+
+BETWEEN
+Fieldstone Software, Inc., hereinafter the Provider,
+AND
+Customer: Silverleaf Dental Group LLC
+Tax ID (EIN): 57-3094269
+Registered office: 2 N Central Ave, Phoenix
+Represented by: Amanda Foster
+Contact: contact@silverleafdental.com - Tel: (215) 276-8927
+
+Section 1 - Scope. The Provider supplies data platform services.
+Section 4 - Fees. The annual fee is USD 560,000 excluding taxes.
+Section 5 - Term. Effective date: December 1, 2023. Renewal date: December 1, 2025.
+
+Signed for the Customer: Amanda Foster

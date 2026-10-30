@@ -1,0 +1,19 @@
+MASTER SUBSCRIPTION AGREEMENT
+Agreement No: CN-2024-107
+Version: 1
+Signature date: January 13, 2024
+
+BETWEEN
+Fieldstone Software, Inc., hereinafter the Provider,
+AND
+Customer: Summit Logistics Incorporated
+Tax ID (EIN): 50-0133528
+Registered office: 329 Maple Ave, Denver
+Represented by: Robert Hughes
+Contact: legal@summitlogistics.com - Tel: +17132382243
+
+Section 1 - Scope. The Provider supplies data platform services.
+Section 4 - Fees. The annual fee is USD 375,000 excluding taxes.
+Section 5 - Term. Effective date: February 1, 2024. Renewal date: February 1, 2026.
+
+Signed for the Customer: Robert Hughes

@@ -1,0 +1,1084 @@
+{
+  "seed": 20261001,
+  "reference_date": "2026-10-01",
+  "entities": {
+    "E01": {
+      "key": "summit-log",
+      "name": "Summit Logistics",
+      "legal_name": "Summit Logistics Inc",
+      "legal_form": "Inc",
+      "arabic_name": null,
+      "domain": "summitlogistics.com",
+      "phone": "+17132382243",
+      "address": "1450 Larimer St",
+      "city": "Denver",
+      "tax_id": "50-0133528",
+      "industry": "Logistics",
+      "owner": "Emily Rodriguez",
+      "contract_number": "CN-2024-107",
+      "contract_value": 461000,
+      "currency": "USD",
+      "contract_start": "2025-12-01",
+      "renewal_date": "2027-12-01",
+      "signatory": "Robert Hughes",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E02": {
+      "key": "summit-travel",
+      "name": "Summit Travel",
+      "legal_name": "Summit Travel LLC",
+      "legal_form": "LLC",
+      "arabic_name": null,
+      "domain": "summittravel.com",
+      "phone": "+12155093293",
+      "address": "800 Lincoln St",
+      "city": "Denver",
+      "tax_id": "35-2955172",
+      "industry": "Travel",
+      "owner": "Marcus Johnson",
+      "contract_number": "CN-2023-114",
+      "contract_value": 134000,
+      "currency": "USD",
+      "contract_start": "2025-11-01",
+      "renewal_date": "2027-11-01",
+      "signatory": "Lisa Morgan",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E03": {
+      "key": "northwind",
+      "name": "Northwind Analytics",
+      "legal_name": "Northwind Analytics Inc",
+      "legal_form": "Inc",
+      "arabic_name": null,
+      "domain": "northwindanalytics.io",
+      "phone": "+12067596821",
+      "address": "1201 3rd Ave",
+      "city": "Seattle",
+      "tax_id": "76-7408495",
+      "industry": "Software",
+      "owner": "Priya Patel",
+      "contract_number": "CN-2023-121",
+      "contract_value": 776000,
+      "currency": "USD",
+      "contract_start": "2026-03-01",
+      "renewal_date": "2027-03-01",
+      "signatory": "Brian Collins",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E04": {
+      "key": "northwind-pack",
+      "name": "Northwind Packaging",
+      "legal_name": "Northwind Packaging LLC",
+      "legal_form": "LLC",
+      "arabic_name": null,
+      "domain": "northwindpack.com",
+      "phone": "+16173883426",
+      "address": "2302 Pacific Ave",
+      "city": "Tacoma",
+      "tax_id": "69-0275899",
+      "industry": "Manufacturing",
+      "owner": "Tom Anderson",
+      "contract_number": "CN-2023-128",
+      "contract_value": 654000,
+      "currency": "USD",
+      "contract_start": "2026-01-01",
+      "renewal_date": "2027-01-01",
+      "signatory": "Kevin Sullivan",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E05": {
+      "key": "bluefin",
+      "name": "Bluefin Health",
+      "legal_name": "Bluefin Health Inc",
+      "legal_form": "Inc",
+      "arabic_name": null,
+      "domain": "bluefinhealth.com",
+      "phone": "+17133226649",
+      "address": "100 Summer St",
+      "city": "Boston",
+      "tax_id": "71-7361124",
+      "industry": "Healthcare",
+      "owner": "Rachel Green",
+      "contract_number": "CN-2023-135",
+      "contract_value": 486000,
+      "currency": "USD",
+      "contract_start": "2025-12-01",
+      "renewal_date": "2026-12-01",
+      "signatory": "Robert Hughes",
+      "owner_change_in_slack_only": true,
+      "crm_value_stale": true
+    },
+    "E06": {
+      "key": "harbor-foods",
+      "name": "Harbor Foods",
+      "legal_name": "Harbor Foods Corp",
+      "legal_form": "Corp",
+      "arabic_name": null,
+      "domain": "harborfoods.com",
+      "phone": "+17135307640",
+      "address": "300 E Pratt St",
+      "city": "Baltimore",
+      "tax_id": "76-6146677",
+      "industry": "Food",
+      "owner": "David Kim",
+      "contract_number": "CN-2024-142",
+      "contract_value": 1468000,
+      "currency": "USD",
+      "contract_start": "2026-05-01",
+      "renewal_date": "2027-05-01",
+      "signatory": "Karen Mitchell",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E07": {
+      "key": "redwood",
+      "name": "Redwood Capital Partners",
+      "legal_name": "Redwood Capital Partners LLC",
+      "legal_form": "LLC",
+      "arabic_name": null,
+      "domain": "redwoodcp.com",
+      "phone": "+12069288567",
+      "address": "555 California St",
+      "city": "San Francisco",
+      "tax_id": "84-3772211",
+      "industry": "Finance",
+      "owner": "Rachel Green",
+      "contract_number": "CN-2023-149",
+      "contract_value": 1387000,
+      "currency": "USD",
+      "contract_start": "2025-12-01",
+      "renewal_date": "2027-12-01",
+      "signatory": "Jennifer Walsh",
+      "owner_change_in_slack_only": true,
+      "crm_value_stale": false
+    },
+    "E08": {
+      "key": "ironclad-mfg",
+      "name": "Ironclad Manufacturing",
+      "legal_name": "Ironclad Manufacturing Inc",
+      "legal_form": "Inc",
+      "arabic_name": null,
+      "domain": "ironcladmfg.com",
+      "phone": "+15127056532",
+      "address": "1300 E 9th St",
+      "city": "Cleveland",
+      "tax_id": "87-2810853",
+      "industry": "Manufacturing",
+      "owner": "Sarah Chen",
+      "contract_number": "CN-2023-156",
+      "contract_value": 1474000,
+      "currency": "USD",
+      "contract_start": "2026-02-01",
+      "renewal_date": "2028-02-01",
+      "signatory": "Laura Bennett",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": true
+    },
+    "E09": {
+      "key": "lumen-retail",
+      "name": "Lumen Retail Group",
+      "legal_name": "Lumen Retail Group Inc",
+      "legal_form": "Inc",
+      "arabic_name": null,
+      "domain": "lumenretail.com",
+      "phone": "+15125260814",
+      "address": "233 S Wacker Dr",
+      "city": "Chicago",
+      "tax_id": "79-9690720",
+      "industry": "Retail",
+      "owner": "Rachel Green",
+      "contract_number": "CN-2023-163",
+      "contract_value": 1925000,
+      "currency": "USD",
+      "contract_start": "2026-05-01",
+      "renewal_date": "2028-05-01",
+      "signatory": "Amanda Foster",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": true
+    },
+    "E10": {
+      "key": "cedar-ins",
+      "name": "Cedar Insurance Brokers",
+      "legal_name": "Cedar Insurance Brokers LLC",
+      "legal_form": "LLC",
+      "arabic_name": null,
+      "domain": "cedarins.com",
+      "phone": "+13034687077",
+      "address": "185 Asylum St",
+      "city": "Hartford",
+      "tax_id": "14-4401175",
+      "industry": "Insurance",
+      "owner": "Rachel Green",
+      "contract_number": "CN-2023-170",
+      "contract_value": 1558000,
+      "currency": "USD",
+      "contract_start": "2025-12-01",
+      "renewal_date": "2026-12-01",
+      "signatory": "Robert Hughes",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E11": {
+      "key": "atlas-freight",
+      "name": "Atlas Freight",
+      "legal_name": "Atlas Freight Inc",
+      "legal_form": "Inc",
+      "arabic_name": null,
+      "domain": "atlasfreight.com",
+      "phone": "+12124153145",
+      "address": "2200 Ross Ave",
+      "city": "Dallas",
+      "tax_id": "89-0326904",
+      "industry": "Logistics",
+      "owner": "Priya Patel",
+      "contract_number": "CN-2024-177",
+      "contract_value": 1068000,
+      "currency": "USD",
+      "contract_start": "2025-10-01",
+      "renewal_date": "2027-10-01",
+      "signatory": "Jennifer Walsh",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E12": {
+      "key": "pioneer-energy",
+      "name": "Pioneer Energy Services",
+      "legal_name": "Pioneer Energy Services Corp",
+      "legal_form": "Corp",
+      "arabic_name": null,
+      "domain": "pioneerenergy.com",
+      "phone": "+13036937822",
+      "address": "811 Main St",
+      "city": "Houston",
+      "tax_id": "50-2174800",
+      "industry": "Energy",
+      "owner": "Marcus Johnson",
+      "contract_number": "CN-2023-184",
+      "contract_value": 713000,
+      "currency": "USD",
+      "contract_start": "2026-06-01",
+      "renewal_date": "2028-06-01",
+      "signatory": "Kevin Sullivan",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E13": {
+      "key": "granite-legal",
+      "name": "Granite Legal Solutions",
+      "legal_name": "Granite Legal Solutions LLC",
+      "legal_form": "LLC",
+      "arabic_name": null,
+      "domain": "granitelegal.com",
+      "phone": "+12069100020",
+      "address": "450 Lexington Ave",
+      "city": "New York",
+      "tax_id": "86-7394616",
+      "industry": "Legal",
+      "owner": "Marcus Johnson",
+      "contract_number": "CN-2023-191",
+      "contract_value": 1284000,
+      "currency": "USD",
+      "contract_start": "2026-02-01",
+      "renewal_date": "2028-02-01",
+      "signatory": "Daniel Brooks",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": true
+    },
+    "E14": {
+      "key": "meridian-edu",
+      "name": "Meridian Learning",
+      "legal_name": "Meridian Learning Inc",
+      "legal_form": "Inc",
+      "arabic_name": null,
+      "domain": "meridianlearning.com",
+      "phone": "+12157915313",
+      "address": "600 Congress Ave",
+      "city": "Austin",
+      "tax_id": "23-0495525",
+      "industry": "Education",
+      "owner": "Priya Patel",
+      "contract_number": "CN-2023-198",
+      "contract_value": 1248000,
+      "currency": "USD",
+      "contract_start": "2025-06-01",
+      "renewal_date": "2027-06-01",
+      "signatory": "Daniel Brooks",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E15": {
+      "key": "oakline",
+      "name": "Oakline Hotels",
+      "legal_name": "Oakline Hotels LLC",
+      "legal_form": "LLC",
+      "arabic_name": null,
+      "domain": "oaklinehotels.com",
+      "phone": "+14049163933",
+      "address": "150 4th Ave N",
+      "city": "Nashville",
+      "tax_id": "71-9933851",
+      "industry": "Hospitality",
+      "owner": "Sarah Chen",
+      "contract_number": "CN-2023-205",
+      "contract_value": 1549000,
+      "currency": "USD",
+      "contract_start": "2025-04-01",
+      "renewal_date": "2027-04-01",
+      "signatory": "Michael Thompson",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E16": {
+      "key": "vertex-bio",
+      "name": "Vertex Biologics",
+      "legal_name": "Vertex Biologics Inc",
+      "legal_form": "Inc",
+      "arabic_name": null,
+      "domain": "vertexbiologics.com",
+      "phone": "+13038991409",
+      "address": "4250 Executive Sq",
+      "city": "San Diego",
+      "tax_id": "70-9683235",
+      "industry": "Biotech",
+      "owner": "Rachel Green",
+      "contract_number": "CN-2023-212",
+      "contract_value": 600000,
+      "currency": "USD",
+      "contract_start": "2025-08-01",
+      "renewal_date": "2027-08-01",
+      "signatory": "Jennifer Walsh",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": true
+    },
+    "E17": {
+      "key": "keystone",
+      "name": "Keystone Construction",
+      "legal_name": "Keystone Construction Inc",
+      "legal_form": "Inc",
+      "arabic_name": null,
+      "domain": "keystonebuild.com",
+      "phone": "+13129298212",
+      "address": "1650 Market St",
+      "city": "Philadelphia",
+      "tax_id": "87-4849699",
+      "industry": "Construction",
+      "owner": "Emily Rodriguez",
+      "contract_number": "CN-2024-219",
+      "contract_value": 384000,
+      "currency": "USD",
+      "contract_start": "2026-01-01",
+      "renewal_date": "2027-01-01",
+      "signatory": "Jennifer Walsh",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E18": {
+      "key": "brightpath",
+      "name": "BrightPath Telecom",
+      "legal_name": "BrightPath Telecom Inc",
+      "legal_form": "Inc",
+      "arabic_name": null,
+      "domain": "brightpathtel.com",
+      "phone": "+12062773520",
+      "address": "1180 Peachtree St NE",
+      "city": "Atlanta",
+      "tax_id": "98-8496726",
+      "industry": "Telecom",
+      "owner": "Marcus Johnson",
+      "contract_number": "CN-2023-226",
+      "contract_value": 1327000,
+      "currency": "USD",
+      "contract_start": "2025-09-01",
+      "renewal_date": "2027-09-01",
+      "signatory": "Amanda Foster",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E19": {
+      "key": "evergreen",
+      "name": "Evergreen Supply Co",
+      "legal_name": "Evergreen Supply Co LLC",
+      "legal_form": "LLC",
+      "arabic_name": null,
+      "domain": "evergreensupply.com",
+      "phone": "+14047860867",
+      "address": "1000 SW Broadway",
+      "city": "Portland",
+      "tax_id": "48-4526943",
+      "industry": "Distribution",
+      "owner": "Jordan Miller",
+      "contract_number": "CN-2024-233",
+      "contract_value": 1085000,
+      "currency": "USD",
+      "contract_start": "2025-12-01",
+      "renewal_date": "2027-12-01",
+      "signatory": "Karen Mitchell",
+      "owner_change_in_slack_only": true,
+      "crm_value_stale": true
+    },
+    "E20": {
+      "key": "copperline",
+      "name": "Copperline Media",
+      "legal_name": "Copperline Media Inc",
+      "legal_form": "Inc",
+      "arabic_name": null,
+      "domain": "copperlinemedia.com",
+      "phone": "+17132090318",
+      "address": "2049 Century Park E",
+      "city": "Los Angeles",
+      "tax_id": "86-3066372",
+      "industry": "Media",
+      "owner": "David Kim",
+      "contract_number": "CN-2023-240",
+      "contract_value": 1518000,
+      "currency": "USD",
+      "contract_start": "2025-10-01",
+      "renewal_date": "2027-10-01",
+      "signatory": "Daniel Brooks",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E21": {
+      "key": "tidewater",
+      "name": "Tidewater Marine",
+      "legal_name": "Tidewater Marine Corp",
+      "legal_form": "Corp",
+      "arabic_name": null,
+      "domain": "tidewatermarine.com",
+      "phone": "+12068113782",
+      "address": "150 W Main St",
+      "city": "Norfolk",
+      "tax_id": "57-8706473",
+      "industry": "Marine",
+      "owner": "Rachel Green",
+      "contract_number": "CN-2023-247",
+      "contract_value": 560000,
+      "currency": "USD",
+      "contract_start": "2025-12-01",
+      "renewal_date": "2026-12-01",
+      "signatory": "Laura Bennett",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": true
+    },
+    "E22": {
+      "key": "silverleaf",
+      "name": "Silverleaf Dental Group",
+      "legal_name": "Silverleaf Dental Group LLC",
+      "legal_form": "LLC",
+      "arabic_name": null,
+      "domain": "silverleafdental.com",
+      "phone": "+12152768927",
+      "address": "2 N Central Ave",
+      "city": "Phoenix",
+      "tax_id": "57-3094269",
+      "industry": "Healthcare",
+      "owner": "Marcus Johnson",
+      "contract_number": "CN-2023-254",
+      "contract_value": 674000,
+      "currency": "USD",
+      "contract_start": "2025-09-01",
+      "renewal_date": "2027-09-01",
+      "signatory": "Amanda Foster",
+      "owner_change_in_slack_only": true,
+      "crm_value_stale": false
+    },
+    "E23": {
+      "key": "quarry",
+      "name": "Quarry Data Systems",
+      "legal_name": "Quarry Data Systems Inc",
+      "legal_form": "Inc",
+      "arabic_name": null,
+      "domain": "quarrydata.com",
+      "phone": "+17132153286",
+      "address": "421 Fayetteville St",
+      "city": "Raleigh",
+      "tax_id": "74-1235924",
+      "industry": "Software",
+      "owner": "Emily Rodriguez",
+      "contract_number": "CN-2023-261",
+      "contract_value": 1496000,
+      "currency": "USD",
+      "contract_start": "2025-05-01",
+      "renewal_date": "2027-05-01",
+      "signatory": "Karen Mitchell",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": false
+    },
+    "E24": {
+      "key": "lakeshore",
+      "name": "Lakeshore Logistics",
+      "legal_name": "Lakeshore Logistics LLC",
+      "legal_form": "LLC",
+      "arabic_name": null,
+      "domain": "lakeshorelogistics.com",
+      "phone": "+13035420953",
+      "address": "1450 Larimer St",
+      "city": "Milwaukee",
+      "tax_id": "96-3824833",
+      "industry": "Logistics",
+      "owner": "Rachel Green",
+      "contract_number": "CN-2023-268",
+      "contract_value": 1382000,
+      "currency": "USD",
+      "contract_start": "2026-05-01",
+      "renewal_date": "2027-05-01",
+      "signatory": "Laura Bennett",
+      "owner_change_in_slack_only": true,
+      "crm_value_stale": false
+    },
+    "E25": {
+      "key": "brightwater",
+      "name": "Brightwater Analytics",
+      "legal_name": "Brightwater Analytics Inc",
+      "legal_form": "Inc",
+      "arabic_name": null,
+      "domain": "brightwateranalytics.com",
+      "phone": "+13034276830",
+      "address": "80 S 8th St",
+      "city": "Minneapolis",
+      "tax_id": "85-8976089",
+      "industry": "Software",
+      "owner": "Marcus Johnson",
+      "contract_number": "CN-2024-275",
+      "contract_value": 411000,
+      "currency": "USD",
+      "contract_start": "2026-06-01",
+      "renewal_date": "2027-06-01",
+      "signatory": "Amanda Foster",
+      "owner_change_in_slack_only": false,
+      "crm_value_stale": true
+    }
+  },
+  "records": {
+    "contract:CN-2023-114_v1": "E02",
+    "contract:CN-2023-114_v2": "E02",
+    "contract:CN-2023-121_v1": "E03",
+    "contract:CN-2023-121_v2": "E03",
+    "contract:CN-2023-128_v1": "E04",
+    "contract:CN-2023-128_v2": "E04",
+    "contract:CN-2023-135_v1": "E05",
+    "contract:CN-2023-135_v2": "E05",
+    "contract:CN-2023-149_v1": "E07",
+    "contract:CN-2023-149_v2": "E07",
+    "contract:CN-2023-156_v1": "E08",
+    "contract:CN-2023-156_v2": "E08",
+    "contract:CN-2023-163_v1": "E09",
+    "contract:CN-2023-163_v2": "E09",
+    "contract:CN-2023-170_v1": "E10",
+    "contract:CN-2023-170_v2": "E10",
+    "contract:CN-2023-184_v1": "E12",
+    "contract:CN-2023-184_v2": "E12",
+    "contract:CN-2023-191_v1": "E13",
+    "contract:CN-2023-191_v2": "E13",
+    "contract:CN-2023-198_v1": "E14",
+    "contract:CN-2023-198_v2": "E14",
+    "contract:CN-2023-205_v1": "E15",
+    "contract:CN-2023-205_v2": "E15",
+    "contract:CN-2023-212_v1": "E16",
+    "contract:CN-2023-212_v2": "E16",
+    "contract:CN-2023-226_v1": "E18",
+    "contract:CN-2023-226_v2": "E18",
+    "contract:CN-2023-240_v1": "E20",
+    "contract:CN-2023-240_v2": "E20",
+    "contract:CN-2023-247_v1": "E21",
+    "contract:CN-2023-247_v2": "E21",
+    "contract:CN-2023-254_v1": "E22",
+    "contract:CN-2023-254_v2": "E22",
+    "contract:CN-2023-261_v1": "E23",
+    "contract:CN-2023-261_v2": "E23",
+    "contract:CN-2023-268_v1": "E24",
+    "contract:CN-2023-268_v2": "E24",
+    "contract:CN-2024-107_v1": "E01",
+    "contract:CN-2024-107_v2": "E01",
+    "contract:CN-2024-142_v1": "E06",
+    "contract:CN-2024-142_v2": "E06",
+    "contract:CN-2024-177_v1": "E11",
+    "contract:CN-2024-177_v2": "E11",
+    "contract:CN-2024-219_v1": "E17",
+    "contract:CN-2024-219_v2": "E17",
+    "contract:CN-2024-233_v1": "E19",
+    "contract:CN-2024-233_v2": "E19",
+    "contract:CN-2024-275_v1": "E25",
+    "contract:CN-2024-275_v2": "E25",
+    "crm:0015g00000DZF3M": "E13",
+    "crm:0015g00001EAHEF": "E07",
+    "crm:0015g00001M7WCT": "E07",
+    "crm:0015g000028EEL0": "E15",
+    "crm:0015g00002DYEP9": "E05",
+    "crm:0015g00002EXZRH": "E13",
+    "crm:0015g00002T8K4C": "E25",
+    "crm:0015g000031W12R": "E24",
+    "crm:0015g00003TQF08": "E09",
+    "crm:0015g000040E829": "E03",
+    "crm:0015g00004MS430": "E11",
+    "crm:0015g0000504GWU": "E20",
+    "crm:0015g0000628MKE": "E04",
+    "crm:0015g00008FYPBD": "E12",
+    "crm:0015g00008WTVJ3": "E04",
+    "crm:0015g00009CNXAW": "E21",
+    "crm:0015g00009MPK8D": "E09",
+    "crm:0015g0000AM4E0Q": "E16",
+    "crm:0015g0000DK7KLG": "E14",
+    "crm:0015g0000F2ASHR": "E05",
+    "crm:0015g0000F9FX21": "E08",
+    "crm:0015g0000FAFSXD": "E10",
+    "crm:0015g0000FKC352": "E02",
+    "crm:0015g0000G5SBZG": "E06",
+    "crm:0015g0000HLPNDM": "E15",
+    "crm:0015g0000JESDWE": "E06",
+    "crm:0015g0000K02FTR": "E18",
+    "crm:0015g0000KFAG8N": "E10",
+    "crm:0015g0000L6BQXV": "E11",
+    "crm:0015g0000LCGAUA": "E22",
+    "crm:0015g0000LTV06K": "E25",
+    "crm:0015g0000N094XS": "E23",
+    "crm:0015g0000QZN936": "E17",
+    "crm:0015g0000RJJCF4": "E18",
+    "crm:0015g0000S22ANG": "E10",
+    "crm:0015g0000SKPBB3": "E02",
+    "crm:0015g0000T617MQ": "E17",
+    "crm:0015g0000ULKUQE": "E19",
+    "crm:0015g0000V7M0HJ": "E02",
+    "crm:0015g0000V9273E": "E12",
+    "crm:0015g0000VF2ME1": "E18",
+    "crm:0015g0000W0A6BV": "E14",
+    "crm:0015g0000W610X1": "E24",
+    "crm:0015g0000Y8R5ND": "E24",
+    "crm:0015g0000YKLRJF": "E01",
+    "slack:C001EM1Y3V": "E03",
+    "slack:C00VJ1P1V6": "E25",
+    "slack:C04K3QV1Y4": "E05",
+    "slack:C04NHBKQMT": "E14",
+    "slack:C06V64FJDW": "E19",
+    "slack:C06VA42EC7": "E15",
+    "slack:C085R3F0JT": "E01",
+    "slack:C0ABPKDZ48": "E22",
+    "slack:C0BVZ3Y0QS": "E07",
+    "slack:C0G0LX5FRK": "E02",
+    "slack:C0K55VT4RP": "E24",
+    "slack:C0KE092LBL": "E01",
+    "slack:C0M4SY6288": "E21",
+    "slack:C0N10NTSW3": "E17",
+    "slack:C0R29ZCVVT": "E13",
+    "slack:C0U3NSK6VK": "E14",
+    "slack:C0YC1HXRCE": "E07",
+    "slack:C0ZH5Z4405": "E22"
+  },
+  "record_notes": {
+    "contract:CN-2023-114_v1": [
+      "superseded"
+    ],
+    "contract:CN-2023-114_v2": [],
+    "contract:CN-2023-121_v1": [
+      "superseded"
+    ],
+    "contract:CN-2023-121_v2": [],
+    "contract:CN-2023-128_v1": [
+      "superseded"
+    ],
+    "contract:CN-2023-128_v2": [],
+    "contract:CN-2023-135_v1": [
+      "superseded"
+    ],
+    "contract:CN-2023-135_v2": [],
+    "contract:CN-2023-149_v1": [
+      "superseded"
+    ],
+    "contract:CN-2023-149_v2": [],
+    "contract:CN-2023-156_v1": [
+      "superseded",
+      "stale:address"
+    ],
+    "contract:CN-2023-156_v2": [],
+    "contract:CN-2023-163_v1": [
+      "superseded"
+    ],
+    "contract:CN-2023-163_v2": [],
+    "contract:CN-2023-170_v1": [
+      "superseded"
+    ],
+    "contract:CN-2023-170_v2": [],
+    "contract:CN-2023-184_v1": [
+      "superseded"
+    ],
+    "contract:CN-2023-184_v2": [],
+    "contract:CN-2023-191_v1": [
+      "superseded"
+    ],
+    "contract:CN-2023-191_v2": [],
+    "contract:CN-2023-198_v1": [
+      "superseded"
+    ],
+    "contract:CN-2023-198_v2": [],
+    "contract:CN-2023-205_v1": [
+      "superseded"
+    ],
+    "contract:CN-2023-205_v2": [],
+    "contract:CN-2023-212_v1": [
+      "superseded",
+      "stale:address"
+    ],
+    "contract:CN-2023-212_v2": [],
+    "contract:CN-2023-226_v1": [
+      "superseded"
+    ],
+    "contract:CN-2023-226_v2": [],
+    "contract:CN-2023-240_v1": [
+      "superseded"
+    ],
+    "contract:CN-2023-240_v2": [],
+    "contract:CN-2023-247_v1": [
+      "superseded"
+    ],
+    "contract:CN-2023-247_v2": [],
+    "contract:CN-2023-254_v1": [
+      "superseded"
+    ],
+    "contract:CN-2023-254_v2": [],
+    "contract:CN-2023-261_v1": [
+      "superseded"
+    ],
+    "contract:CN-2023-261_v2": [],
+    "contract:CN-2023-268_v1": [
+      "superseded"
+    ],
+    "contract:CN-2023-268_v2": [],
+    "contract:CN-2024-107_v1": [
+      "superseded",
+      "stale:address"
+    ],
+    "contract:CN-2024-107_v2": [],
+    "contract:CN-2024-142_v1": [
+      "superseded",
+      "stale:address"
+    ],
+    "contract:CN-2024-142_v2": [],
+    "contract:CN-2024-177_v1": [
+      "superseded"
+    ],
+    "contract:CN-2024-177_v2": [],
+    "contract:CN-2024-219_v1": [
+      "superseded"
+    ],
+    "contract:CN-2024-219_v2": [],
+    "contract:CN-2024-233_v1": [
+      "superseded",
+      "stale:address"
+    ],
+    "contract:CN-2024-233_v2": [],
+    "contract:CN-2024-275_v1": [
+      "superseded"
+    ],
+    "contract:CN-2024-275_v2": [],
+    "crm:0015g00000DZF3M": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:typo",
+      "free_mail"
+    ],
+    "crm:0015g00001EAHEF": [
+      "stale:owner",
+      "name:upper"
+    ],
+    "crm:0015g00001M7WCT": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:darija"
+    ],
+    "crm:0015g000028EEL0": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:noaccent"
+    ],
+    "crm:0015g00002DYEP9": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:ste"
+    ],
+    "crm:0015g00002EXZRH": [
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:ste"
+    ],
+    "crm:0015g00002T8K4C": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:typo"
+    ],
+    "crm:0015g000031W12R": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:darija",
+      "free_mail"
+    ],
+    "crm:0015g00003TQF08": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:typo",
+      "free_mail"
+    ],
+    "crm:0015g000040E829": [
+      "name:clean"
+    ],
+    "crm:0015g00004MS430": [
+      "name:clean"
+    ],
+    "crm:0015g0000504GWU": [
+      "name:clean"
+    ],
+    "crm:0015g0000628MKE": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:typo"
+    ],
+    "crm:0015g00008FYPBD": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:noaccent",
+      "free_mail"
+    ],
+    "crm:0015g00008WTVJ3": [
+      "name:clean"
+    ],
+    "crm:0015g00009CNXAW": [
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:clean"
+    ],
+    "crm:0015g00009MPK8D": [
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:clean"
+    ],
+    "crm:0015g0000AM4E0Q": [
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:ste"
+    ],
+    "crm:0015g0000DK7KLG": [
+      "name:ste"
+    ],
+    "crm:0015g0000F2ASHR": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:noaccent",
+      "free_mail"
+    ],
+    "crm:0015g0000F9FX21": [
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:clean"
+    ],
+    "crm:0015g0000FAFSXD": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:noaccent"
+    ],
+    "crm:0015g0000FKC352": [
+      "name:upper"
+    ],
+    "crm:0015g0000G5SBZG": [
+      "name:clean"
+    ],
+    "crm:0015g0000HLPNDM": [
+      "name:ste"
+    ],
+    "crm:0015g0000JESDWE": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "stale:address",
+      "name:darija",
+      "free_mail"
+    ],
+    "crm:0015g0000K02FTR": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:noaccent"
+    ],
+    "crm:0015g0000KFAG8N": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:alias"
+    ],
+    "crm:0015g0000L6BQXV": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:noaccent"
+    ],
+    "crm:0015g0000LCGAUA": [
+      "stale:owner",
+      "name:upper"
+    ],
+    "crm:0015g0000LTV06K": [
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:ste"
+    ],
+    "crm:0015g0000N094XS": [
+      "name:clean"
+    ],
+    "crm:0015g0000QZN936": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:typo"
+    ],
+    "crm:0015g0000RJJCF4": [
+      "name:clean"
+    ],
+    "crm:0015g0000S22ANG": [
+      "name:upper"
+    ],
+    "crm:0015g0000SKPBB3": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:alias",
+      "free_mail"
+    ],
+    "crm:0015g0000T617MQ": [
+      "name:upper"
+    ],
+    "crm:0015g0000ULKUQE": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:clean"
+    ],
+    "crm:0015g0000V7M0HJ": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:noaccent"
+    ],
+    "crm:0015g0000V9273E": [
+      "name:ste"
+    ],
+    "crm:0015g0000VF2ME1": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:noaccent"
+    ],
+    "crm:0015g0000W0A6BV": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:typo"
+    ],
+    "crm:0015g0000W610X1": [
+      "stale:owner",
+      "name:ste"
+    ],
+    "crm:0015g0000Y8R5ND": [
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date",
+      "name:typo"
+    ],
+    "crm:0015g0000YKLRJF": [
+      "name:ste"
+    ],
+    "slack:C001EM1Y3V": [
+      "channel:old-northwind-analytics",
+      "archived",
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date"
+    ],
+    "slack:C00VJ1P1V6": [
+      "channel:deal-brightwater"
+    ],
+    "slack:C04K3QV1Y4": [
+      "channel:acc-bluefin"
+    ],
+    "slack:C04NHBKQMT": [
+      "channel:old-meridian",
+      "archived",
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date"
+    ],
+    "slack:C06V64FJDW": [
+      "channel:deal-evergreensupply"
+    ],
+    "slack:C06VA42EC7": [
+      "channel:old-oaklinehotels",
+      "archived",
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date"
+    ],
+    "slack:C085R3F0JT": [
+      "channel:old-summitlog",
+      "archived",
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date"
+    ],
+    "slack:C0ABPKDZ48": [
+      "channel:old-silverleaf",
+      "archived",
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date"
+    ],
+    "slack:C0BVZ3Y0QS": [
+      "channel:old-redwood-capital-partners",
+      "archived",
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date"
+    ],
+    "slack:C0G0LX5FRK": [
+      "channel:ext-summit-trips"
+    ],
+    "slack:C0K55VT4RP": [
+      "channel:deal-lakeshore"
+    ],
+    "slack:C0KE092LBL": [
+      "channel:acc-summit-logistics"
+    ],
+    "slack:C0M4SY6288": [
+      "channel:acc-tidewater"
+    ],
+    "slack:C0N10NTSW3": [
+      "channel:old-keystone",
+      "archived",
+      "stale:owner",
+      "stale:contract_value",
+      "stale:renewal_date"
+    ],
+    "slack:C0R29ZCVVT": [
+      "channel:ext-granite-legal-solutions"
+    ],
+    "slack:C0U3NSK6VK": [
+      "channel:deal-meridianlearning"
+    ],
+    "slack:C0YC1HXRCE": [
+      "channel:ext-redwood-capital"
+    ],
+    "slack:C0ZH5Z4405": [
+      "channel:acc-silverleaf-dental-group"
+    ]
+  }
+}

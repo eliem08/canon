@@ -43,6 +43,8 @@ DEFAULT_HALF_LIFE_DAYS = {
     "contract_number": 730,
     "signatory": 365,
     "address": 730,
+    "renewal_period_months": 365,
+    "renewal_notice": 365,
     # identity attributes (scored at query time by the MCP service) change rarely
     "phone": 1095,
     "domain": 1095,
@@ -51,7 +53,7 @@ DEFAULT_HALF_LIFE_DAYS = {
 }
 FACT_FIELDS = (
     "owner", "contract_value", "renewal_date", "contract_start", "contract_number",
-    "signatory", "address",
+    "signatory", "address", "renewal_period_months", "renewal_notice",
 )  # fmt: skip
 
 

@@ -1,0 +1,19 @@
+MASTER SUBSCRIPTION AGREEMENT
+Agreement No: CN-2024-233
+Version: 1
+Signature date: April 26, 2024
+
+BETWEEN
+Fieldstone Software, Inc., hereinafter the Provider,
+AND
+Customer: Evergreen Supply Co LLC
+Tax ID (EIN): 48-4526943
+Registered office: 1306 Maple Ave, Portland
+Represented by: Karen Mitchell
+Contact: legal@evergreensupply.com - Tel: +14047860867
+
+Section 1 - Scope. The Provider supplies data platform services.
+Section 4 - Fees. The annual fee is USD 1,015,000 excluding taxes.
+Section 5 - Term. Effective date: May 1, 2024. Renewal date: May 1, 2026.
+
+Signed for the Customer: Karen Mitchell

@@ -1,0 +1,21 @@
+MASTER SUBSCRIPTION AGREEMENT
+Agreement No: CN-2023-205
+Version: 2
+Signature date: April 19, 2025
+
+BETWEEN
+Fieldstone Software, Inc., hereinafter the Provider,
+AND
+Customer: Oakline Hotels llc
+Tax ID (EIN): 71-9933851
+Registered office: 150 4th Ave N, Nashville
+Represented by: Michael Thompson
+Contact: legal@oaklinehotels.com - Tel: 404.916.3933
+
+Section 1 - Scope. The Provider supplies data platform services.
+Section 4 - Fees. The annual fee is USD 1,549,000 excluding taxes.
+Section 5 - Term. Effective date: April 1, 2025. Renewal date: April 1, 2027.
+
+Section 12 - Entire agreement. This agreement supersedes and replaces version 1 of agreement CN-2023-205 signed on December 23, 2023.
+
+Signed for the Customer: Michael Thompson

@@ -1,0 +1,19 @@
+MASTER SUBSCRIPTION AGREEMENT
+Agreement No: CN-2023-191
+Version: 1
+Signature date: August 2, 2023
+
+BETWEEN
+Fieldstone Software, Inc., hereinafter the Provider,
+AND
+Customer: Granite Legal Solutions LLC
+Tax ID (EIN): 86-7394616
+Registered office: 450 Lexington Ave, New York
+Represented by: Daniel Brooks
+Contact: legal@granitelegal.com - Tel: 206.910.0020
+
+Section 1 - Scope. The Provider supplies data platform services.
+Section 4 - Fees. The annual fee is USD 1,135,000 excluding taxes.
+Section 5 - Term. Effective date: August 1, 2023. Renewal date: August 1, 2025.
+
+Signed for the Customer: Daniel Brooks

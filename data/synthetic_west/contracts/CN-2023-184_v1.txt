@@ -1,0 +1,19 @@
+MASTER SUBSCRIPTION AGREEMENT
+Agreement No: CN-2023-184
+Version: 1
+Signature date: March 8, 2023
+
+BETWEEN
+Fieldstone Software, Inc., hereinafter the Provider,
+AND
+Customer: Pioneer Energy Services, Corporation
+Tax ID (EIN): 50-2174800
+Registered office: 811 Main St, Houston
+Represented by: Kevin Sullivan
+Contact: contact@pioneerenergy.com - Tel: (303) 693-7822
+
+Section 1 - Scope. The Provider supplies data platform services.
+Section 4 - Fees. The annual fee is USD 570,000 excluding taxes.
+Section 5 - Term. Effective date: March 1, 2023. Renewal date: March 1, 2025.
+
+Signed for the Customer: Kevin Sullivan

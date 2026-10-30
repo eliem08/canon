@@ -1,0 +1,362 @@
+[
+  {
+    "id": "Q01",
+    "type": "contract_value",
+    "question": "Quel est le montant annuel actuel du contrat de Summit Logistics ?",
+    "entity_id": "E01",
+    "mention": "Summit Logistics",
+    "mention_style": "canonical",
+    "expected": 461000
+  },
+  {
+    "id": "Q02",
+    "type": "contract_value",
+    "question": "Quel est le montant annuel actuel du contrat de Northwind Analytics LLC ?",
+    "entity_id": "E03",
+    "mention": "Northwind Analytics LLC",
+    "mention_style": "legal",
+    "expected": 776000
+  },
+  {
+    "id": "Q03",
+    "type": "contract_value",
+    "question": "Ch7al kaykhalsou f l3am daba, the Atlas Freight team?",
+    "entity_id": "E11",
+    "mention": "the Atlas Freight team",
+    "mention_style": "darija",
+    "expected": 1068000
+  },
+  {
+    "id": "Q04",
+    "type": "contract_value",
+    "question": "Quel est le montant annuel actuel du contrat de Pioneer Energy ?",
+    "entity_id": "E12",
+    "mention": "Pioneer Energy",
+    "mention_style": "alias",
+    "expected": 713000
+  },
+  {
+    "id": "Q05",
+    "type": "contract_value",
+    "question": "Quel est le montant annuel actuel du contrat de Granite Legal Solutions Inc ?",
+    "entity_id": "E13",
+    "mention": "Granite Legal Solutions Inc",
+    "mention_style": "legal",
+    "expected": 1284000
+  },
+  {
+    "id": "Q06",
+    "type": "contract_value",
+    "question": "What is the current annual contract value for meridian learning?",
+    "entity_id": "E14",
+    "mention": "meridian learning",
+    "mention_style": "lower",
+    "expected": 1248000
+  },
+  {
+    "id": "Q07",
+    "type": "contract_value",
+    "question": "Ch7al kaykhalsou f l3am daba, BrightPath?",
+    "entity_id": "E18",
+    "mention": "BrightPath",
+    "mention_style": "alias",
+    "expected": 1327000
+  },
+  {
+    "id": "Q08",
+    "type": "contract_value",
+    "question": "Ch7al kaykhalsou f l3am daba, copperline media?",
+    "entity_id": "E20",
+    "mention": "copperline media",
+    "mention_style": "lower",
+    "expected": 1518000
+  },
+  {
+    "id": "Q09",
+    "type": "contract_value",
+    "question": "Ch7al kaykhalsou f l3am daba, Tidewater Marine?",
+    "entity_id": "E21",
+    "mention": "Tidewater Marine",
+    "mention_style": "canonical",
+    "expected": 560000
+  },
+  {
+    "id": "Q10",
+    "type": "contract_value",
+    "question": "Ch7al kaykhalsou f l3am daba, the Silverleaf Dental Group team?",
+    "entity_id": "E22",
+    "mention": "the Silverleaf Dental Group team",
+    "mention_style": "darija",
+    "expected": 674000
+  },
+  {
+    "id": "Q11",
+    "type": "renewal_date",
+    "question": "When is the contract renewal date for the Summit Logistics team?",
+    "entity_id": "E01",
+    "mention": "the Summit Logistics team",
+    "mention_style": "darija",
+    "expected": "2027-12-01"
+  },
+  {
+    "id": "Q12",
+    "type": "renewal_date",
+    "question": "Quelle est la date de renouvellement du contrat de Bluefin Health ?",
+    "entity_id": "E05",
+    "mention": "Bluefin Health",
+    "mention_style": "canonical",
+    "expected": "2026-12-01"
+  },
+  {
+    "id": "Q13",
+    "type": "renewal_date",
+    "question": "Quelle est la date de renouvellement du contrat de Ironclad Manufacturing ?",
+    "entity_id": "E08",
+    "mention": "Ironclad Manufacturing",
+    "mention_style": "canonical",
+    "expected": "2028-02-01"
+  },
+  {
+    "id": "Q14",
+    "type": "renewal_date",
+    "question": "Quelle est la date de renouvellement du contrat de cedar insurance brokers ?",
+    "entity_id": "E10",
+    "mention": "cedar insurance brokers",
+    "mention_style": "lower",
+    "expected": "2026-12-01"
+  },
+  {
+    "id": "Q15",
+    "type": "renewal_date",
+    "question": "Imta ghadi ytjedded contrat dyal the Meridian Learning team?",
+    "entity_id": "E14",
+    "mention": "the Meridian Learning team",
+    "mention_style": "darija",
+    "expected": "2027-06-01"
+  },
+  {
+    "id": "Q16",
+    "type": "renewal_date",
+    "question": "When is the contract renewal date for oakline hotels?",
+    "entity_id": "E15",
+    "mention": "oakline hotels",
+    "mention_style": "lower",
+    "expected": "2027-04-01"
+  },
+  {
+    "id": "Q17",
+    "type": "renewal_date",
+    "question": "When is the contract renewal date for Keystone Construction LLC?",
+    "entity_id": "E17",
+    "mention": "Keystone Construction LLC",
+    "mention_style": "legal",
+    "expected": "2027-01-01"
+  },
+  {
+    "id": "Q18",
+    "type": "renewal_date",
+    "question": "Imta ghadi ytjedded contrat dyal the Copperline Media team?",
+    "entity_id": "E20",
+    "mention": "the Copperline Media team",
+    "mention_style": "darija",
+    "expected": "2027-10-01"
+  },
+  {
+    "id": "Q19",
+    "type": "renewal_date",
+    "question": "Imta ghadi ytjedded contrat dyal tidewater marine?",
+    "entity_id": "E21",
+    "mention": "tidewater marine",
+    "mention_style": "lower",
+    "expected": "2026-12-01"
+  },
+  {
+    "id": "Q20",
+    "type": "renewal_date",
+    "question": "When is the contract renewal date for the Silverleaf Dental Group team?",
+    "entity_id": "E22",
+    "mention": "the Silverleaf Dental Group team",
+    "mention_style": "darija",
+    "expected": "2027-09-01"
+  },
+  {
+    "id": "Q21",
+    "type": "owner",
+    "question": "Qui est le responsable du compte northwind packaging ?",
+    "entity_id": "E04",
+    "mention": "northwind packaging",
+    "mention_style": "lower",
+    "expected": "Tom Anderson"
+  },
+  {
+    "id": "Q22",
+    "type": "owner",
+    "question": "Chkoun l'owner dyal Harbor?",
+    "entity_id": "E06",
+    "mention": "Harbor",
+    "mention_style": "alias",
+    "expected": "David Kim"
+  },
+  {
+    "id": "Q23",
+    "type": "owner",
+    "question": "Who is the account owner for the Lumen Retail Group team?",
+    "entity_id": "E09",
+    "mention": "the Lumen Retail Group team",
+    "mention_style": "darija",
+    "expected": "Rachel Green"
+  },
+  {
+    "id": "Q24",
+    "type": "owner",
+    "question": "Chkoun l'owner dyal Granite Legal?",
+    "entity_id": "E13",
+    "mention": "Granite Legal",
+    "mention_style": "alias",
+    "expected": "Marcus Johnson"
+  },
+  {
+    "id": "Q25",
+    "type": "owner",
+    "question": "Chkoun l'owner dyal Vertex Biologics LLC?",
+    "entity_id": "E16",
+    "mention": "Vertex Biologics LLC",
+    "mention_style": "legal",
+    "expected": "Rachel Green"
+  },
+  {
+    "id": "Q26",
+    "type": "owner",
+    "question": "Qui est le responsable du compte Keystone Consrtuction ?",
+    "entity_id": "E17",
+    "mention": "Keystone Consrtuction",
+    "mention_style": "typo",
+    "expected": "Emily Rodriguez"
+  },
+  {
+    "id": "Q27",
+    "type": "owner",
+    "question": "Qui est le responsable du compte brightpath telecom ?",
+    "entity_id": "E18",
+    "mention": "brightpath telecom",
+    "mention_style": "lower",
+    "expected": "Marcus Johnson"
+  },
+  {
+    "id": "Q28",
+    "type": "owner",
+    "question": "Who is the account owner for Copperline Media?",
+    "entity_id": "E20",
+    "mention": "Copperline Media",
+    "mention_style": "canonical",
+    "expected": "David Kim"
+  },
+  {
+    "id": "Q29",
+    "type": "owner",
+    "question": "Qui est le responsable du compte silverleaf dental group ?",
+    "entity_id": "E22",
+    "mention": "silverleaf dental group",
+    "mention_style": "lower",
+    "expected": "Marcus Johnson"
+  },
+  {
+    "id": "Q30",
+    "type": "owner",
+    "question": "Chkoun l'owner dyal Brightwater?",
+    "entity_id": "E25",
+    "mention": "Brightwater",
+    "mention_style": "alias",
+    "expected": "Marcus Johnson"
+  },
+  {
+    "id": "Q31",
+    "type": "phone",
+    "question": "What is the main phone number of Northwind?",
+    "entity_id": "E03",
+    "mention": "Northwind",
+    "mention_style": "alias",
+    "expected": "+12067596821"
+  },
+  {
+    "id": "Q32",
+    "type": "phone",
+    "question": "Quel est le numéro de téléphone de Granite Legal Solutions Inc ?",
+    "entity_id": "E13",
+    "mention": "Granite Legal Solutions Inc",
+    "mention_style": "legal",
+    "expected": "+12069100020"
+  },
+  {
+    "id": "Q33",
+    "type": "phone",
+    "question": "What is the main phone number of Meridian Learning LLC?",
+    "entity_id": "E14",
+    "mention": "Meridian Learning LLC",
+    "mention_style": "legal",
+    "expected": "+12157915313"
+  },
+  {
+    "id": "Q34",
+    "type": "phone",
+    "question": "Quel est le numéro de téléphone de Oakline Hotels ?",
+    "entity_id": "E15",
+    "mention": "Oakline Hotels",
+    "mention_style": "canonical",
+    "expected": "+14049163933"
+  },
+  {
+    "id": "Q35",
+    "type": "phone",
+    "question": "Quel est le numéro de téléphone de Copperline ?",
+    "entity_id": "E20",
+    "mention": "Copperline",
+    "mention_style": "alias",
+    "expected": "+17132090318"
+  },
+  {
+    "id": "Q36",
+    "type": "address",
+    "question": "Quelle est l'adresse du siège social de Northwind Packaging ?",
+    "entity_id": "E04",
+    "mention": "Northwind Packaging",
+    "mention_style": "canonical",
+    "expected": "2302 Pacific Ave"
+  },
+  {
+    "id": "Q37",
+    "type": "address",
+    "question": "Quelle est l'adresse du siège social de lumen retail group ?",
+    "entity_id": "E09",
+    "mention": "lumen retail group",
+    "mention_style": "lower",
+    "expected": "233 S Wacker Dr"
+  },
+  {
+    "id": "Q38",
+    "type": "address",
+    "question": "Quelle est l'adresse du siège social de Cedar Insurance Brokers ?",
+    "entity_id": "E10",
+    "mention": "Cedar Insurance Brokers",
+    "mention_style": "canonical",
+    "expected": "185 Asylum St"
+  },
+  {
+    "id": "Q39",
+    "type": "address",
+    "question": "Quelle est l'adresse du siège social de Granite Legal Solutions ?",
+    "entity_id": "E13",
+    "mention": "Granite Legal Solutions",
+    "mention_style": "canonical",
+    "expected": "450 Lexington Ave"
+  },
+  {
+    "id": "Q40",
+    "type": "address",
+    "question": "What is the registered office address of Brightwater?",
+    "entity_id": "E25",
+    "mention": "Brightwater",
+    "mention_style": "alias",
+    "expected": "80 S 8th St"
+  }
+]

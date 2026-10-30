@@ -1,68 +1,66 @@
 # Outreach templates and discovery
 
-*Sales material. Prices are hypotheses to validate in discovery; no customer, partnership or certification exists yet. Never present synthetic-data numbers as client results. Updated 2026-10-30.*
+*Sales material for US, UK and EU buyers. Prices are hypotheses to validate in discovery; no customer, partnership or certification exists yet. Never present synthetic-data numbers as client results. Updated 2026-10-31.*
 
-Drafts only. Nothing has been sent; the founder edits and sends. First email (FR/EN): `docs/sales/OUTREACH.md`.
+Drafts only. Nothing has been sent; the founder edits and sends.
 
-## Sequence
+## Targets and triggers
 
-- **Target roles.** Commercial director, COO, CRM admin, and integrator partner managers.
-- **Triggers.**
-  - an AI-assistant announcement or job post;
-  - a CRM migration;
-  - hiring sales operations;
-  - a CNDP news item.
-- **Warm routes.**
-  - CRM integrators;
-  - founder's network;
-  - Moroccan tech associations (APEBI) and startup programs (e.g. Technopark, UM6P / StartGate). These are hypotheses: verify the programs exist and are eligible.
-- **Sequence.**
-  1. **Email 1** (draft exists in `docs/sales/OUTREACH.md`, FR/EN): the problem and the 2-week audit.
-  2. **Email 2** (+4 days): "What we found in a sample export". Use the synthetic audit screenshot, labelled synthetic.
-  3. **Email 3** (+7 days): "Should I close the loop?", with a calendar link.
-- **Discovery questions.**
-  1. Which systems hold customer truth today?
-  2. Who fixes the CRM, and how often?
-  3. When did a renewal or owner mistake last cost you money?
-  4. Are you deploying an AI assistant? With what access?
-  5. Can data leave your network? Who decides?
-  6. What would a successful 2-week audit show?
-  7. Who signs and what's the budget range?
-- **Demo agenda (30 min).**
-  - 5 min: the problem;
-  - 15 min: the synthetic demo (§3.6);
-  - 5 min: their data shape;
-  - 5 min: the pilot offer and next step.
+- **Roles.** VP RevOps, Head of Sales Ops, CRO; Salesforce/HubSpot partner principals; RevOps agency founders.
+- **Triggers.** Job posts for "AI agent" or "AI engineer" alongside RevOps; announcements of Agentforce/Copilot
+  rollouts; CRM migrations; new RevOps leader (first 90 days).
+- **Warm routes.** CRM consulting partners, RevOps communities (e.g. RevOps Co-op, Pavilion), founder network,
+  accelerators. Verify each community's rules on outreach before posting.
 
-### Message 2 (+4 days)
+## Message 1
 
-> **Subject:** What a two-week audit finds, on a sample company
+> **Subject:** What will your AI agent get wrong about your customers?
 >
-> Hi [first name], here is what our audit produced on a *synthetic* sample company (not a client): 62 CRM values
-> contradicting newer sources, 19 customers with duplicate accounts, and 3 contracts renewing within six months with
-> their notice deadlines. It runs on your machine, without network access. Worth 30 minutes to see what yours would show?
+> Hi [first name] — teams connecting AI agents to Salesforce/HubSpot, Slack and contracts run into the same thing:
+> the agent answers with whatever it finds first (a renewal date the signed contract changed, last quarter's account
+> owner) and doesn't know who's asking.
+>
+> We run a two-week audit inside your environment. You get a fix list in your CRM's own record ids, the contracts
+> auto-renewing in the next six months with their notice deadlines, and a test of an agent that respects each
+> person's access. About 3–4 hours of your team's time.
+>
+> Worth 30 minutes to see whether it fits [company]?
 
-### Message 3 (+7 days)
+## Message 2 (+4 days)
+
+> **Subject:** What the audit finds, on a sample company
+>
+> On a *synthetic* sample company (not a client), the audit flagged CRM values contradicted by signed contracts,
+> duplicate accounts, and contracts renewing within six months with their notice deadlines — in about a second, on a
+> laptop, with networking off. Happy to show it on a sample of your export.
+
+## Message 3 (+7 days)
 
 > **Subject:** Close the loop?
 >
-> Hi [first name], I won't follow up again after this. If customer-data cleanup or AI-readiness becomes a topic this
-> quarter, here is my calendar: [link]. Happy to send the one-page brief either way.
+> I won't follow up again. If CRM clean-up or AI-agent readiness comes up this quarter, here's my calendar: [link].
+
+## Discovery questions
+
+1. Where does customer truth live today (CRM, contracts, Slack)? Which one wins when they disagree?
+2. Who fixes the CRM, how often, with what tools?
+3. When did a renewal, owner or contract-value mistake last cost you money? How much?
+4. Are you deploying AI agents on customer data? With which access model?
+5. What does security need to see before a two-week on-prem trial?
+6. What would a successful two-week audit have to show?
+7. Who signs, and what budget range is realistic?
+
+## Demo agenda (30 minutes)
+
+5 min problem · 15 min demo on `data/synthetic_west` (`docs/sales/DEMO_SCRIPT.md`) · 5 min their data · 5 min offer.
 
 ## Funnel metrics and go/no-go
 
-- **Metrics:**
-  - conversations booked out of outreach (target ≥10%);
-  - discovery calls that reach a proposal (target ≥30%);
-  - proposals that close (target ≥30%);
-  - time to first paid audit (target under 60 days).
-- **Go/no-go after 10 discovery calls:**
-  - **go** if ≥3 have a stated budget owner and an urgent trigger;
-  - **narrow or pivot** if the pain is only "nice to have", or if all of them want a hosted SaaS.
+Reply rate to booked call ≥ 10%; discovery → proposal ≥ 30%; proposal → close ≥ 30%; first paid audit < 60 days.
+After 10 discovery calls: go if ≥ 3 have a budget owner and a trigger; narrow or pivot if the pain is "nice to have"
+or every prospect requires a SOC 2 hosted product.
 
 ## Channels
 
-- CRM integrators, resale or referral at 15–25% (hypothesis).
-- Telecom or cloud GenAI programs as bundle partners.
-- Accelerators and tech associations.
-- Public procurement is **not** recommended initially: slow, with heavy requirements.
+Salesforce/HubSpot consulting partners (referral 15–25%, hypothesis); RevOps agencies; MCP gateway vendors as
+integration partners. No public-sector procurement initially.

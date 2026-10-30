@@ -1,0 +1,286 @@
+[
+  {
+    "id": "C04K3QV1Y4",
+    "name": "acc-bluefin",
+    "created": 1764288000,
+    "is_archived": false,
+    "purpose": {
+      "value": "Account channel for Bluefin"
+    },
+    "topic": {
+      "value": "Account channel"
+    },
+    "members": [
+      "U03",
+      "U08"
+    ]
+  },
+  {
+    "id": "C0ZH5Z4405",
+    "name": "acc-silverleaf-dental-group",
+    "created": 1756944000,
+    "is_archived": false,
+    "purpose": {
+      "value": "Account channel for Silverleaf"
+    },
+    "topic": {
+      "value": "Account channel"
+    },
+    "members": [
+      "U03",
+      "U08"
+    ]
+  },
+  {
+    "id": "C0KE092LBL",
+    "name": "acc-summit-logistics",
+    "created": 1764633600,
+    "is_archived": false,
+    "purpose": {
+      "value": "Account channel for Summit Logistics"
+    },
+    "topic": {
+      "value": ""
+    },
+    "members": [
+      "U04",
+      "U05"
+    ]
+  },
+  {
+    "id": "C0M4SY6288",
+    "name": "acc-tidewater",
+    "created": 1764288000,
+    "is_archived": false,
+    "purpose": {
+      "value": "Account channel for tidewater"
+    },
+    "topic": {
+      "value": "Account channel"
+    },
+    "members": [
+      "U08"
+    ]
+  },
+  {
+    "id": "C00VJ1P1V6",
+    "name": "deal-brightwater",
+    "created": 1779321600,
+    "is_archived": false,
+    "purpose": {
+      "value": "Account channel for brightwater"
+    },
+    "topic": {
+      "value": "Everything about this customer"
+    },
+    "members": [
+      "U02",
+      "U03"
+    ]
+  },
+  {
+    "id": "C06V64FJDW",
+    "name": "deal-evergreensupply",
+    "created": 1764547200,
+    "is_archived": false,
+    "purpose": {
+      "value": "Account channel for the Evergreen Supply team"
+    },
+    "topic": {
+      "value": ""
+    },
+    "members": [
+      "U01",
+      "U04"
+    ]
+  },
+  {
+    "id": "C0K55VT4RP",
+    "name": "deal-lakeshore",
+    "created": 1778284800,
+    "is_archived": false,
+    "purpose": {
+      "value": "Account channel for Lakeshore Logistics"
+    },
+    "topic": {
+      "value": "Account channel"
+    },
+    "members": [
+      "U06",
+      "U08"
+    ]
+  },
+  {
+    "id": "C0U3NSK6VK",
+    "name": "deal-meridianlearning",
+    "created": 1748390400,
+    "is_archived": false,
+    "purpose": {
+      "value": "Account channel for Meridian Learning"
+    },
+    "topic": {
+      "value": ""
+    },
+    "members": [
+      "U06"
+    ]
+  },
+  {
+    "id": "C0R29ZCVVT",
+    "name": "ext-granite-legal-solutions",
+    "created": 1770249600,
+    "is_archived": false,
+    "purpose": {
+      "value": "Account channel for granite legal"
+    },
+    "topic": {
+      "value": "Account channel"
+    },
+    "members": [
+      "U03",
+      "U07"
+    ]
+  },
+  {
+    "id": "C0YC1HXRCE",
+    "name": "ext-redwood-capital",
+    "created": 1763769600,
+    "is_archived": false,
+    "purpose": {
+      "value": "Account channel for redwood capital"
+    },
+    "topic": {
+      "value": "Account channel"
+    },
+    "members": [
+      "U01",
+      "U08"
+    ]
+  },
+  {
+    "id": "C0G0LX5FRK",
+    "name": "ext-summit-trips",
+    "created": 1760486400,
+    "is_archived": false,
+    "purpose": {
+      "value": "Account channel for Summit Trips"
+    },
+    "topic": {
+      "value": "Account channel"
+    },
+    "members": [
+      "U03",
+      "U06"
+    ]
+  },
+  {
+    "id": "C0N10NTSW3",
+    "name": "old-keystone",
+    "created": 1709596800,
+    "is_archived": true,
+    "purpose": {
+      "value": "Account channel for Keystone"
+    },
+    "topic": {
+      "value": ""
+    },
+    "members": [
+      "U06",
+      "U08"
+    ]
+  },
+  {
+    "id": "C04NHBKQMT",
+    "name": "old-meridian",
+    "created": 1677110400,
+    "is_archived": true,
+    "purpose": {
+      "value": "Account channel for meridian"
+    },
+    "topic": {
+      "value": "Everything about this customer"
+    },
+    "members": [
+      "U01",
+      "U07"
+    ]
+  },
+  {
+    "id": "C001EM1Y3V",
+    "name": "old-northwind-analytics",
+    "created": 1674864000,
+    "is_archived": true,
+    "purpose": {
+      "value": "Account channel for the Northwind team"
+    },
+    "topic": {
+      "value": ""
+    },
+    "members": [
+      "U04",
+      "U06"
+    ]
+  },
+  {
+    "id": "C06VA42EC7",
+    "name": "old-oaklinehotels",
+    "created": 1700697600,
+    "is_archived": true,
+    "purpose": {
+      "value": "Account channel for Oakline Hotels"
+    },
+    "topic": {
+      "value": ""
+    },
+    "members": [
+      "U05"
+    ]
+  },
+  {
+    "id": "C0BVZ3Y0QS",
+    "name": "old-redwood-capital-partners",
+    "created": 1676678400,
+    "is_archived": true,
+    "purpose": {
+      "value": "Account channel for Redwood Capital Partners"
+    },
+    "topic": {
+      "value": "Everything about this customer"
+    },
+    "members": [
+      "U02",
+      "U03"
+    ]
+  },
+  {
+    "id": "C0ABPKDZ48",
+    "name": "old-silverleaf",
+    "created": 1698105600,
+    "is_archived": true,
+    "purpose": {
+      "value": "Account channel for Silverleaf"
+    },
+    "topic": {
+      "value": "Everything about this customer"
+    },
+    "members": [
+      "U01",
+      "U08"
+    ]
+  },
+  {
+    "id": "C085R3F0JT",
+    "name": "old-summitlog",
+    "created": 1702512000,
+    "is_archived": true,
+    "purpose": {
+      "value": "Account channel for Summit Logistics"
+    },
+    "topic": {
+      "value": ""
+    },
+    "members": [
+      "U03"
+    ]
+  }
+]

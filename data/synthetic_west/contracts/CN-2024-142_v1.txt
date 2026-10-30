@@ -1,0 +1,19 @@
+MASTER SUBSCRIPTION AGREEMENT
+Agreement No: CN-2024-142
+Version: 1
+Signature date: April 7, 2024
+
+BETWEEN
+Fieldstone Software, Inc., hereinafter the Provider,
+AND
+Customer: Harbor Foods Corporation
+Tax ID (EIN): 76-6146677
+Registered office: 627 Oak St, Baltimore
+Represented by: Karen Mitchell
+Contact: legal@harborfoods.com - Tel: +1 713 530 7640
+
+Section 1 - Scope. The Provider supplies data platform services.
+Section 4 - Fees. The annual fee is USD 1,190,000 excluding taxes.
+Section 5 - Term. Effective date: April 1, 2024. Renewal date: April 1, 2026.
+
+Signed for the Customer: Karen Mitchell

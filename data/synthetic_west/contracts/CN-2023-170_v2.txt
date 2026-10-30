@@ -1,0 +1,22 @@
+MASTER SUBSCRIPTION AGREEMENT
+Agreement No: CN-2023-170
+Version: 2
+Signature date: December 25, 2025
+
+BETWEEN
+Fieldstone Software, Inc., hereinafter the Provider,
+AND
+Customer: Cedar Insurance Brokers, L.L.C.
+Tax ID (EIN): 14-4401175
+Registered office: 185 Asylum St, Hartford
+Represented by: Robert Hughes
+Contact: contact@cedarins.com - Tel: +1 303 468 7077
+
+Section 1 - Scope. The Provider supplies data platform services.
+Section 4 - Fees. The annual fee is USD 1,558,000 excluding taxes.
+Section 5 - Term. Effective date: December 1, 2025. Renewal date: December 1, 2026.
+Section 6 - Renewal. Thereafter this Agreement shall automatically renew for successive one (1) year periods unless either party gives at least thirty (30) days' prior written notice of non-renewal.
+
+Section 12 - Entire agreement. This agreement supersedes and replaces version 1 of agreement CN-2023-170 signed on March 11, 2023.
+
+Signed for the Customer: Robert Hughes

@@ -1,0 +1,19 @@
+MASTER SUBSCRIPTION AGREEMENT
+Agreement No: CN-2023-163
+Version: 1
+Signature date: September 28, 2023
+
+BETWEEN
+Fieldstone Software, Inc., hereinafter the Provider,
+AND
+Customer: Lumen Retail Group INC
+Tax ID (EIN): 79-9690720
+Registered office: 233 S Wacker Dr, Chicago
+Represented by: Amanda Foster
+Contact: contact@lumenretail.com - Tel: +15125260814
+
+Section 1 - Scope. The Provider supplies data platform services.
+Section 4 - Fees. The annual fee is USD 1,490,000 excluding taxes.
+Section 5 - Term. Effective date: October 1, 2023. Renewal date: October 1, 2025.
+
+Signed for the Customer: Amanda Foster

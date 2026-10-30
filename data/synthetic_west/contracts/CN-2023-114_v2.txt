@@ -1,0 +1,21 @@
+MASTER SUBSCRIPTION AGREEMENT
+Agreement No: CN-2023-114
+Version: 2
+Signature date: November 4, 2025
+
+BETWEEN
+Fieldstone Software, Inc., hereinafter the Provider,
+AND
+Customer: Summit Travel, L.L.C.
+Tax ID (EIN): 35-2955172
+Registered office: 800 Lincoln St, Denver
+Represented by: Lisa Morgan
+Contact: contact@summittravel.com - Tel: 215.509.3293
+
+Section 1 - Scope. The Provider supplies data platform services.
+Section 4 - Fees. The annual fee is USD 134,000 excluding taxes.
+Section 5 - Term. Effective date: November 1, 2025. Renewal date: November 1, 2027.
+
+Section 12 - Entire agreement. This agreement supersedes and replaces version 1 of agreement CN-2023-114 signed on October 28, 2023.
+
+Signed for the Customer: Lisa Morgan

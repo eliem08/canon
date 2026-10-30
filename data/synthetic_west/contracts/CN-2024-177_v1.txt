@@ -1,0 +1,19 @@
+MASTER SUBSCRIPTION AGREEMENT
+Agreement No: CN-2024-177
+Version: 1
+Signature date: March 30, 2024
+
+BETWEEN
+Fieldstone Software, Inc., hereinafter the Provider,
+AND
+Customer: Atlas Freight, Incorporated
+Tax ID (EIN): 89-0326904
+Registered office: 2200 Ross Ave, Dallas
+Represented by: Jennifer Walsh
+Contact: contact@atlasfreight.com - Tel: 1-212-415-3145
+
+Section 1 - Scope. The Provider supplies data platform services.
+Section 4 - Fees. The annual fee is USD 845,000 excluding taxes.
+Section 5 - Term. Effective date: April 1, 2024. Renewal date: April 1, 2026.
+
+Signed for the Customer: Jennifer Walsh

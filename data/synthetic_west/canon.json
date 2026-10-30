@@ -1,0 +1,12 @@
+{
+  "ingest": {
+    "default_country": "1",
+    "currency": "USD",
+    "dayfirst": false
+  },
+  "crm": {
+    "columns": {
+      "tax_id": "Tax ID"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+MASTER SUBSCRIPTION AGREEMENT
+Agreement No: CN-2023-121
+Version: 1
+Signature date: February 27, 2023
+
+BETWEEN
+Fieldstone Software, Inc., hereinafter the Provider,
+AND
+Customer: Northwind Analytics, Inc
+Tax ID (EIN): 76-7408495
+Registered office: 1201 3rd Ave, Seattle
+Represented by: Brian Collins
+Contact: contact@northwindanalytics.io - Tel: +12067596821
+
+Section 1 - Scope. The Provider supplies data platform services.
+Section 4 - Fees. The annual fee is USD 640,000 excluding taxes.
+Section 5 - Term. Effective date: March 1, 2023. Renewal date: March 1, 2025.
+
+Signed for the Customer: Brian Collins

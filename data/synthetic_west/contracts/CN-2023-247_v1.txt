@@ -1,0 +1,19 @@
+MASTER SUBSCRIPTION AGREEMENT
+Agreement No: CN-2023-247
+Version: 1
+Signature date: December 13, 2023
+
+BETWEEN
+Fieldstone Software, Inc., hereinafter the Provider,
+AND
+Customer: Tidewater Marine Corp
+Tax ID (EIN): 57-8706473
+Registered office: 150 W Main St, Norfolk
+Represented by: Laura Bennett
+Contact: legal@tidewatermarine.com - Tel: 1-206-811-3782
+
+Section 1 - Scope. The Provider supplies data platform services.
+Section 4 - Fees. The annual fee is USD 430,000 excluding taxes.
+Section 5 - Term. Effective date: December 1, 2023. Renewal date: December 1, 2025.
+
+Signed for the Customer: Laura Bennett

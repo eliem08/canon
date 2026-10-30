@@ -1,0 +1,76 @@
+{
+  "callers": {
+    "jordan.miller": {
+      "name": "Jordan Miller",
+      "groups": [
+        "sales"
+      ]
+    },
+    "sarah.chen": {
+      "name": "Sarah Chen",
+      "groups": [
+        "sales"
+      ]
+    },
+    "marcus.johnson": {
+      "name": "Marcus Johnson",
+      "groups": [
+        "sales"
+      ]
+    },
+    "emily.rodriguez": {
+      "name": "Emily Rodriguez",
+      "groups": [
+        "sales"
+      ]
+    },
+    "david.kim": {
+      "name": "David Kim",
+      "groups": [
+        "sales"
+      ]
+    },
+    "priya.patel": {
+      "name": "Priya Patel",
+      "groups": [
+        "sales"
+      ]
+    },
+    "tom.anderson": {
+      "name": "Tom Anderson",
+      "groups": [
+        "sales"
+      ]
+    },
+    "rachel.green": {
+      "name": "Rachel Green",
+      "groups": [
+        "sales"
+      ]
+    },
+    "dana.legal": {
+      "name": "Dana Whitfield (legal counsel)",
+      "groups": [
+        "legal"
+      ]
+    },
+    "ceo": {
+      "name": "Chief Executive Officer",
+      "groups": [
+        "exec"
+      ]
+    },
+    "revops.admin": {
+      "name": "RevOps admin",
+      "groups": [
+        "sales",
+        "legal",
+        "exec"
+      ]
+    },
+    "intern": {
+      "name": "Summer intern",
+      "groups": []
+    }
+  }
+}

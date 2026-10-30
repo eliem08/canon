@@ -1,0 +1,21 @@
+MASTER SUBSCRIPTION AGREEMENT
+Agreement No: CN-2024-275
+Version: 2
+Signature date: June 10, 2026
+
+BETWEEN
+Fieldstone Software, Inc., hereinafter the Provider,
+AND
+Customer: Brightwater Analytics, INC
+Tax ID (EIN): 85-8976089
+Registered office: 80 S 8th St, Minneapolis
+Represented by: Amanda Foster
+Contact: contact@brightwateranalytics.com - Tel: (303) 427-6830
+
+Section 1 - Scope. The Provider supplies data platform services.
+Section 4 - Fees. The annual fee is USD 411,000 excluding taxes.
+Section 5 - Term. Effective date: June 1, 2026. Renewal date: June 1, 2027.
+
+Section 12 - Entire agreement. This agreement supersedes and replaces version 1 of agreement CN-2024-275 signed on March 27, 2024.
+
+Signed for the Customer: Amanda Foster

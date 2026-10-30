@@ -14,8 +14,15 @@ def _data_dir() -> Path:
 
 def cmd_generate(args: argparse.Namespace) -> None:
     from canon.synth import generate
+    from canon.synth.generate import DEFAULT_SEED
 
-    truth = generate(Path(args.out), seed=args.seed)
+    seed = args.seed if args.seed is not None else DEFAULT_SEED
+    if args.profile == "west":
+        from canon.synth.west import generate_west
+
+        truth = generate_west(Path(args.out), seed=seed)
+    else:
+        truth = generate(Path(args.out), seed=seed)
     print(
         f"wrote {len(truth['records'])} records for {len(truth['entities'])} entities to {args.out}"
     )
@@ -359,6 +366,12 @@ def main(argv: list[str] | None = None) -> None:
     g = sub.add_parser("generate", help="generate the seeded synthetic dataset")
     g.add_argument("--out", default=str(_data_dir()))
     g.add_argument("--seed", type=int, default=None)
+    g.add_argument(
+        "--profile",
+        choices=["morocco", "west"],
+        default="morocco",
+        help="morocco: French/Arabic, MAD (the test fixture); west: US English, USD (demos)",
+    )
     g.set_defaults(func=cmd_generate)
 
     r = sub.add_parser("resolve", help="ingest sources, resolve entities, build golden records")

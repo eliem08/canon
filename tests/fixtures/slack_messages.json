@@ -1,668 +1,718 @@
 {
- "description": "Hand-written Slack messages with the facts a careful reader would extract. 'dev' may be used to write rules; 'heldout' is only measured. Written before the v2 rules.",
- "users": {
-  "U01": "Youssef Benali",
-  "U02": "Salma El Idrissi",
-  "U03": "Karim Tazi",
-  "U04": "Nadia Berrada",
-  "U05": "Mehdi Alaoui",
-  "U06": "Imane Chraibi",
-  "U07": "Omar Fassi",
-  "U08": "Leila Bennani"
- },
- "messages": [
-  {
-   "id": "D01",
-   "split": "dev",
-   "text": "Account owner: <@U04> (Zitoun)",
-   "expect": {
-    "owner": "Nadia Berrada"
-   }
-  },
-  {
-   "id": "D02",
-   "split": "dev",
-   "text": "FYI <@U06> reprend le compte KHG à partir d'aujourd'hui",
-   "expect": {
-    "owner": "Imane Chraibi"
-   }
-  },
-  {
-   "id": "D03",
-   "split": "dev",
-   "text": "Salam, mn daba <@U03> howa l'owner dyal Fennec",
-   "expect": {
-    "owner": "Karim Tazi"
-   }
-  },
-  {
-   "id": "D04",
-   "split": "dev",
-   "text": "Le compte Rif Cement est maintenant géré par <@U02>",
-   "expect": {
-    "owner": "Salma El Idrissi"
-   }
-  },
-  {
-   "id": "D05",
-   "split": "dev",
-   "text": "<@U08> is now the account owner for Medina Pharm",
-   "expect": {
-    "owner": "Leila Bennani"
-   }
-  },
-  {
-   "id": "D06",
-   "split": "dev",
-   "text": "<@U05> s'occupe de la relance pour Zitoun",
-   "expect": {}
-  },
-  {
-   "id": "D07",
-   "split": "dev",
-   "text": "owner de l'action: <@U01>",
-   "expect": {}
-  },
-  {
-   "id": "D08",
-   "split": "dev",
-   "text": "Mehdi prend le relais sur le compte Oasis Agro",
-   "expect": {
-    "owner": "Mehdi Alaoui"
-   }
-  },
-  {
-   "id": "D09",
-   "split": "dev",
-   "text": "Deal signé m3a Fennec: 1,031,000 MAD par an",
-   "expect": {
-    "contract_value": 1031000
-   }
-  },
-  {
-   "id": "D10",
-   "split": "dev",
-   "text": "Nouveau montant annuel pour AtlasLog: 461,000 MAD",
-   "expect": {
-    "contract_value": 461000
-   }
-  },
-  {
-   "id": "D11",
-   "split": "dev",
-   "text": "contrat argan dor tla3 l 1497k MAD 🎉",
-   "expect": {
-    "contract_value": 1497000
-   }
-  },
-  {
-   "id": "D12",
-   "split": "dev",
-   "text": "Contrat signé: 2 M MAD par an pour Rif Cement",
-   "expect": {
-    "contract_value": 2000000
-   }
-  },
-  {
-   "id": "D13",
-   "split": "dev",
-   "text": "Envoyé la facture à argan dor",
-   "expect": {}
-  },
-  {
-   "id": "D14",
-   "split": "dev",
-   "text": "Facture KHG: 75 000 MAD",
-   "expect": {}
-  },
-  {
-   "id": "D15",
-   "split": "dev",
-   "text": "Remise exceptionnelle de 10 000 MAD pour Zitoun",
-   "expect": {}
-  },
-  {
-   "id": "D16",
-   "split": "dev",
-   "text": "On a proposé 500k MAD à Fennec",
-   "expect": {}
-  },
-  {
-   "id": "D17",
-   "split": "dev",
-   "text": "rappel: date de renouvellement AtlasLog = 01/12/2027",
-   "expect": {
-    "renewal_date": "2027-12-01"
-   }
-  },
-  {
-   "id": "D18",
-   "split": "dev",
-   "text": "Renewal Fennec prévu le 01/09/2027",
-   "expect": {
-    "renewal_date": "2027-09-01"
-   }
-  },
-  {
-   "id": "D19",
-   "split": "dev",
-   "text": "renouvellement dyal tmf f 01/06/2028",
-   "expect": {
-    "renewal_date": "2028-06-01"
-   }
-  },
-  {
-   "id": "D20",
-   "split": "dev",
-   "text": "Le contrat Zitoun expire le 30/04/2027",
-   "expect": {
-    "renewal_date": "2027-04-30"
-   }
-  },
-  {
-   "id": "D21",
-   "split": "dev",
-   "text": "rappel: meeting m3a Fennec ghda 10h",
-   "expect": {}
-  },
-  {
-   "id": "D22",
-   "split": "dev",
-   "text": "Point renouvellement avec KHG le 14/11/2026",
-   "expect": {}
-  },
-  {
-   "id": "D23",
-   "split": "dev",
-   "text": "Payment due for Rif Cement on 15/12/2026",
-   "expect": {}
-  },
-  {
-   "id": "D24",
-   "split": "dev",
-   "text": "MRR Fennec: 80k MAD",
-   "expect": {}
-  },
-  {
-   "id": "D25",
-   "split": "dev",
-   "text": "Budget prévisionnel Oasis Agro: 1M MAD, rien de signé",
-   "expect": {}
-  },
-  {
-   "id": "D26",
-   "split": "dev",
-   "text": "Contrat KHG renouvelé au 01/01/2028 pour 1,3M MAD",
-   "expect": {
-    "renewal_date": "2028-01-01",
-    "contract_value": 1300000
-   }
-  },
-  {
-   "id": "H01",
-   "split": "heldout",
-   "text": "À partir de lundi c'est <@U02> qui gère Argan d'Or",
-   "expect": {
-    "owner": "Salma El Idrissi"
-   }
-  },
-  {
-   "id": "H02",
-   "split": "heldout",
-   "text": "<@U05> takes over the Fennec account from today",
-   "expect": {
-    "owner": "Mehdi Alaoui"
-   }
-  },
-  {
-   "id": "H03",
-   "split": "heldout",
-   "text": "Passation: le compte Zitoun passe à <@U07>",
-   "expect": {
-    "owner": "Omar Fassi"
-   }
-  },
-  {
-   "id": "H04",
-   "split": "heldout",
-   "text": "new account manager for KHG is <@U01>",
-   "expect": {
-    "owner": "Youssef Benali"
-   }
-  },
-  {
-   "id": "H05",
-   "split": "heldout",
-   "text": "mn daba Leila hiya li katgeri compte Oasis Agro",
-   "expect": {
-    "owner": "Leila Bennani"
-   }
-  },
-  {
-   "id": "H06",
-   "split": "heldout",
-   "text": "Nadia devient la responsable commerciale d'Atlantic Fishing",
-   "expect": {
-    "owner": "Nadia Berrada"
-   }
-  },
-  {
-   "id": "H07",
-   "split": "heldout",
-   "text": "KAM pour Rif Cement : <@U03>",
-   "expect": {
-    "owner": "Karim Tazi"
-   }
-  },
-  {
-   "id": "H08",
-   "split": "heldout",
-   "text": "Le portefeuille Chaouen Tex est réattribué à Imane",
-   "expect": {
-    "owner": "Imane Chraibi"
-   }
-  },
-  {
-   "id": "H09",
-   "split": "heldout",
-   "text": "<@U08> est désormais l'interlocutrice principale côté commercial pour Medina Pharm",
-   "expect": {
-    "owner": "Leila Bennani"
-   }
-  },
-  {
-   "id": "H10",
-   "split": "heldout",
-   "text": "Ownership of the Sahara Tech account moves to <@U04> effective immediately",
-   "expect": {
-    "owner": "Nadia Berrada"
-   }
-  },
-  {
-   "id": "H11",
-   "split": "heldout",
-   "text": "<@U03> peux-tu prendre en charge la relance de la facture Argan d'Or ?",
-   "expect": {}
-  },
-  {
-   "id": "H12",
-   "split": "heldout",
-   "text": "owner de la tâche: <@U06> (préparer la démo Fennec)",
-   "expect": {}
-  },
-  {
-   "id": "H13",
-   "split": "heldout",
-   "text": "<@U02> tu es owner du ticket JIRA-482 pour KHG",
-   "expect": {}
-  },
-  {
-   "id": "H14",
-   "split": "heldout",
-   "text": "Merci <@U05> pour le compte-rendu de la réunion Zitoun",
-   "expect": {}
-  },
-  {
-   "id": "H15",
-   "split": "heldout",
-   "text": "Le compte de Karim sur Salesforce est bloqué, qui peut le réinitialiser ?",
-   "expect": {}
-  },
-  {
-   "id": "H16",
-   "split": "heldout",
-   "text": "chkon howa l'owner dyal Oasis Agro daba?",
-   "expect": {}
-  },
-  {
-   "id": "H17",
-   "split": "heldout",
-   "text": "Est-ce que <@U07> reprend le compte Rif Cement ? À confirmer",
-   "expect": {}
-  },
-  {
-   "id": "H18",
-   "split": "heldout",
-   "text": "<@U01> was the account owner for Fennec until last year",
-   "expect": {}
-  },
-  {
-   "id": "H19",
-   "split": "heldout",
-   "text": "Contrat signé avec Rif Cement : 2,4 M MAD par an",
-   "expect": {
-    "contract_value": 2400000
-   }
-  },
-  {
-   "id": "H20",
-   "split": "heldout",
-   "text": "Le renouvellement de Zitoun s'est fait à 780 000 DH HT annuels",
-   "expect": {
-    "contract_value": 780000
-   }
-  },
-  {
-   "id": "H21",
-   "split": "heldout",
-   "text": "ACV Fennec = 1.2M MAD",
-   "expect": {
-    "contract_value": 1200000
-   }
-  },
-  {
-   "id": "H22",
-   "split": "heldout",
-   "text": "We closed Atlantic Fishing at 950k MAD/year",
-   "expect": {
-    "contract_value": 950000
-   }
-  },
-  {
-   "id": "H23",
-   "split": "heldout",
-   "text": "Medina Pharm a signé, montant annuel 615 000 dirhams",
-   "expect": {
-    "contract_value": 615000
-   }
-  },
-  {
-   "id": "H24",
-   "split": "heldout",
-   "text": "Sahara Tech: contrat de 3 ans, 540k MAD par an",
-   "expect": {
-    "contract_value": 540000
-   }
-  },
-  {
-   "id": "H25",
-   "split": "heldout",
-   "text": "Deal KHG signé à 1 150 000 MAD",
-   "expect": {
-    "contract_value": 1150000
-   }
-  },
-  {
-   "id": "H26",
-   "split": "heldout",
-   "text": "العقد ديال أركان دور وصل ل 1.5 مليون درهم",
-   "expect": {
-    "contract_value": 1500000
-   }
-  },
-  {
-   "id": "H27",
-   "split": "heldout",
-   "text": "Oasis Agro: valeur du contrat portée à 1 300 000 MAD après avenant",
-   "expect": {
-    "contract_value": 1300000
-   }
-  },
-  {
-   "id": "H28",
-   "split": "heldout",
-   "text": "contrat Chaouen Tex tla3 l 900k dh",
-   "expect": {
-    "contract_value": 900000
-   }
-  },
-  {
-   "id": "H29",
-   "split": "heldout",
-   "text": "Remise de 50 000 MAD accordée à Fennec sur la facture de mars",
-   "expect": {}
-  },
-  {
-   "id": "H30",
-   "split": "heldout",
-   "text": "Facture Argan d'Or de 124 500 MAD envoyée",
-   "expect": {}
-  },
-  {
-   "id": "H31",
-   "split": "heldout",
-   "text": "MRR Zitoun: 65k MAD",
-   "expect": {}
-  },
-  {
-   "id": "H32",
-   "split": "heldout",
-   "text": "Ils ont un budget de 2M MAD mais rien n'est signé",
-   "expect": {}
-  },
-  {
-   "id": "H33",
-   "split": "heldout",
-   "text": "On propose 800k MAD à KHG, en attente de leur retour",
-   "expect": {}
-  },
-  {
-   "id": "H34",
-   "split": "heldout",
-   "text": "Pénalité de retard: 12 000 MAD pour Rif Cement",
-   "expect": {}
-  },
-  {
-   "id": "H35",
-   "split": "heldout",
-   "text": "Atlantic Fishing a payé un acompte de 200 000 MAD",
-   "expect": {}
-  },
-  {
-   "id": "H36",
-   "split": "heldout",
-   "text": "Si on signe Medina Pharm à 700k on dépasse l'objectif du trimestre",
-   "expect": {}
-  },
-  {
-   "id": "H37",
-   "split": "heldout",
-   "text": "Le contrat Oasis Agro inclut 40 utilisateurs et 3 sites",
-   "expect": {}
-  },
-  {
-   "id": "H38",
-   "split": "heldout",
-   "text": "Un concurrent a proposé 600k MAD à Sahara Tech, on doit s'aligner?",
-   "expect": {}
-  },
-  {
-   "id": "H39",
-   "split": "heldout",
-   "text": "discount of 15% on the Fennec contract approved",
-   "expect": {}
-  },
-  {
-   "id": "H40",
-   "split": "heldout",
-   "text": "Montant de l'avoir Chaouen Tex: 30 000 MAD",
-   "expect": {}
-  },
-  {
-   "id": "H41",
-   "split": "heldout",
-   "text": "Fennec renouvelle le 15/01/2028",
-   "expect": {
-    "renewal_date": "2028-01-15"
-   }
-  },
-  {
-   "id": "H42",
-   "split": "heldout",
-   "text": "Zitoun renewal date: 2027-11-30",
-   "expect": {
-    "renewal_date": "2027-11-30"
-   }
-  },
-  {
-   "id": "H43",
-   "split": "heldout",
-   "text": "Échéance du contrat Rif Cement: 31 décembre 2027",
-   "expect": {
-    "renewal_date": "2027-12-31"
-   }
-  },
-  {
-   "id": "H44",
-   "split": "heldout",
-   "text": "Le contrat Medina Pharm arrive à échéance le 01/07/2027",
-   "expect": {
-    "renewal_date": "2027-07-01"
-   }
-  },
-  {
-   "id": "H45",
-   "split": "heldout",
-   "text": "Atlantic Fishing renews on March 1, 2028",
-   "expect": {
-    "renewal_date": "2028-03-01"
-   }
-  },
-  {
-   "id": "H46",
-   "split": "heldout",
-   "text": "tajdid dyal KHG nhar 01/10/2027",
-   "expect": {
-    "renewal_date": "2027-10-01"
-   }
-  },
-  {
-   "id": "H47",
-   "split": "heldout",
-   "text": "تجديد عقد أركان دور: 01/05/2027",
-   "expect": {
-    "renewal_date": "2027-05-01"
-   }
-  },
-  {
-   "id": "H48",
-   "split": "heldout",
-   "text": "Renouvellement tacite Oasis Agro au 1er février 2028",
-   "expect": {
-    "renewal_date": "2028-02-01"
-   }
-  },
-  {
-   "id": "H49",
-   "split": "heldout",
-   "text": "Contract end date for Sahara Tech is 30/06/2027",
-   "expect": {
-    "renewal_date": "2027-06-30"
-   }
-  },
-  {
-   "id": "H50",
-   "split": "heldout",
-   "text": "On a un call de renouvellement avec Fennec le 12/11/2026",
-   "expect": {}
-  },
-  {
-   "id": "H51",
-   "split": "heldout",
-   "text": "Facture Zitoun à payer avant le 30/11/2026",
-   "expect": {}
-  },
-  {
-   "id": "H52",
-   "split": "heldout",
-   "text": "Renewal Rif Cement: à discuter, pas de date fixée",
-   "expect": {}
-  },
-  {
-   "id": "H53",
-   "split": "heldout",
-   "text": "Le renouvellement de KHG a été signé le 03/10/2026",
-   "expect": {}
-  },
-  {
-   "id": "H54",
-   "split": "heldout",
-   "text": "Démo Medina Pharm prévue le 05/12/2026",
-   "expect": {}
-  },
-  {
-   "id": "H55",
-   "split": "heldout",
-   "text": "Livraison Atlantic Fishing reportée au 20/11/2026",
-   "expect": {}
-  },
-  {
-   "id": "H56",
-   "split": "heldout",
-   "text": "Rif Cement renouvelé jusqu'au 31/12/2028 à 2,6 M MAD/an",
-   "expect": {
-    "renewal_date": "2028-12-31",
-    "contract_value": 2600000
-   }
-  },
-  {
-   "id": "H57",
-   "split": "heldout",
-   "text": "Nouveau contrat Zitoun: 820k MAD/an, renouvellement le 01/09/2028, owner <@U07>",
-   "expect": {
-    "contract_value": 820000,
-    "renewal_date": "2028-09-01",
-    "owner": "Omar Fassi"
-   }
-  },
-  {
-   "id": "H58",
-   "split": "heldout",
-   "text": "Avenant KHG signé: montant annuel 1 200 000 MAD",
-   "expect": {
-    "contract_value": 1200000
-   }
-  },
-  {
-   "id": "H59",
-   "split": "heldout",
-   "text": "FYI Fennec: <@U06> reprend le compte, et le renouvellement est au 01/03/2028",
-   "expect": {
-    "owner": "Imane Chraibi",
-    "renewal_date": "2028-03-01"
-   }
-  },
-  {
-   "id": "H60",
-   "split": "heldout",
-   "text": "Salam 3likom, chkon 3ndo l'update 3la Zitoun?",
-   "expect": {}
-  },
-  {
-   "id": "H61",
-   "split": "heldout",
-   "text": "Réunion Argan d'Or déplacée à jeudi 10h",
-   "expect": {}
-  },
-  {
-   "id": "H62",
-   "split": "heldout",
-   "text": "Le client Oasis Agro est très content de la nouvelle version 🎉",
-   "expect": {}
-  },
-  {
-   "id": "H63",
-   "split": "heldout",
-   "text": "contact chez Rif Cement: +212 5 22 33 44 55",
-   "expect": {}
-  },
-  {
-   "id": "H64",
-   "split": "heldout",
-   "text": "Envoyé la facture à KHG (montant 98 000 MAD)",
-   "expect": {}
-  },
-  {
-   "id": "H65",
-   "split": "heldout",
-   "text": "Fennec a 120 employés et 3 agences",
-   "expect": {}
-  },
-  {
-   "id": "H66",
-   "split": "heldout",
-   "text": "Le compte Medina Pharm est en retard de paiement de 45 000 MAD",
-   "expect": {}
-  }
- ]
+  "description": "Hand-written Slack messages with the facts a careful reader would extract. 'dev' may be used to write rules; 'heldout' is only measured. Written before the v2 rules.",
+  "users": {
+    "U01": "Youssef Benali",
+    "U02": "Salma El Idrissi",
+    "U03": "Karim Tazi",
+    "U04": "Nadia Berrada",
+    "U05": "Mehdi Alaoui",
+    "U06": "Imane Chraibi",
+    "U07": "Omar Fassi",
+    "U08": "Leila Bennani"
+  },
+  "messages": [
+    {
+      "id": "D01",
+      "split": "dev",
+      "text": "Account owner: <@U04> (Zitoun)",
+      "expect": {
+        "owner": "Nadia Berrada"
+      }
+    },
+    {
+      "id": "D02",
+      "split": "dev",
+      "text": "FYI <@U06> reprend le compte KHG à partir d'aujourd'hui",
+      "expect": {
+        "owner": "Imane Chraibi"
+      }
+    },
+    {
+      "id": "D03",
+      "split": "dev",
+      "text": "Salam, mn daba <@U03> howa l'owner dyal Fennec",
+      "expect": {
+        "owner": "Karim Tazi"
+      }
+    },
+    {
+      "id": "D04",
+      "split": "dev",
+      "text": "Le compte Rif Cement est maintenant géré par <@U02>",
+      "expect": {
+        "owner": "Salma El Idrissi"
+      }
+    },
+    {
+      "id": "D05",
+      "split": "dev",
+      "text": "<@U08> is now the account owner for Medina Pharm",
+      "expect": {
+        "owner": "Leila Bennani"
+      }
+    },
+    {
+      "id": "D06",
+      "split": "dev",
+      "text": "<@U05> s'occupe de la relance pour Zitoun",
+      "expect": {}
+    },
+    {
+      "id": "D07",
+      "split": "dev",
+      "text": "owner de l'action: <@U01>",
+      "expect": {}
+    },
+    {
+      "id": "D08",
+      "split": "dev",
+      "text": "Mehdi prend le relais sur le compte Oasis Agro",
+      "expect": {
+        "owner": "Mehdi Alaoui"
+      }
+    },
+    {
+      "id": "D09",
+      "split": "dev",
+      "text": "Deal signé m3a Fennec: 1,031,000 MAD par an",
+      "expect": {
+        "contract_value": 1031000
+      }
+    },
+    {
+      "id": "D10",
+      "split": "dev",
+      "text": "Nouveau montant annuel pour AtlasLog: 461,000 MAD",
+      "expect": {
+        "contract_value": 461000
+      }
+    },
+    {
+      "id": "D11",
+      "split": "dev",
+      "text": "contrat argan dor tla3 l 1497k MAD 🎉",
+      "expect": {
+        "contract_value": 1497000
+      }
+    },
+    {
+      "id": "D12",
+      "split": "dev",
+      "text": "Contrat signé: 2 M MAD par an pour Rif Cement",
+      "expect": {
+        "contract_value": 2000000
+      }
+    },
+    {
+      "id": "D13",
+      "split": "dev",
+      "text": "Envoyé la facture à argan dor",
+      "expect": {}
+    },
+    {
+      "id": "D14",
+      "split": "dev",
+      "text": "Facture KHG: 75 000 MAD",
+      "expect": {}
+    },
+    {
+      "id": "D15",
+      "split": "dev",
+      "text": "Remise exceptionnelle de 10 000 MAD pour Zitoun",
+      "expect": {}
+    },
+    {
+      "id": "D16",
+      "split": "dev",
+      "text": "On a proposé 500k MAD à Fennec",
+      "expect": {}
+    },
+    {
+      "id": "D17",
+      "split": "dev",
+      "text": "rappel: date de renouvellement AtlasLog = 01/12/2027",
+      "expect": {
+        "renewal_date": "2027-12-01"
+      }
+    },
+    {
+      "id": "D18",
+      "split": "dev",
+      "text": "Renewal Fennec prévu le 01/09/2027",
+      "expect": {
+        "renewal_date": "2027-09-01"
+      }
+    },
+    {
+      "id": "D19",
+      "split": "dev",
+      "text": "renouvellement dyal tmf f 01/06/2028",
+      "expect": {
+        "renewal_date": "2028-06-01"
+      }
+    },
+    {
+      "id": "D20",
+      "split": "dev",
+      "text": "Le contrat Zitoun expire le 30/04/2027",
+      "expect": {
+        "renewal_date": "2027-04-30"
+      }
+    },
+    {
+      "id": "D21",
+      "split": "dev",
+      "text": "rappel: meeting m3a Fennec ghda 10h",
+      "expect": {}
+    },
+    {
+      "id": "D22",
+      "split": "dev",
+      "text": "Point renouvellement avec KHG le 14/11/2026",
+      "expect": {}
+    },
+    {
+      "id": "D23",
+      "split": "dev",
+      "text": "Payment due for Rif Cement on 15/12/2026",
+      "expect": {}
+    },
+    {
+      "id": "D24",
+      "split": "dev",
+      "text": "MRR Fennec: 80k MAD",
+      "expect": {}
+    },
+    {
+      "id": "D25",
+      "split": "dev",
+      "text": "Budget prévisionnel Oasis Agro: 1M MAD, rien de signé",
+      "expect": {}
+    },
+    {
+      "id": "D26",
+      "split": "dev",
+      "text": "Contrat KHG renouvelé au 01/01/2028 pour 1,3M MAD",
+      "expect": {
+        "renewal_date": "2028-01-01",
+        "contract_value": 1300000
+      }
+    },
+    {
+      "id": "H01",
+      "split": "heldout",
+      "text": "À partir de lundi c'est <@U02> qui gère Argan d'Or",
+      "expect": {
+        "owner": "Salma El Idrissi"
+      }
+    },
+    {
+      "id": "H02",
+      "split": "heldout",
+      "text": "<@U05> takes over the Fennec account from today",
+      "expect": {
+        "owner": "Mehdi Alaoui"
+      }
+    },
+    {
+      "id": "H03",
+      "split": "heldout",
+      "text": "Passation: le compte Zitoun passe à <@U07>",
+      "expect": {
+        "owner": "Omar Fassi"
+      }
+    },
+    {
+      "id": "H04",
+      "split": "heldout",
+      "text": "new account manager for KHG is <@U01>",
+      "expect": {
+        "owner": "Youssef Benali"
+      }
+    },
+    {
+      "id": "H05",
+      "split": "heldout",
+      "text": "mn daba Leila hiya li katgeri compte Oasis Agro",
+      "expect": {
+        "owner": "Leila Bennani"
+      }
+    },
+    {
+      "id": "H06",
+      "split": "heldout",
+      "text": "Nadia devient la responsable commerciale d'Atlantic Fishing",
+      "expect": {
+        "owner": "Nadia Berrada"
+      }
+    },
+    {
+      "id": "H07",
+      "split": "heldout",
+      "text": "KAM pour Rif Cement : <@U03>",
+      "expect": {
+        "owner": "Karim Tazi"
+      }
+    },
+    {
+      "id": "H08",
+      "split": "heldout",
+      "text": "Le portefeuille Chaouen Tex est réattribué à Imane",
+      "expect": {
+        "owner": "Imane Chraibi"
+      }
+    },
+    {
+      "id": "H09",
+      "split": "heldout",
+      "text": "<@U08> est désormais l'interlocutrice principale côté commercial pour Medina Pharm",
+      "expect": {
+        "owner": "Leila Bennani"
+      }
+    },
+    {
+      "id": "H10",
+      "split": "heldout",
+      "text": "Ownership of the Sahara Tech account moves to <@U04> effective immediately",
+      "expect": {
+        "owner": "Nadia Berrada"
+      }
+    },
+    {
+      "id": "H11",
+      "split": "heldout",
+      "text": "<@U03> peux-tu prendre en charge la relance de la facture Argan d'Or ?",
+      "expect": {}
+    },
+    {
+      "id": "H12",
+      "split": "heldout",
+      "text": "owner de la tâche: <@U06> (préparer la démo Fennec)",
+      "expect": {}
+    },
+    {
+      "id": "H13",
+      "split": "heldout",
+      "text": "<@U02> tu es owner du ticket JIRA-482 pour KHG",
+      "expect": {}
+    },
+    {
+      "id": "H14",
+      "split": "heldout",
+      "text": "Merci <@U05> pour le compte-rendu de la réunion Zitoun",
+      "expect": {}
+    },
+    {
+      "id": "H15",
+      "split": "heldout",
+      "text": "Le compte de Karim sur Salesforce est bloqué, qui peut le réinitialiser ?",
+      "expect": {}
+    },
+    {
+      "id": "H16",
+      "split": "heldout",
+      "text": "chkon howa l'owner dyal Oasis Agro daba?",
+      "expect": {}
+    },
+    {
+      "id": "H17",
+      "split": "heldout",
+      "text": "Est-ce que <@U07> reprend le compte Rif Cement ? À confirmer",
+      "expect": {}
+    },
+    {
+      "id": "H18",
+      "split": "heldout",
+      "text": "<@U01> was the account owner for Fennec until last year",
+      "expect": {}
+    },
+    {
+      "id": "H19",
+      "split": "heldout",
+      "text": "Contrat signé avec Rif Cement : 2,4 M MAD par an",
+      "expect": {
+        "contract_value": 2400000
+      }
+    },
+    {
+      "id": "H20",
+      "split": "heldout",
+      "text": "Le renouvellement de Zitoun s'est fait à 780 000 DH HT annuels",
+      "expect": {
+        "contract_value": 780000
+      }
+    },
+    {
+      "id": "H21",
+      "split": "heldout",
+      "text": "ACV Fennec = 1.2M MAD",
+      "expect": {
+        "contract_value": 1200000
+      }
+    },
+    {
+      "id": "H22",
+      "split": "heldout",
+      "text": "We closed Atlantic Fishing at 950k MAD/year",
+      "expect": {
+        "contract_value": 950000
+      }
+    },
+    {
+      "id": "H23",
+      "split": "heldout",
+      "text": "Medina Pharm a signé, montant annuel 615 000 dirhams",
+      "expect": {
+        "contract_value": 615000
+      }
+    },
+    {
+      "id": "H24",
+      "split": "heldout",
+      "text": "Sahara Tech: contrat de 3 ans, 540k MAD par an",
+      "expect": {
+        "contract_value": 540000
+      }
+    },
+    {
+      "id": "H25",
+      "split": "heldout",
+      "text": "Deal KHG signé à 1 150 000 MAD",
+      "expect": {
+        "contract_value": 1150000
+      }
+    },
+    {
+      "id": "H26",
+      "split": "heldout",
+      "text": "العقد ديال أركان دور وصل ل 1.5 مليون درهم",
+      "expect": {
+        "contract_value": 1500000
+      }
+    },
+    {
+      "id": "H27",
+      "split": "heldout",
+      "text": "Oasis Agro: valeur du contrat portée à 1 300 000 MAD après avenant",
+      "expect": {
+        "contract_value": 1300000
+      }
+    },
+    {
+      "id": "H28",
+      "split": "heldout",
+      "text": "contrat Chaouen Tex tla3 l 900k dh",
+      "expect": {
+        "contract_value": 900000
+      }
+    },
+    {
+      "id": "H29",
+      "split": "heldout",
+      "text": "Remise de 50 000 MAD accordée à Fennec sur la facture de mars",
+      "expect": {}
+    },
+    {
+      "id": "H30",
+      "split": "heldout",
+      "text": "Facture Argan d'Or de 124 500 MAD envoyée",
+      "expect": {}
+    },
+    {
+      "id": "H31",
+      "split": "heldout",
+      "text": "MRR Zitoun: 65k MAD",
+      "expect": {}
+    },
+    {
+      "id": "H32",
+      "split": "heldout",
+      "text": "Ils ont un budget de 2M MAD mais rien n'est signé",
+      "expect": {}
+    },
+    {
+      "id": "H33",
+      "split": "heldout",
+      "text": "On propose 800k MAD à KHG, en attente de leur retour",
+      "expect": {}
+    },
+    {
+      "id": "H34",
+      "split": "heldout",
+      "text": "Pénalité de retard: 12 000 MAD pour Rif Cement",
+      "expect": {}
+    },
+    {
+      "id": "H35",
+      "split": "heldout",
+      "text": "Atlantic Fishing a payé un acompte de 200 000 MAD",
+      "expect": {}
+    },
+    {
+      "id": "H36",
+      "split": "heldout",
+      "text": "Si on signe Medina Pharm à 700k on dépasse l'objectif du trimestre",
+      "expect": {}
+    },
+    {
+      "id": "H37",
+      "split": "heldout",
+      "text": "Le contrat Oasis Agro inclut 40 utilisateurs et 3 sites",
+      "expect": {}
+    },
+    {
+      "id": "H38",
+      "split": "heldout",
+      "text": "Un concurrent a proposé 600k MAD à Sahara Tech, on doit s'aligner?",
+      "expect": {}
+    },
+    {
+      "id": "H39",
+      "split": "heldout",
+      "text": "discount of 15% on the Fennec contract approved",
+      "expect": {}
+    },
+    {
+      "id": "H40",
+      "split": "heldout",
+      "text": "Montant de l'avoir Chaouen Tex: 30 000 MAD",
+      "expect": {}
+    },
+    {
+      "id": "H41",
+      "split": "heldout",
+      "text": "Fennec renouvelle le 15/01/2028",
+      "expect": {
+        "renewal_date": "2028-01-15"
+      }
+    },
+    {
+      "id": "H42",
+      "split": "heldout",
+      "text": "Zitoun renewal date: 2027-11-30",
+      "expect": {
+        "renewal_date": "2027-11-30"
+      }
+    },
+    {
+      "id": "H43",
+      "split": "heldout",
+      "text": "Échéance du contrat Rif Cement: 31 décembre 2027",
+      "expect": {
+        "renewal_date": "2027-12-31"
+      }
+    },
+    {
+      "id": "H44",
+      "split": "heldout",
+      "text": "Le contrat Medina Pharm arrive à échéance le 01/07/2027",
+      "expect": {
+        "renewal_date": "2027-07-01"
+      }
+    },
+    {
+      "id": "H45",
+      "split": "heldout",
+      "text": "Atlantic Fishing renews on March 1, 2028",
+      "expect": {
+        "renewal_date": "2028-03-01"
+      }
+    },
+    {
+      "id": "H46",
+      "split": "heldout",
+      "text": "tajdid dyal KHG nhar 01/10/2027",
+      "expect": {
+        "renewal_date": "2027-10-01"
+      }
+    },
+    {
+      "id": "H47",
+      "split": "heldout",
+      "text": "تجديد عقد أركان دور: 01/05/2027",
+      "expect": {
+        "renewal_date": "2027-05-01"
+      }
+    },
+    {
+      "id": "H48",
+      "split": "heldout",
+      "text": "Renouvellement tacite Oasis Agro au 1er février 2028",
+      "expect": {
+        "renewal_date": "2028-02-01"
+      }
+    },
+    {
+      "id": "H49",
+      "split": "heldout",
+      "text": "Contract end date for Sahara Tech is 30/06/2027",
+      "expect": {
+        "renewal_date": "2027-06-30"
+      }
+    },
+    {
+      "id": "H50",
+      "split": "heldout",
+      "text": "On a un call de renouvellement avec Fennec le 12/11/2026",
+      "expect": {}
+    },
+    {
+      "id": "H51",
+      "split": "heldout",
+      "text": "Facture Zitoun à payer avant le 30/11/2026",
+      "expect": {}
+    },
+    {
+      "id": "H52",
+      "split": "heldout",
+      "text": "Renewal Rif Cement: à discuter, pas de date fixée",
+      "expect": {}
+    },
+    {
+      "id": "H53",
+      "split": "heldout",
+      "text": "Le renouvellement de KHG a été signé le 03/10/2026",
+      "expect": {}
+    },
+    {
+      "id": "H54",
+      "split": "heldout",
+      "text": "Démo Medina Pharm prévue le 05/12/2026",
+      "expect": {}
+    },
+    {
+      "id": "H55",
+      "split": "heldout",
+      "text": "Livraison Atlantic Fishing reportée au 20/11/2026",
+      "expect": {}
+    },
+    {
+      "id": "H56",
+      "split": "heldout",
+      "text": "Rif Cement renouvelé jusqu'au 31/12/2028 à 2,6 M MAD/an",
+      "expect": {
+        "renewal_date": "2028-12-31",
+        "contract_value": 2600000
+      }
+    },
+    {
+      "id": "H57",
+      "split": "heldout",
+      "text": "Nouveau contrat Zitoun: 820k MAD/an, renouvellement le 01/09/2028, owner <@U07>",
+      "expect": {
+        "contract_value": 820000,
+        "renewal_date": "2028-09-01",
+        "owner": "Omar Fassi"
+      }
+    },
+    {
+      "id": "H58",
+      "split": "heldout",
+      "text": "Avenant KHG signé: montant annuel 1 200 000 MAD",
+      "expect": {
+        "contract_value": 1200000
+      }
+    },
+    {
+      "id": "H59",
+      "split": "heldout",
+      "text": "FYI Fennec: <@U06> reprend le compte, et le renouvellement est au 01/03/2028",
+      "expect": {
+        "owner": "Imane Chraibi",
+        "renewal_date": "2028-03-01"
+      }
+    },
+    {
+      "id": "H60",
+      "split": "heldout",
+      "text": "Salam 3likom, chkon 3ndo l'update 3la Zitoun?",
+      "expect": {}
+    },
+    {
+      "id": "H61",
+      "split": "heldout",
+      "text": "Réunion Argan d'Or déplacée à jeudi 10h",
+      "expect": {}
+    },
+    {
+      "id": "H62",
+      "split": "heldout",
+      "text": "Le client Oasis Agro est très content de la nouvelle version 🎉",
+      "expect": {}
+    },
+    {
+      "id": "H63",
+      "split": "heldout",
+      "text": "contact chez Rif Cement: +212 5 22 33 44 55",
+      "expect": {}
+    },
+    {
+      "id": "H64",
+      "split": "heldout",
+      "text": "Envoyé la facture à KHG (montant 98 000 MAD)",
+      "expect": {}
+    },
+    {
+      "id": "H65",
+      "split": "heldout",
+      "text": "Fennec a 120 employés et 3 agences",
+      "expect": {}
+    },
+    {
+      "id": "H66",
+      "split": "heldout",
+      "text": "Le compte Medina Pharm est en retard de paiement de 45 000 MAD",
+      "expect": {}
+    },
+    {
+      "id": "E01",
+      "split": "dev",
+      "text": "Heads up: <@U02> is taking over the Summit account starting today",
+      "expect": {
+        "owner": "Salma El Idrissi"
+      }
+    },
+    {
+      "id": "E02",
+      "split": "dev",
+      "text": "FYI <@U05> now owns Northwind",
+      "expect": {
+        "owner": "Mehdi Alaoui"
+      }
+    },
+    {
+      "id": "E03",
+      "split": "dev",
+      "text": "<@U03> took over Bluefin last week",
+      "expect": {
+        "owner": "Karim Tazi"
+      }
+    },
+    {
+      "id": "E04",
+      "split": "dev",
+      "text": "New owner for Harbor Foods is <@U07>",
+      "expect": {
+        "owner": "Omar Fassi"
+      }
+    },
+    {
+      "id": "E05",
+      "split": "dev",
+      "text": "<@U01> was the owner until March, ask him about history",
+      "expect": {}
+    },
+    {
+      "id": "E06",
+      "split": "dev",
+      "text": "is <@U04> taking over the demo for Lumen tomorrow? task for the team",
+      "expect": {}
+    },
+    {
+      "id": "E07",
+      "split": "dev",
+      "text": "who now owns the invoice for Cedar? <@U08>",
+      "expect": {}
+    }
+  ]
 }

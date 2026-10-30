@@ -91,6 +91,8 @@ class Generator:
     VENDOR = VENDOR
     IDENTITIES = IDENTITIES
     CURRENCY = "MAD"
+    EMAIL_LOCALS = ("contact", "info", "{first}", "achats")
+    FREE_MAIL = tuple(FREE_MAIL)
     NUMERIC_DATE = "%d/%m/%Y"  # how people in this locale write dates by hand
     TAX_COLUMN = "ICE"
     CONTACT_NAMES = ("Hamid", "Samira", "Driss", "Loubna", "Yassine", "Ghita", "Reda", "Asmae")
@@ -326,10 +328,12 @@ class Generator:
                 phone = self._phone_variant(t.phone if rng.random() < 0.75 else t.mobile)
             email = None
             if rng.random() < 0.7:
-                local = rng.choice(["contact", "info", t.contact_first.lower(), "achats"])
+                local = rng.choice(
+                    [x.format(first=t.contact_first.lower()) for x in self.EMAIL_LOCALS]
+                )
                 domain = s.domain
                 if not primary and rng.random() < 0.4:
-                    domain = rng.choice(FREE_MAIL)
+                    domain = rng.choice(self.FREE_MAIL)
                     local = f"{t.contact_first.lower()}.{s.key.replace('-', '')}"
                     notes.append("free_mail")
                 email = f"{local}@{domain}"

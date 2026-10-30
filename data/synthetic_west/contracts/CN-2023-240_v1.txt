@@ -1,0 +1,19 @@
+MASTER SUBSCRIPTION AGREEMENT
+Agreement No: CN-2023-240
+Version: 1
+Signature date: June 3, 2023
+
+BETWEEN
+Fieldstone Software, Inc., hereinafter the Provider,
+AND
+Customer: Copperline Media Inc.
+Tax ID (EIN): 86-3066372
+Registered office: 2049 Century Park E, Los Angeles
+Represented by: Daniel Brooks
+Contact: contact@copperlinemedia.com - Tel: (713) 209-0318
+
+Section 1 - Scope. The Provider supplies data platform services.
+Section 4 - Fees. The annual fee is USD 1,150,000 excluding taxes.
+Section 5 - Term. Effective date: June 1, 2023. Renewal date: June 1, 2025.
+
+Signed for the Customer: Daniel Brooks

@@ -1,0 +1,19 @@
+MASTER SUBSCRIPTION AGREEMENT
+Agreement No: CN-2023-128
+Version: 1
+Signature date: February 15, 2023
+
+BETWEEN
+Fieldstone Software, Inc., hereinafter the Provider,
+AND
+Customer: Northwind Packaging LLC
+Tax ID (EIN): 69-0275899
+Registered office: 2302 Pacific Ave, Tacoma
+Represented by: Kevin Sullivan
+Contact: legal@northwindpack.com - Tel: 617-388-3426
+
+Section 1 - Scope. The Provider supplies data platform services.
+Section 4 - Fees. The annual fee is USD 620,000 excluding taxes.
+Section 5 - Term. Effective date: March 1, 2023. Renewal date: March 1, 2025.
+
+Signed for the Customer: Kevin Sullivan

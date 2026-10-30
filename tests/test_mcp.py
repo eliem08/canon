@@ -334,3 +334,22 @@ def test_a_confirmation_about_a_record_that_left_the_export_is_skipped():
 
     fact = FactOverride(record_id="crm:gone", field="owner", value="X", by="Y", at=AS_OF)
     assert Overrides(facts=[fact]).confirmed_records([]) == []
+
+
+def test_a_disputed_end_date_still_rolls_forward_but_says_so():
+    from datetime import date
+
+    from canon.mcp_server.schemas import Answer
+    from canon.mcp_server.service import _cancel_by, _next_renewal
+
+    end = Answer(
+        field="renewal_date", value="2024-03-03", confidence=0.6, sources=[], conflict=True
+    )
+    facts = {"renewal_date": end,
+             "renewal_period_months": Answer(field="renewal_period_months", value=12,
+                                             confidence=0.9, sources=[]),
+             "renewal_notice": Answer(field="renewal_notice", value="P60D", confidence=0.9,
+                                      sources=[])}  # fmt: skip
+    nxt = _next_renewal(facts, date(2026, 10, 20))
+    assert nxt.value == "2027-03-03" and "disagree" in nxt.explanation and nxt.confidence == 0.6
+    assert _cancel_by(facts, nxt, date(2026, 10, 20)).value == "2027-01-02"

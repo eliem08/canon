@@ -107,7 +107,7 @@ def _next_renewal(facts: dict[str, Answer], today: date) -> Answer | None:
     to the first date after today. Computed: it cites both facts and keeps the weaker
     confidence."""
     end, period = facts.get("renewal_date"), facts.get("renewal_period_months")
-    if not end or not period or end.conflict or period.conflict:
+    if not end or not period or period.conflict:
         return None
     try:
         d = next_renewal(date.fromisoformat(str(end.value)), int(period.value), today)
@@ -124,6 +124,7 @@ def _next_renewal(facts: dict[str, Answer], today: date) -> Answer | None:
         explanation=(
             f"Computed: the term ended {end.value} and renews automatically every "
             f"{period.value} month(s); next renewal after {today.isoformat()}."
+            + (" Sources disagree on the end date: confirm it." if end.conflict else "")
         ),
     )
 
@@ -133,7 +134,7 @@ def _cancel_by(facts: dict[str, Answer], renewal: Answer | None, today: date) ->
     renewal, else the stated end date when it is still ahead)."""
     notice, period = facts.get("renewal_notice"), facts.get("renewal_period_months")
     renewal = renewal or facts.get("renewal_date")
-    if not notice or not period or not renewal or notice.conflict or renewal.conflict:
+    if not notice or not period or not renewal or notice.conflict:
         return None
     try:
         d = date.fromisoformat(str(renewal.value))
@@ -152,6 +153,7 @@ def _cancel_by(facts: dict[str, Answer], renewal: Answer | None, today: date) ->
             f"Computed: notice of {notice.value} before the renewal on {renewal.value}."
             + (" Already passed: the contract renews unless the parties agree otherwise."
                if by < today else "")
+            + (" Sources disagree on the renewal date: confirm it." if renewal.conflict else "")
         ),
     )  # fmt: skip
 

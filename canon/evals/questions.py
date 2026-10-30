@@ -144,7 +144,10 @@ def _typo(rng: random.Random, text: str) -> str:
 
 
 def _mention(rng: random.Random, entity: dict) -> tuple[str, str]:
-    seed = next(s for s in SEEDS if s.key == entity["key"])
+    from canon.synth.west import WEST_SEEDS  # local: west imports the generator, which imports us
+
+    west = any(s.key == entity["key"] for s in WEST_SEEDS)
+    seed = next(s for s in (*SEEDS, *WEST_SEEDS) if s.key == entity["key"])
     styles = ["canonical", "legal", "lower", "typo", "darija"]
     if seed.aliases:
         styles.append("alias")
@@ -152,13 +155,14 @@ def _mention(rng: random.Random, entity: dict) -> tuple[str, str]:
         styles.append("arabic")
     style = rng.choice(styles)
     if style == "legal":
-        return f"{seed.name} {rng.choice(['SARL', 'S.A.', 'Ltd', 'S.A.R.L.'])}", style
+        forms = ["Inc", "LLC", "Corp.", "Inc."] if west else ["SARL", "S.A.", "Ltd", "S.A.R.L."]
+        return f"{seed.name} {rng.choice(forms)}", style
     if style == "lower":
         return seed.name.lower(), style
     if style == "typo":
         return _typo(rng, seed.name), style
-    if style == "darija":
-        return f"chrikat {seed.name}", style
+    if style == "darija":  # the informal way people name a company in chat
+        return (f"the {seed.name} team" if west else f"chrikat {seed.name}"), style
     if style == "alias":
         return rng.choice(seed.aliases), style
     if style == "arabic":

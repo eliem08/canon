@@ -1,75 +1,64 @@
 # Market research
 
-*Part of the product document set (`docs/product/`). Code claims cite repository paths; market statements are hypotheses unless a source is linked. Written by the agent that built most of the code: treat as a self-assessment, not independent review. Updated 2026-10-30.*
+*Part of the product document set. Target market: the US first, then the UK and EU (decision 94). Market statements are hypotheses unless a source is linked; no customer has been interviewed. Written by the agent that built most of the code. Updated 2026-10-31.*
 
-No customer interviews have been done. Everything here is desk research plus hypotheses to test in discovery.
+No customer interviews have been done. This page separates **evidence** (linked) from **assumptions** (to test in discovery).
 
-## Ideal customer profile
+## The problem in the market
 
-- **Geography and language.** Morocco first, then the francophone Maghreb. Operating language is French with Arabic names and documents. The synthetic data, the French/Arabic OCR and the WhatsApp connector all point here, and few global tools handle this mix well.
-- **Company.** B2B, about 100 to 1,000 employees, with 20 to 200 people in sales or account management. Examples: distribution, logistics, B2B services, IT services and integrators, insurance brokerage, leasing.
-- **Systems.** A CRM (Salesforce, HubSpot or Dynamics), contracts in PDF or scanned, and sales conversations in WhatsApp or Teams.
-- **Technical maturity.** An IT or data lead exists, and the company is piloting an AI assistant (Copilot, an internal chatbot, an MCP agent).
-- **Triggering events:**
-  - an AI-assistant rollout;
-  - a CRM migration or clean-up;
-  - a renewal-revenue leak, such as contracts renewing or lapsing unnoticed;
-  - a CNDP compliance push, which favours on-premise processing.
+- **Agents inherit CRM data problems.** Practitioner and vendor sources say agents built on inconsistent or outdated
+  CRM data become less accurate, and recommend cleaning data before deploying agents ([Tofu: getting CRM data agent-ready (vendor blog)](https://www.tofuhq.com/post/how-to-get-crm-data-agent-ready)). A Diginomica
+  article reports that 62% of organisations have suffered direct revenue loss from poor CRM data quality; the
+  underlying survey is not named, so treat it as unverified ([Diginomica: poor CRM data and AI initiatives](https://diginomica.com/how-poor-crm-data-continues-plague-marketings-ai-initiatives-board-may-not-see-it)).
+- **MCP deployments rarely scope access per user.** One industry write-up cites 18% of MCP server deployments
+  implementing access scoping ([Celigo: MCP governance](https://www.celigo.com/blog/mcp-governance/)); another notes agents act with the permissions granted to the server,
+  not the person asking ([MintMCP: assessing MCP data risk](https://docs.mintmcp.com/blog/assess-mcp-data-risk)). Enterprises are being advised to keep an inventory of the MCP servers their
+  agents can reach ([CData: 2026 enterprise MCP adoption roadmap](https://www.cdata.com/blog/2026-enterprise-mcp-adoption-roadmap)).
+- **EU regulation asks deployers for input-data relevance, human oversight and logs.** Article 26 of the EU AI Act
+  obliges deployers of high-risk systems to ensure input data under their control is relevant and to keep logs
+  ([EU AI Act Article 26 (deployer obligations)](https://artificialintelligenceact.eu/article/26/), [DLA Piper: deployer obligations from 2 August 2026](https://knowledge.dlapiper.com/dlapiperknowledge/globalemploymentlatestdevelopments/2026/deployer-obligations-under-the-ai-act-implications-for-employers-from-2-august-2026)). The dates are contested: a May 2026 "Digital Omnibus" agreement may move
+  high-risk obligations to December 2027 or August 2028 ([Process Excellence Network: what changed in the EU AI Act in 2026](https://www.processexcellencenetwork.com/ai/articles/eu-ai-act-2026-what-actually-changed-and-what-deployers-still-must-do)). Most B2B sales agents are not
+  high-risk systems; this is a tailwind for governance budgets, not a compliance requirement Canon satisfies.
+
+## Ideal customer profile (hypothesis)
+
+- **Geography.** United States first (largest pool of RevOps teams building agents); then UK and EU, where keeping data
+  on the company's own infrastructure (GDPR) is a stronger argument.
+- **Company.** B2B with recurring revenue (SaaS, IT services, subscriptions, distribution with contracts),
+  about 200 to 2,000 employees, a RevOps or sales-operations team of 2 to 15 people.
+- **Systems.** Salesforce or HubSpot; Slack or Microsoft Teams; contracts as PDFs (e-signature exports, Drive/SharePoint
+  folders).
+- **Trigger events.** An internal AI agent or Copilot/Agentforce rollout touching customer data; a CRM migration or
+  clean-up project; a missed auto-renewal or a forecast miss traced to bad CRM data; a security review of an AI pilot.
 
 ## Today's workflow and alternatives
 
-- **Today.** CRM hygiene is done by hand in spreadsheets. Renewal dates live in contracts that nobody re-reads. Account ownership changes in WhatsApp and never reaches the CRM. AI pilots connect straight to raw data.
-- **Alternatives:**
-  - CRM-native tools: HubSpot or Salesforce duplicate management, Salesforce Data Cloud / Agentforce;
-  - enterprise search with permissions: Glean, Microsoft Copilot over SharePoint;
-  - MCP gateways and governance tools: MintMCP, CData;
-  - data-quality and master-data tools: Informatica, Talend;
-  - local integrators doing manual clean-ups.
-- **Why a buyer would switch:**
-  1. It runs fully on-premise and offline, which helps with Moroccan cross-border transfer rules (see the risk note in §3.4).
-  2. It reads French and Arabic contracts and WhatsApp alongside the CRM.
-  3. It produces a concrete fix list and renewal calendar in two weeks.
-  4. It enforces permissions per caller, whereas many MCP deployments don't scope access at all. One industry source cites 18% scoping ([Celigo](https://www.celigo.com/blog/mcp-governance/)), and another notes that agents act with the server's permissions, not the user's ([MintMCP](https://docs.mintmcp.com/blog/assess-mcp-data-risk)).
-- **The measurable outcome they would pay for:**
-  - number of stale and duplicate CRM records fixed;
-  - renewal revenue at risk found, from contracts renewing in the next 180 days with notice deadlines;
-  - a demonstrated zero-leak permission test on their own roles.
+- **Today.** RevOps cleans the CRM in spreadsheets and with CRM dedupe tools; renewal dates are tracked by hand from
+  contracts; account ownership changes in Slack before the CRM; AI pilots connect straight to raw sources.
+- **Alternatives.** See `COMPETITOR_ANALYSIS.md`: CRM-native data tools, enterprise search (Glean, Copilot), MCP
+  gateways, data-quality/MDM platforms, RevOps consultancies.
 
-## Prospect types
+## Prospect types, ranked (hypotheses, no named companies)
 
-| # | Prospect type | Why it fits | Approach | Use case | Friction | Confidence |
-|---|---|---|---|---|---|---|
-| 1 | Moroccan B2B distributors or wholesalers with field sales on WhatsApp | Many accounts, owner churn, contract renewals | Commercial director | Audit plus renewal calendar | Low to medium | Medium |
-| 2 | Salesforce, HubSpot or Dynamics integrators in Casablanca/Rabat (as a **channel**) | They own the CRM relationship and need AI-readiness offers | Partner manager or CEO | Resell the audit to their clients | Partner terms | Medium |
-| 3 | IT services companies and system integrators | They run their own CRM and contracts, and are tech-mature design partners | CEO or COO | Audit plus an MCP trial on their own data | Low | Medium |
-| 4 | Insurance brokers | Policies and contracts with renewals and notice periods | Head of operations | Renewal and notice extraction | CNDP sensitivity | Low to medium |
-| 5 | Logistics and transport B2B | Multi-site customers, duplicates | Sales operations | Duplicate merge, owner map | Low | Low to medium |
-| 6 | Leasing or equipment-rental firms | Contract-heavy, renewal revenue | Finance director | Renewal calendar | Medium | Low |
-| 7 | Telecom or cloud providers launching enterprise GenAI ([Orange Maroc / Orange Business "Live Intelligence"](https://fr.hespress.com/468751-468751.html) is one example of the push) | Partner channel for "data-readiness before GenAI" | Partnerships | Bundled offer | Long cycles | Low |
-| 8 | Customer-experience outsourcers (Concentrix's AI customer-experience observatory shows AI focus in Morocco; [Hespress](https://fr.hespress.com/468751-concentrix-lance-le-premier-observatoire-de-lexperience-client-a-lere-de-lia-au-maroc-en-partenariat.html)) | Large CRM data volumes | IT innovation | Permission-safe agents | Enterprise procurement | Low |
+| # | Prospect type | Why it fits | Approach | Friction | Confidence |
+|---|---|---|---|---|---|
+| 1 | US B2B SaaS, 200–1,000 staff, RevOps team, building an internal agent on CRM + Slack | Renewal-driven revenue; agent permission risk is concrete | VP RevOps / Head of Sales Ops | Security questionnaire; no SOC 2 | Medium |
+| 2 | Salesforce / HubSpot consulting partners (channel) | Need an "AI-readiness" offer; own the CRM relationship | Partner principal | Partner terms | Medium |
+| 3 | RevOps agencies and fractional RevOps leaders | Deliver clean-ups by hand; Canon makes it repeatable | Founder / principal | Small budgets | Medium |
+| 4 | UK / EU B2B companies with data-residency concerns | On-premise processing is decisive | Head of RevOps + DPO | GDPR review, DPA | Low–medium |
+| 5 | IT services / MSPs with large contract portfolios | Contract renewal tracking | COO / Finance | Contract formats vary | Low–medium |
+| 6 | Companies piloting MCP agents (job posts for "AI agent engineer" + RevOps) | Direct permission pain | Head of AI / platform | Build-vs-buy | Low |
 
-**Beachhead, narrow enough for one founder:** Moroccan B2B companies with 100 to 500 employees that use HubSpot or Salesforce, with French contracts and WhatsApp-heavy sales, reached through **two CRM integrators** as warm channels. The target is 15 conversations and 2 paid audits.
+**Beachhead for one founder:** US B2B SaaS companies of 200–1,000 employees on Salesforce or HubSpot with Slack,
+reached through two or three CRM consulting partners and warm RevOps contacts. Target: 20 conversations, 2 paid audits.
 
-**Not a buyer:**
-- large banks and telecoms (slow procurement; they build in-house);
-- B2C companies (wrong data shape);
-- companies with no CRM;
-- US or EU enterprises (Glean and the CRM vendors already serve them, and Canon has no US proof beyond a public benchmark);
-- anyone who wants a hosted SaaS tomorrow (Canon is on-premise and batch).
+**Not a buyer:** enterprises that require a SOC 2 Type II hosted SaaS before any trial (Canon has none); companies
+with no CRM; startups under ~50 people (too little data to have the problem); teams wanting a CRM replacement.
 
-## Regulatory context
+## Regulatory notes (not legal advice; no compliance claims)
 
-- **Cross-border transfers.** Moroccan Law 09-08 (Articles 43–44) restricts transfers abroad. Practitioners treat cloud hosting abroad as a transfer that may need CNDP authorization, and the CNDP has begun warning large controllers ([Upsilon](https://upsilon-consulting.com/en/international-personal-data-transfer-morocco/), [Chambers 2026](https://practiceguides.chambers.com/practice-guides/data-protection-privacy-2026/morocco)). These are secondary sources; verify with a lawyer.
-- **What this means for Canon.** Offline, on-premise processing is a selling point. The `eval` step with a hosted model would be a transfer, so use a local model or get written consent.
-- **No compliance claims.** Do not claim to be "CNDP-compliant". Claim "processes inside your network; no data leaves unless you choose a hosted model".
-
-## Sources
-
-- [Upsilon Consulting: international data transfer in Morocco](https://upsilon-consulting.com/en/international-personal-data-transfer-morocco/)
-- [Chambers Data Protection & Privacy 2026: Morocco](https://practiceguides.chambers.com/practice-guides/data-protection-privacy-2026/morocco)
-- [DPO Consulting: Morocco Law 09-08 guide](https://www.dpo-consulting.com/blog/morocco-data-protection-law-09-08)
-- [Celigo: MCP governance](https://www.celigo.com/blog/mcp-governance/)
-- [MintMCP: assessing MCP data risk](https://docs.mintmcp.com/blog/assess-mcp-data-risk)
-- [CData: 2026 enterprise MCP adoption roadmap](https://www.cdata.com/blog/2026-enterprise-mcp-adoption-roadmap)
-- [Hespress: Concentrix AI customer-experience observatory, Morocco](https://fr.hespress.com/468751-concentrix-lance-le-premier-observatoire-de-lexperience-client-a-lere-de-lia-au-maroc-en-partenariat.html)
-- [KPMG France: Trends of AI 2026](https://kpmg.com/fr/fr/media/press-releases/2026/01/adoption-ia-entreprises-francaises.html)
+- **GDPR (EU/UK).** Canon processes customer and employee personal data (names, emails, phone numbers). Running
+  inside the client's network avoids an international transfer by Canon; the client remains controller. A DPA is
+  still expected for the engagement.
+- **US.** State privacy laws (e.g. CCPA/CPRA) mostly concern consumer data; B2B contact data has partial exemptions
+  that vary by state. Procurement will mostly ask security questions (SOC 2, pen test, data handling).
