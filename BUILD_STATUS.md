@@ -75,7 +75,7 @@ An on-premise tool for a two-week customer-data and AI-readiness engagement:
 
 1. Run the first real export through `canon pilot`; fix what breaks, adding a fixture and a decision entry for each fix.
 2. Dynamics 365 column preset.
-3. Email connector (`.eml`/`.mbox`). The source type already exists; there is no loader.
+3. ~~Email connector~~ done (`.eml`/`.mbox`, 2026-11-07). PST archives would need a converter; not started.
 4. An opt-in script to test the CRM pull against sandbox accounts.
 5. Incremental runs, only if a client's volume needs them.
 

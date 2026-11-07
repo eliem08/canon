@@ -10,7 +10,7 @@ No rewrite, no microservices, no hosted database. Changes are targeted:
 
 | Area | Keep | Changed in this round | Later (only with a customer reason) |
 |---|---|---|---|
-| Ingest | File connectors, read-only CRM pull, refusal-based parsing | — | Email connector, Dynamics preset |
+| Ingest | File connectors, read-only CRM pull, refusal-based parsing | Email connector (`.eml`/`.mbox`) | PST archives, Dynamics preset |
 | Resolution | Fellegi–Sunter scoring, blocking, average-linkage clustering | Neighbour-map clustering (decision 92) | Incremental re-runs |
 | Scoring | Authority × freshness, lineage per fact, confirmed facts | — | — |
 | Storage | SQLite file + JSON in `out/` | `run.json` manifest | Encryption at rest if a client requires it beyond disk encryption |

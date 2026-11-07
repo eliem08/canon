@@ -9,6 +9,7 @@ config file, not a code change. Every key is optional; a missing file means the 
       "crm":       {"file": "crm/companies.csv", "acl": ["sales", "exec"],
                     "columns": {"name": "Company name", "owner": "Company owner"}},
       "slack":     {"acl": ["sales"], "archived_acl": ["sales"], "channel_prefixes": ["client"]},
+      "email":     {"own_domains": ["ourcompany.com"], "acl": ["sales", "exec"]},
       "contracts": {"acl": ["legal", "exec"]}
     }
 
@@ -26,6 +27,7 @@ from canon.ingest.chat import WhatsAppConfig
 from canon.ingest.config import IngestConfig
 from canon.ingest.contracts import DEFAULT_CONTRACT_ACL
 from canon.ingest.crm import DEFAULT_CRM_ACL, CRMFieldMap
+from canon.ingest.email import EmailConfig
 from canon.ingest.slack import SlackConfig
 
 DEPLOYMENT_FILE = "canon.json"
@@ -42,6 +44,7 @@ class Deployment:
     teams: SlackConfig = field(default_factory=SlackConfig)
     whatsapp: WhatsAppConfig = field(default_factory=WhatsAppConfig)
     contract_acl: tuple[str, ...] = tuple(DEFAULT_CONTRACT_ACL)
+    email: EmailConfig = field(default_factory=EmailConfig)
 
     def crm_paths(self, root: Path) -> list[Path]:
         if self.crm_file:
@@ -73,7 +76,8 @@ def _chat_config(section: str, data: dict, base: SlackConfig) -> SlackConfig:
 
 
 def parse_deployment(data: dict) -> Deployment:
-    _check_keys("the top level", data, {"ingest", "crm", "slack", "teams", "whatsapp", "contracts"})
+    top = {"ingest", "crm", "slack", "teams", "whatsapp", "email", "contracts"}
+    _check_keys("the top level", data, top)
     dep = Deployment()
     ingest = data.get("ingest", {})
     _check_keys("ingest", ingest, {f.name for f in fields(IngestConfig)})
@@ -103,6 +107,16 @@ def parse_deployment(data: dict) -> Deployment:
             ),
         ),
     )
+
+    em = data.get("email", {})
+    _check_keys("email", em, {"own_domains", "acl"})
+    if "own_domains" in em:
+        own = em["own_domains"]
+        if not isinstance(own, list) or not all(isinstance(d, str) and "." in d for d in own):
+            raise ValueError(f"{DEPLOYMENT_FILE}: email.own_domains must be a list of domains")
+        dep = replace(dep, email=replace(dep.email, own_domains=tuple(d.lower() for d in own)))
+    if "acl" in em:
+        dep = replace(dep, email=replace(dep.email, acl=_acl("email", em["acl"])))
 
     contracts = data.get("contracts", {})
     _check_keys("contracts", contracts, {"acl"})

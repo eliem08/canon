@@ -64,7 +64,7 @@ Status key: **A** = implemented and verified · **B** = implemented but unverifi
 | Audit pack (HTML, CSV, review page, renewal calendar, `--compare`) | **Working (A)** on synthetic data | `audit.py`, `deliver.py` |
 | People's corrections (confirmed facts) | **Working (A)**; entered by hand in `overrides.json` | `resolve/pipeline.py:FactOverride` |
 | Before/after eval harness | **Working (A)**. Questions are synthetic or written by us (C) | `evals/*`, `eval_summary.md` |
-| Email connector | **Absent (E)** | — |
+| Email connector | **Working (A)** on test fixtures since 2026-11-07; no real mailbox export tested (B) | `canon/ingest/email.py`, `tests/test_email.py` |
 | Live or incremental sync, write-back | **Absent (E)** | — |
 | Monitoring, health checks, metrics | **Absent (E)** | — |
 | Encryption at rest, retention automation, SBOM | **Absent (E)** | `DEPLOY.md` |

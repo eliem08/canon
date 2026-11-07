@@ -25,6 +25,8 @@ export/
   teams/                      Microsoft Teams (Graph): channels.json (id, displayName, membershipType, members),
                               <channel id>/*.json pages of chatMessage objects
   whatsapp/                   WhatsApp "Export chat" .txt files (iOS or Android format), one per chat
+  email/                      .eml files and/or .mbox mailboxes (Gmail Takeout, Outlook/Thunderbird export);
+                              set "email": {"own_domains": ["yourcompany.com"]} in canon.json
   contracts/                  PDF / DOCX / scans / .txt, any folder depth
     board/_acl.json           {"acl": ["exec"]}: who may read this folder (default: legal, exec)
   identities.json             callers -> groups (+ optional slack_user_id), from the role spreadsheet

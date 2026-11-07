@@ -230,6 +230,22 @@ def _other_chat_check(root: Path) -> dict:
     return out
 
 
+def _email_check(root: Path, dep) -> dict:
+    """Email exports: how many messages, and whether our own domains are known."""
+    if not root.is_dir():
+        return {"present": False}
+    from canon.ingest.email import _messages, own_domains
+
+    messages = _messages(root)
+    ours = own_domains(messages, dep.email.own_domains)
+    return {
+        "present": True,
+        "messages": len(messages),
+        "own_domains": sorted(ours) if ours else None,
+        "configured": bool(dep.email.own_domains),
+    }
+
+
 def _contracts_check(root: Path) -> dict:
     if not root.is_dir():
         return {"present": False}
@@ -272,6 +288,7 @@ def check_export(root: Path) -> dict:
     report["crm"] = [_crm_check(root, dep, p) for p in paths]
     report["slack"] = _slack_check(root / "slack")
     report["other_chat"] = _other_chat_check(root)
+    report["email"] = _email_check(root / "email", dep)
     report["contracts"] = _contracts_check(root / "contracts")
     report["identities"] = (root / "identities.json").exists()
     report["ok"] = bool(paths) and not any(c["blocking"] for c in report["crm"])
@@ -359,6 +376,19 @@ def render_check(report: dict) -> str:
             + (f" from {s['date_range'][0]} to {s['date_range'][1]}." if s["date_range"] else ".")
         )
         lines += [f"- warning: {w}" for w in s["warnings"]]
+    em = report.get("email", {})
+    if em.get("present"):
+        lines += ["", "## Email", "", f"{em['messages']} messages."]
+        if em["own_domains"] is None:
+            lines.append(
+                "- warning: cannot tell which email domain is yours; set "
+                '`"email": {"own_domains": ["yourcompany.com"]}` in canon.json, or the mailbox is '
+                "skipped"
+            )
+        elif not em["configured"]:
+            lines.append(
+                f"- your domain looks like {', '.join(em['own_domains'])}; confirm it in canon.json"
+            )
     other = report.get("other_chat", {})
     if "teams" in other:
         t = other["teams"]

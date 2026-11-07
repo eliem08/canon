@@ -37,7 +37,7 @@ Status: **Done** = implemented and covered by an automated test that ran on 2026
 | F10 | Authenticated HTTP access | Bearer tokens (hashed) or OIDC JWT; identity from the token, not the request | Done (`tests/test_security.py`, `test_sso.py`; no real IdP tested) |
 | F11 | End-of-engagement deletion | `canon purge` dry-runs by default, refuses non-Canon folders, prints a receipt | Done (`tests/test_purge.py`) |
 | F12 | Read-only CRM pull | HubSpot/Salesforce GET only, same-host pagination | Implemented; mocked HTTP only (`tests/test_pull.py`) |
-| F13 | Email as a source | `.eml`/`.mbox` ingest | **Missing** |
+| F13 | Email as a source | `.eml`/`.mbox` ingest; one record per customer domain; quoted history ignored; own domain known or refused | Done (`tests/test_email.py`); no real mailbox tested |
 | F14 | Incremental runs | Re-run cost proportional to change | **Missing** |
 
 ## Non-functional requirements

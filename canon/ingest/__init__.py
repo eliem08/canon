@@ -10,6 +10,7 @@ from canon.ingest.config import IngestConfig
 from canon.ingest.contracts import load_contracts
 from canon.ingest.crm import load_crm
 from canon.ingest.deployment import Deployment, load_deployment
+from canon.ingest.email import load_email
 from canon.ingest.slack import load_slack
 from canon.models import ParseIssue, SourceRecord
 
@@ -37,6 +38,8 @@ def load_all(
         records += load_teams(root / "teams", config=dep.teams, ingest=config)
     if (root / "whatsapp").is_dir():
         records += load_whatsapp(root / "whatsapp", config=dep.whatsapp, ingest=config)
+    if (root / "email").is_dir():
+        records += load_email(root / "email", dep.email, config, unreadable=unreadable)
     if (root / "contracts").is_dir():
         records += load_contracts(
             root / "contracts", acl=dep.contract_acl, config=config, unreadable=unreadable

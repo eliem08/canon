@@ -29,7 +29,7 @@ The MCP server is a **trial option**, not the core offer. All of this exists in 
 | **P1** | Correction entry in `review.html`, writing confirmed `facts` | Today corrections are typed into JSON | A user can enter a corrected value; it appears in `overrides.json` | — | S | Low |
 | **P1** | Performance: 50k CRM records resolved in under 10 minutes | Mid-market CRMs | Benchmark report at 50k | — | M | Medium |
 | **P1** | Run log and progress output, plus `serve` health and metrics endpoints | Supportability on site | `/health` returns 200; a structured log exists | — | S | Low |
-| **P2** | Email connector (`.eml`/`.mbox`/PST export) | The source type already exists | Emails become records with lineage | — | M | Medium |
+| **P2** | ~~Email connector (`.eml`/`.mbox`)~~ done 2026-11-07; PST (Outlook archive) still missing | The source type already exists | Emails become records with lineage | — | M | Medium |
 | **P2** | Read ACLs from source sharing (Slack membership exists; add SharePoint/Drive) | Strengthens the permission claim | ACLs derived, not hand-configured | APIs | L | Medium |
 | **P2** | Incremental re-runs | Recurring subscription | Re-run time proportional to the change | — | L | Medium |
 | **P3** | Hosted multi-tenant SaaS, write-back to the CRM, LLM-based contract reading | Speculative | — | — | L | High |

@@ -385,6 +385,7 @@ REASON_HINTS = {
     "fax_number": "A fax number in a phone field; move it.",
     "conflicting_values_in_contract": "The contract states two different values; check it.",
     "unsure_ocr_digits": "Some digits on the scan are illegible; check the paper copy.",
+    "own_domain_unknown": "Set email.own_domains in canon.json (your company's email domains).",
     "low_ocr_confidence": "Poor scan; rescan or provide the original file.",
     "ocr_unavailable": "Install tesseract (fra+ara+eng) and rerun.",
     "unreadable_pdf": "The PDF cannot be opened (damaged or encrypted); provide another copy.",
