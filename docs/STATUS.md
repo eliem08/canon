@@ -1,5 +1,8 @@
 # Canon: status and gap analysis
 
+> **Superseded.** Historical audit from 2026-10-16 (before the move to US/EU buyers). The current status, test results
+> and readiness gates are in [`BUILD_STATUS.md`](../BUILD_STATUS.md).
+
 *Audit date 2026-10-16 · repo state: `claude/funny-keller-2ivw36` @ `dfd70c9` (PR #1, open) · assumed 30-day clock starts at the
 first commit, 2026-10-15, so this is **day 2 of 30** (UNVERIFIED: the real start date is the founder's).*
 
