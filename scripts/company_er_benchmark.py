@@ -40,7 +40,7 @@ from canon.resolve.evaluate import bcubed, pairwise  # noqa: E402
 from canon.resolve.normalize import normalize_name  # noqa: E402
 from canon.resolve.pipeline import resolve  # noqa: E402
 
-UA = "canon-benchmark/0.1 (+https://github.com/eliem08/canon)"
+UA = "canon-benchmark/0.1 (research; contact via repository)"  # SEC refuses UAs with URLs
 CACHE = Path(os.environ.get("CANON_CACHE", Path.home() / ".cache" / "canon")) / "company_er"
 SPARQL = """SELECT ?item ?label ?cik ?lei ?site ?hqLabel WHERE {
   ?item wdt:P5531 ?cik; wdt:P1278 ?lei.
