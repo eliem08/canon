@@ -32,6 +32,8 @@ LEGAL_TOKENS = frozenset(
     {
         "sarl", "sarlau", "sa", "sas", "sasu", "snc", "ltd", "limited", "llc", "inc", "plc",
         "gmbh", "co", "cie", "ste", "societe", "company", "corp",
+        # English and international legal forms seen in registries (SEC, GLEIF)
+        "corporation", "incorporated", "nv", "bv", "ag", "se", "lp", "llp", "pllc",
         # Darija-in-Latin "company" nouns
         "chrika", "chrikat", "charika", "charikat", "sharika",
     }
@@ -94,10 +96,17 @@ def has_arabic(text: str) -> bool:
     return bool(ARABIC_RE.search(text))
 
 
+def strip_filer_qualifier(text: str) -> str:
+    """SEC filer-name qualifiers are not part of the name: "AETNA INC /PA/", "LENNAR CORP /NEW/",
+    "APPLIED MATERIALS INC /DE" (a state or "new", after a slash, at the end)."""
+    return re.sub(r"\s/[A-Za-z]{2,4}/?\s*$", " ", text)
+
+
 def _tokens(name: str, drop_article: bool = False) -> list[str]:
     if has_arabic(name):
         name = transliterate_arabic(name, drop_article)
     text = fold(name).replace("&", " et ").replace("'", " ").replace("’", " ")
+    text = strip_filer_qualifier(text)
     # Join dotted abbreviations (S.A.R.L. -> sarl, S.A -> sa) before splitting on punctuation.
     text = re.sub(r"\b(?:[a-z]\.){1,4}[a-z]?\b\.?", lambda m: m.group(0).replace(".", ""), text)
     text = re.sub(r"[^\w\s]", " ", text)
@@ -150,7 +159,7 @@ def acronyms(name: str | None) -> set[str]:
     core = _tokens(name, drop_article=True)
     if len(core) >= 2:
         out.add("".join(t[0] for t in core))
-    words = [t for t in re.findall(r"\w+", fold(name)) if t not in ARTICLES]
+    words = [t for t in re.findall(r"\w+", strip_filer_qualifier(fold(name))) if t not in ARTICLES]
     for keep_links in (False, True):
         kept = [
             t
@@ -216,6 +225,22 @@ def normalize_address(address: str | None) -> str:
 
 
 _CITY_WORDS = re.compile(r"^(?:ville|city|municipalite)\s+(?:de\s+|d'|of\s+)?|\s+(?:city|ville)$")
+
+
+# The address of a registered agent (where a company is incorporated, typically in Delaware) says
+# nothing about where the company is: "C/O Corporation Service Company, 251 Little Falls Drive".
+_REGISTERED_AGENT = re.compile(
+    r"\bc\s*/\s*o\b.*\b(?:corporation service|ct corporation|corporation trust|registered agent"
+    r"|national registered|cogency|incorp services)|\bcorporation trust cent(?:er|re)\b"
+    r"|\b1209 orange st|\b251 little falls dr|\b2711 centerville r(?:oa)?d"
+    r"|\b850 new burton r(?:oa)?d"
+    r"|\bregistered agent\b",
+    re.I,
+)
+
+
+def is_registered_agent(address: str | None) -> bool:
+    return bool(address and _REGISTERED_AGENT.search(address))
 
 
 def normalize_city(city: str | None) -> str:

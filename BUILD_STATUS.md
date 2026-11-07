@@ -37,6 +37,7 @@ An on-premise tool for a two-week customer-data and AI-readiness engagement:
 | Western pivot: US defaults; US synthetic dataset; English owner-change cues; sales and market docs for US/UK/EU | `tests/test_west.py` (dataset reproducible, F1 1.000, all current values right, no permission leaks); `docs/reports/permission_report_west.md` |
 | Fix: renewal period and notice were dropped by scoring (calendar never showed notice deadlines) | Pipeline-level test in `tests/test_west.py` |
 | Fix: `serve` used the built-in dataset's identities regardless of `--data` | `tests/test_west.py::test_serve_reads_the_identities_of_the_export_it_serves`; demo run |
+| Real multi-system benchmark: 966 held-out real US companies across Wikidata, SEC EDGAR and GLEIF; F1 0.804 (exact names 0.755), renamed customers 72% linked + 24% to review; three resolution fixes found on real data | `docs/reports/company_er_report.md`, `tests/test_resolve_units.py` |
 
 ## Test results (2026-10-30)
 

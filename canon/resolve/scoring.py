@@ -50,6 +50,9 @@ class ScoringConfig:
     generic_name_no_identifier: float = -4.0  # "Pharmacie Al Amal" x2, nothing else shared
     city_conflict_no_identifier: float = -2.0
     concept_weight: float = 0.95  # bilingual concept-set similarity, see lexicon.py
+    # an identical normalized name of at least this many words is distinctive enough that a
+    # different site (address, city) is not evidence of a different company
+    distinctive_min_words: int = 2
 
 
 _HOUSE_NUMBER = re.compile(r"\b\d+[a-z]?\b")
@@ -180,6 +183,15 @@ def score_pair(fa: RecordFeatures, fb: RecordFeatures, cfg: ScoringConfig) -> Pa
         )
     if fa.city and fb.city:
         s.evidence["city"] = cfg.city_agree if fa.city == fb.city else cfg.city_disagree
+    # the same distinctive multi-word name ("monolithic power systems") at two sites is one
+    # company with two offices, not two companies: other sites are not evidence against it
+    same_name = set(fa.names) & set(fb.names)
+    if any(len(n.split()) >= cfg.distinctive_min_words for n in same_name) and not (
+        (fa.types | fb.types) & _local_shop_types()
+    ):
+        for k in ("address", "city"):
+            if s.evidence.get(k, 0) < 0:
+                s.evidence[k] = 0.0
     # corroboration = anything beyond the name that ties the two records together
     identifier_agrees = (
         any(s.evidence.get(k, 0) > 0 for k in ("domain", "tax_id", "address"))
@@ -190,7 +202,7 @@ def score_pair(fa: RecordFeatures, fb: RecordFeatures, cfg: ScoringConfig) -> Pa
     elif not identifier_agrees:
         if (fa.types & fb.types) & _local_shop_types():
             s.evidence["generic_name_no_identifier"] = cfg.generic_name_no_identifier
-        if fa.city and fb.city and fa.city != fb.city:
+        if fa.city and fb.city and fa.city != fb.city and s.evidence.get("city", 0) < 0:
             s.evidence["city_conflict_no_identifier"] = cfg.city_conflict_no_identifier
     s.probability = 1 / (1 + math.exp(-s.total))
     return s

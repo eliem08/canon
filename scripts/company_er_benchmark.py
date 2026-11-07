@@ -243,7 +243,8 @@ def render(results: dict) -> str:
             "",
             f"- Companies whose records all ended up together: {r['complete']} of "
             f"{r['companies']} ({100 * r['complete'] / r['companies']:.0f}%).",
-            f"- Clusters that wrongly mix two companies: {r['mixed_clusters']}.",
+            f"- Clusters that wrongly mix two companies: {r['mixed_clusters']} (counted as errors "
+            "even when the answer key itself has two Wikidata items for one company).",
             f"- Renamed companies: the stale account under the former name was linked for "
             f"{r['renamed_linked']} of {r['renamed']}; {r['renamed_review']} more were sent to a "
             "person.",

@@ -41,15 +41,18 @@ The gap to strong RAG is **not statistically significant** (p ≥ 0.5), so we do
 | What | Real data | Result |
 |---|---|---|
 | Contract terms | 510 SEC-filed contracts (CUAD), lawyer answers | parties 57% found, 99% right; agreement date 66% / 94%; effective date 60% / 95%; end date 33% / 91%; auto-renewal period 41% found, 0 wrong; notice to stop renewal 37% found, 0 wrong |
+| Same company across three real systems | 966 held-out US-listed companies in Wikidata, SEC EDGAR and GLEIF (3,238 records; identifiers as the answer key) | F1 0.804 (exact names 0.755); 58% of companies fully linked; 16 wrong merges |
+| Renamed customers | Stale CRM account under the real former name | 72% linked, 24% more to review; exact names: 0% |
 | Duplicate customers, US listings | Fodors–Zagat | F1 0.948 (exact-name matching: 0.825) |
 | Duplicate customers, French companies (EU) | INSEE SIRENE registry vs shop signs | 29% linked automatically and 28% sent to a person, 93% precision (exact names: 24% recall) |
 | Arabic ↔ Latin names (multilingual customer bases) | 23k real Arabic names with transliterations | 97.8% of true pairs at 0.85 similarity, 0.10% false matches |
 | OCR on scans | 361 real scanned receipts (SROIE) | dates 63% right, 2% wrong; the rest withheld rather than guessed |
 
-Sources: [`cuad_report.md`](../reports/cuad_report.md), [`er_real_report.md`](../reports/er_real_report.md),
+Sources: [`company_er_report.md`](../reports/company_er_report.md), [`cuad_report.md`](../reports/cuad_report.md), [`er_real_report.md`](../reports/er_real_report.md),
 [`er_french_report.md`](../reports/er_french_report.md), [`arabic_names_report.md`](../reports/arabic_names_report.md),
 [`receipts_report.md`](../reports/receipts_report.md). Each real-data test found bugs in Canon (US phone numbers refused,
-French acronyms missed, date formats, misread digits). They were fixed and the fixes are measured above.
+French acronyms missed, date formats, misread digits, registered-agent addresses and SEC name qualifiers read as real
+addresses and names). They were fixed and the fixes are measured above.
 
 ## The design choice behind every number: refuse rather than guess
 

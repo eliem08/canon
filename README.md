@@ -148,6 +148,8 @@ All numbers are reproducible from the repository. "Real data" means public datas
 | Permission leaks | Synthetic US company, 4,400 answers, 110 callers | Canon **0%**; keyword RAG 43%, strong RAG 87% ([report](docs/reports/permission_report_west.md)) |
 | Answer accuracy | 40 synthetic questions, 4 open models | Canon 97.5%, strong RAG 92.5% (difference **not** significant), keyword RAG 55–58% ([summary](docs/reports/eval_summary.md)) |
 | Contract terms | 267 held-out SEC-filed US contracts (CUAD), lawyer answers | Parties 57% found / 99% precision; agreement date 66% / 94%; end date 33% / 91%; renewal notice 37% / 100% ([report](docs/reports/cuad_report.md)) |
+| **Same real company across three systems** | 966 held-out US-listed companies: Wikidata (CRM-like), SEC EDGAR (finance), GLEIF (legal registry), 3,238 records | F1 0.804 vs 0.755 for exact names; all records of a company together for 58%; 16 wrong merges ([report](docs/reports/company_er_report.md)) |
+| **Renamed customers** | Stale CRM account under the company's real former name (e.g. a pre-rename filing name) | 72% linked automatically, 24% more sent to a person; exact-name matching: 0% (same report) |
 | Duplicate customers | US business listings (Fodors–Zagat), held-out | F1 0.948 vs 0.825 for exact names ([report](docs/reports/er_real_report.md)) |
 | Duplicate customers | French company registry vs shop signs (SIRENE) | 93% precision on automatic links; most shop signs need a person ([report](docs/reports/er_french_report.md)) |
 | Arabic ↔ Latin names | 23k real names | 97.8% of true pairs at 0.85 similarity, 0.10% false matches ([report](docs/reports/arabic_names_report.md)) |

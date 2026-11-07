@@ -146,7 +146,7 @@ def _addr(name, address):
 def test_another_house_number_on_the_same_street_is_another_address():
     s = score_pair(_addr("Pas a Pas", "22 Boulevard Jeanne d'Arc"),
                    _addr("Pas a Pas", "6 Bd Jeanne d'Arc"), ScoringConfig())  # fmt: skip
-    assert s.evidence["address"] < 0
+    assert s.evidence["address"] <= 0  # never agreement (0 here: same distinctive name, two sites)
     s = score_pair(_addr("Pas a Pas", "22 Boulevard Jeanne d'Arc"),
                    _addr("Pas a Pas", "22 Bd Jeanne d'Arc"), ScoringConfig())  # fmt: skip
     assert s.evidence["address"] > 0
@@ -157,3 +157,27 @@ def test_two_full_addresses_that_differ_count_more_than_a_vague_one():
     full = score_pair(_addr("SAP", "62 Rue Saint Martin"), _addr("SAP", "35 Bd Jeanne d'Arc"), cfg)
     vague = score_pair(_addr("SAP", "Rue Saint Martin"), _addr("SAP", "La Gare"), cfg)
     assert full.evidence["address"] == cfg.address_disagree_full < vague.evidence["address"]
+
+
+def test_same_distinctive_name_at_two_sites_is_not_evidence_against():
+    cfg = ScoringConfig()
+    a = _addr("Monolithic Power Systems, Inc.", "79 Great Oaks Blvd")
+    b = _addr("MONOLITHIC POWER SYSTEMS INC", "1555 Palm Beach Lakes Blvd")
+    s = score_pair(a, b, cfg)
+    assert s.evidence["address"] == 0 and s.probability > 0.5
+    # a one-word name is not distinctive: "Atlas" at two addresses stays penalised
+    one = score_pair(_addr("Atlas", "1 Main St"), _addr("Atlas", "9 Oak Ave"), cfg)
+    assert one.evidence["address"] < 0
+
+
+def test_registered_agent_addresses_are_not_locations():
+    from canon.resolve.normalize import is_registered_agent
+
+    assert is_registered_agent("C/O Corporation Service Company, 251 Little Falls Drive")
+    assert is_registered_agent("Corporation Trust Center, 1209 Orange Street")
+    assert not is_registered_agent("2503 S. Hanley Road")
+    rec = SourceRecord(record_id="x", source="crm", locator="x", name="Verifone Inc",
+                       address="C/O Corporation Service Company, 2711 Centerville Road",
+                       city="Wilmington")  # fmt: skip
+    f = features(rec)
+    assert f.address == "" and f.city == ""
